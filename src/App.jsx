@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useStore } from './context/StoreContext';
 import { Header } from './components/Header';
 import { HomePage } from './pages/HomePage';
@@ -44,6 +44,13 @@ const Layout = () => {
           <Route path="*" element={<HomePage />} />
         </Routes>
       </main>
+
+      {/* Footer: Kundan Works Creation */}
+      <footer className="bg-[#F3ECE4] border-t border-[#E5DACF] py-6 text-center px-4">
+        <p className="font-serif text-xs sm:text-sm tracking-widest text-[#241F1C] uppercase font-medium">
+          Kundan Works Creation
+        </p>
+      </footer>
 
       {/* Mobile Sticky Bottom Navigation (4 tabs: Home, Cart, Contact, Order) */}
       <BottomNavigation />
