@@ -4,17 +4,12 @@ import {
   Package, 
   Truck, 
   CheckCircle2, 
-  Clock, 
-  MapPin, 
-  PhoneCall, 
-  MessageSquare, 
   AlertCircle 
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { FashionPlaceholder } from './Placeholders';
 
 export const OrderSection = () => {
-  const { orders, trackOrder, setIsContactOpen } = useStore();
+  const { orders, trackOrder } = useStore();
 
   // Search state - defaults to first order so user immediately sees a live tracking demo!
   const [searchQuery, setSearchQuery] = useState('KW-1001');
@@ -155,7 +150,7 @@ export const OrderSection = () => {
             </div>
 
             {/* Stepper Timeline */}
-            <div className="px-5 sm:px-8 py-2">
+            <div className="px-5 sm:px-8 pt-2 pb-7">
               <div className="relative">
                 {/* Horizontal Progress Bar for Desktop, Vertical for Mobile */}
                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 relative">
@@ -198,93 +193,6 @@ export const OrderSection = () => {
                   })}
                 </div>
               </div>
-            </div>
-
-            {/* Ordered Items & Delivery Details Grid */}
-            <div className="p-5 sm:p-8 pt-0 grid grid-cols-1 md:grid-cols-12 gap-6">
-              
-              {/* Items Card */}
-              <div className="md:col-span-7 bg-[#FAF8F5] p-4 rounded-xl border border-[#EAE0D4] space-y-3">
-                <h3 className="font-serif text-xs uppercase tracking-wider text-brand-800 font-semibold pb-2 border-b border-[#EAE0D4]">
-                  Items in this Shipment
-                </h3>
-
-                {searchedOrder.items.map((item, i) => (
-                  <div key={i} className="flex gap-3 items-center">
-                    <div className="w-16 h-20 rounded-lg overflow-hidden bg-[#EFE8DF] shrink-0 border border-[#DAC8B8]">
-                      <FashionPlaceholder 
-                        type={item.placeholderKey || 'kurta'} 
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-serif text-xs sm:text-sm font-medium text-[#221B16] line-clamp-1">
-                        {item.title}
-                      </h4>
-                      <p className="text-[11px] text-neutral-500 mt-0.5">
-                        Size: <span className="font-semibold text-neutral-700">{item.size}</span> • Qty: {item.quantity}
-                      </p>
-                      <p className="font-serif font-semibold text-xs text-[#1E1A17] mt-1">
-                        ₹{item.price.toLocaleString('en-IN')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-
-                <div className="pt-2 border-t border-[#EAE0D4] text-xs space-y-1 text-neutral-600">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>₹{searchedOrder.subtotal?.toLocaleString('en-IN')}</span>
-                  </div>
-                  {searchedOrder.discount > 0 && (
-                    <div className="flex justify-between text-emerald-700">
-                      <span>Promo Savings</span>
-                      <span>- ₹{searchedOrder.discount?.toLocaleString('en-IN')}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between font-semibold text-[#1E1A17] pt-1 border-t border-[#EAE0D4]">
-                    <span>Total Paid</span>
-                    <span className="font-serif">₹{searchedOrder.total?.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Shipping & Support Card */}
-              <div className="md:col-span-5 bg-[#FAF8F5] p-4 rounded-xl border border-[#EAE0D4] flex flex-col justify-between space-y-4">
-                <div className="space-y-3 text-xs">
-                  <h3 className="font-serif uppercase tracking-wider text-brand-800 font-semibold pb-2 border-b border-[#EAE0D4]">
-                    Dispatch & Recipient Info
-                  </h3>
-
-                  <div>
-                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Recipient</span>
-                    <p className="font-medium text-neutral-800">{searchedOrder.customerName}</p>
-                    <p className="text-neutral-500">{searchedOrder.phone}</p>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Delivery Address</span>
-                    <p className="text-neutral-700 leading-relaxed text-[11px]">{searchedOrder.shippingAddress}</p>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">AWB Tracking No.</span>
-                    <p className="font-mono text-neutral-800 font-semibold">{searchedOrder.awbNumber}</p>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    onClick={() => setIsContactOpen(true)}
-                    className="w-full py-2 bg-white hover:bg-neutral-50 border border-[#DAC6B4] text-brand-900 rounded-lg text-xs font-medium tracking-wide uppercase transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>Order Inquiries Desk</span>
-                  </button>
-                </div>
-              </div>
-
             </div>
 
           </div>
