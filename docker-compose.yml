@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  kundanworks-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kundanworks-app
+    restart: unless-stopped
+    ports:
+      # Host port 3040 maps to internal container port 80.
+      # You can change PORT in your .env file on the VPS if 3040 is occupied.
+      - "${PORT:-3040}:80"
+    environment:
+      - NODE_ENV=production
+    labels:
+      - "project=kundanworks"
+      - "domain=kundanworks.shonku.site"
+
+# Optional: If you use a shared Docker network for Nginx Proxy Manager / Traefik:
+# networks:
+#   default:
+#     name: web-proxy
+#     external: true
