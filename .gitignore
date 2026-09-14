@@ -26,3 +26,7 @@ dist-ssr
 # Environment variables
 .env
 .env.production
+
+# Uploaded Media
+uploads/
+server/uploads/

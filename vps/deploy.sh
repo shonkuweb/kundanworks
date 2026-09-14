@@ -3,13 +3,15 @@
 # ================================================================
 # Automated Deployment Script for Kundan Works on VPS
 # Domain: kundanworks.shonku.site
+# Stack: PostgreSQL 16 + Express REST API + React SPA Nginx
 # ================================================================
 
 set -e
 
 echo "=========================================="
-echo " Starting Kundan Works Docker Deployment  "
+echo " Starting Kundan Works Full-Stack Deploy  "
 echo " Domain: kundanworks.shonku.site          "
+echo " Stack: PostgreSQL + Node API + Web SPA   "
 echo "=========================================="
 
 # Check if Docker is installed
@@ -19,32 +21,44 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
+# Load .env if present
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
 # Set host port (default: 3040)
 export PORT=${PORT:-3040}
 echo "✓ Host Port configured: $PORT"
 
-# Stop existing container if running
-echo "✓ Rebuilding and launching Docker container..."
+# Rebuild and launch containers
+echo "✓ Rebuilding and launching Docker containers (Database, API, Web)..."
 if docker compose version &> /dev/null; then
-    docker compose down || true
     docker compose up -d --build
 else
-    docker-compose down || true
     docker-compose up -d --build
 fi
 
-# Wait for container to be ready
-echo "✓ Waiting for container to initialize..."
-sleep 4
+# Wait for containers to be ready
+echo "✓ Waiting for PostgreSQL and API to initialize tables..."
+sleep 6
 
-# Check health
+# Check Web health
 if curl -s http://127.0.0.1:$PORT/healthz | grep -q "healthy"; then
+    echo "✅ Web Nginx container is UP on port $PORT"
+else
+    echo "⚠️ Checking Web container logs:"
+    docker logs --tail 20 kundanworks-app
+fi
+
+# Check API + PostgreSQL health
+if curl -s http://127.0.0.1:$PORT/api/healthz | grep -q "connected"; then
+    echo "✅ PostgreSQL Database & API are CONNECTED & HEALTHY"
     echo "=========================================="
-    echo "✅ Container is UP & HEALTHY on port $PORT"
+    echo "🎉 Full-Stack Kundan Works is RUNNING!"
     echo "=========================================="
 else
-    echo "⚠️ Warning: Health check did not return immediately, checking logs:"
-    docker logs --tail 20 kundanworks-app
+    echo "⚠️ Checking API container logs:"
+    docker logs --tail 30 kundanworks-api
 fi
 
 echo ""

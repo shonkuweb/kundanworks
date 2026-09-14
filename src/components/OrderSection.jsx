@@ -11,7 +11,8 @@ import {
   MapPin,
   Phone,
   ExternalLink,
-  MessageCircle
+  MessageCircle,
+  Loader2
 } from 'lucide-react';
 import { useStore, ORDER_STAGES } from '../context/StoreContext';
 import { FashionPlaceholder } from './Placeholders';
@@ -26,34 +27,56 @@ export const OrderSection = () => {
   const [searchQuery, setSearchQuery] = useState(urlOrderId);
   const [searchedOrder, setSearchedOrder] = useState(null);
   const [searchError, setSearchError] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   // Auto-search if navigated with ?id=... from checkout
   useEffect(() => {
     if (urlOrderId) {
       setSearchQuery(urlOrderId);
-      const result = trackOrder(urlOrderId);
+      (async () => {
+        setIsSearching(true);
+        setSearchError('');
+        try {
+          const result = await trackOrder(urlOrderId);
+          if (result) {
+            setSearchedOrder(result);
+            setSearchError('');
+          } else {
+            setSearchError(`No active order found with ID "${urlOrderId}". Please check your order reference.`);
+          }
+        } catch {
+          setSearchError(`Unable to fetch tracking for "${urlOrderId}".`);
+        } finally {
+          setIsSearching(false);
+        }
+      })();
+    }
+  }, [urlOrderId]);
+
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) {
+      setSearchError('Please enter your Order ID or Phone Number');
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchError('');
+    try {
+      const result = await trackOrder(query);
       if (result) {
         setSearchedOrder(result);
         setSearchError('');
       } else {
-        setSearchError(`No active order found with ID "${urlOrderId}". Please check your order reference.`);
+        setSearchedOrder(null);
+        setSearchError(`No active order found matching "${query}". Please verify your Order ID or Phone Number.`);
       }
-    }
-  }, [urlOrderId, orders]);
-
-  const handleSearch = (e) => {
-    if (e) e.preventDefault();
-    if (!searchQuery.trim()) {
-      setSearchError('Please enter your Order ID or Phone Number');
-      return;
-    }
-    const result = trackOrder(searchQuery.trim());
-    if (result) {
-      setSearchedOrder(result);
-      setSearchError('');
-    } else {
+    } catch {
       setSearchedOrder(null);
-      setSearchError(`No active order found matching "${searchQuery.trim()}". Please verify your Order ID.`);
+      setSearchError(`Error connecting to server. Please try again.`);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -94,9 +117,17 @@ export const OrderSection = () => {
             </div>
             <button
               type="submit"
-              className="px-6 py-3 bg-[#1E1A17] hover:bg-[#342C27] text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-xs transition-all active:scale-95 cursor-pointer"
+              disabled={isSearching}
+              className="px-6 py-3 bg-[#1E1A17] hover:bg-[#342C27] disabled:bg-neutral-400 text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2 min-w-[120px]"
             >
-              Track Order
+              {isSearching ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Searching...</span>
+                </>
+              ) : (
+                <span>Track Order</span>
+              )}
             </button>
           </form>
 
