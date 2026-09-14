@@ -415,6 +415,10 @@ app.get('/api/orders/:identifier', async (req, res) => {
       WHERE UPPER(id) = UPPER($1) 
          OR customer_phone = $1 
          OR REPLACE(customer_phone, ' ', '') = REPLACE($1, ' ', '')
+         OR (
+           LENGTH(REGEXP_REPLACE($1, '[^0-9]', '', 'g')) >= 10 
+           AND RIGHT(REGEXP_REPLACE(customer_phone, '[^0-9]', '', 'g'), 10) = RIGHT(REGEXP_REPLACE($1, '[^0-9]', '', 'g'), 10)
+         )
       ORDER BY created_at DESC
     `, [cleanIdentifier]);
 
