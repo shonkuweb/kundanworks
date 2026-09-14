@@ -3,12 +3,25 @@ import { INITIAL_CATEGORIES, INITIAL_PRODUCTS, INITIAL_CONFIG, INITIAL_ORDERS } 
 
 const StoreContext = createContext();
 
+// 4 Fulfillment Stages
+export const ORDER_STAGES = [
+  { step: 1, key: 'confirmed', label: 'Order Confirmed', desc: 'Order verified & confirmed by studio' },
+  { step: 2, key: 'packed', label: 'Packed', desc: 'Garments quality inspected & packaged in luxury boutique box' },
+  { step: 3, key: 'shipped', label: 'Shipped', desc: 'Handed over to express courier partner with live tracking' },
+  { step: 4, key: 'delivered', label: 'Delivered', desc: 'Package delivered safely to your doorstep' }
+];
+
 export const StoreProvider = ({ children }) => {
   // Load persisted state or fallback to initial defaults
   const [categories, setCategories] = useState(() => {
     try {
       const saved = localStorage.getItem('kundan_categories');
-      return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const legacyDummyIds = ['cat_ethnic', 'cat_western', 'cat_kurtas', 'cat_tops', 'cat_sarees', 'cat_bottoms'];
+        return parsed.filter(c => !legacyDummyIds.includes(c.id));
+      }
+      return INITIAL_CATEGORIES;
     } catch {
       return INITIAL_CATEGORIES;
     }
@@ -17,7 +30,12 @@ export const StoreProvider = ({ children }) => {
   const [products, setProducts] = useState(() => {
     try {
       const saved = localStorage.getItem('kundan_products');
-      return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const legacyDummyIds = ['prod_1', 'prod_2', 'prod_3', 'prod_4', 'prod_5', 'prod_6'];
+        return parsed.filter(p => !legacyDummyIds.includes(p.id));
+      }
+      return INITIAL_PRODUCTS;
     } catch {
       return INITIAL_PRODUCTS;
     }
@@ -26,7 +44,12 @@ export const StoreProvider = ({ children }) => {
   const [orders, setOrders] = useState(() => {
     try {
       const saved = localStorage.getItem('kundan_orders');
-      return saved ? JSON.parse(saved) : INITIAL_ORDERS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const legacyDummyIds = ['KW-1001', 'KW-1002', 'KW-1003'];
+        return parsed.filter(o => !legacyDummyIds.includes(o.id));
+      }
+      return INITIAL_ORDERS;
     } catch {
       return INITIAL_ORDERS;
     }
@@ -151,26 +174,41 @@ export const StoreProvider = ({ children }) => {
 
   // Admin Product Operations
   const addProduct = (newProduct) => {
+    const images = Array.isArray(newProduct.images) ? newProduct.images : (newProduct.imageUrl ? [newProduct.imageUrl] : []);
+    const stockNum = newProduct.stock !== undefined ? Math.max(0, Number(newProduct.stock) || 0) : 10;
     const item = {
       ...newProduct,
       id: `prod_${Date.now()}`,
-      inStock: newProduct.inStock ?? true,
+      stock: stockNum,
+      inStock: stockNum > 0,
       price: Number(newProduct.price) || 0,
-      originalPrice: Number(newProduct.originalPrice) || Number(newProduct.price) || 0
+      originalPrice: Number(newProduct.originalPrice) || Number(newProduct.price) || 0,
+      images,
+      imageUrl: images[0] || newProduct.imageUrl || ''
     };
     setProducts(prev => [item, ...prev]);
-    showToast(`Product "${item.title}" created successfully`);
+    showToast(`Product "${item.title}" created (Stock: ${stockNum} units)`);
     return item;
   };
 
   const updateProduct = (id, updatedFields) => {
     setProducts(prev => prev.map(p => {
       if (p.id === id) {
+        const images = updatedFields.images !== undefined
+          ? (Array.isArray(updatedFields.images) ? updatedFields.images : [])
+          : (p.images || (p.imageUrl ? [p.imageUrl] : []));
+        const stockNum = updatedFields.stock !== undefined 
+          ? Math.max(0, Number(updatedFields.stock) || 0)
+          : (p.stock !== undefined ? Math.max(0, Number(p.stock) || 0) : 10);
         return {
           ...p,
           ...updatedFields,
+          stock: stockNum,
+          inStock: stockNum > 0,
+          images,
+          imageUrl: images[0] || updatedFields.imageUrl || p.imageUrl || '',
           price: Number(updatedFields.price !== undefined ? updatedFields.price : p.price),
-          originalPrice: Number(updatedFields.originalPrice !== undefined ? updatedFields.originalPrice : p.originalPrice)
+          originalPrice: Number(updatedFields.originalPrice !== undefined ? updatedFields.originalPrice : (updatedFields.price !== undefined ? updatedFields.price : p.originalPrice))
         };
       }
       return p;
@@ -227,6 +265,32 @@ export const StoreProvider = ({ children }) => {
   };
 
   // Order Operations
+  const createOrder = (orderData) => {
+    const stage1 = ORDER_STAGES[0];
+    const newOrder = {
+      id: orderData.id || `KW-${Math.floor(100000 + Math.random() * 900000)}`,
+      date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+      time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+      customerName: orderData.name || '',
+      phone: orderData.phone || '',
+      shippingAddress: orderData.location || '',
+      decision: orderData.decision || 'pending', // 'pending' | 'accepted' | 'rejected'
+      currentStep: orderData.currentStep || 1,
+      status: stage1.key,
+      statusTitle: stage1.label,
+      statusDescription: stage1.desc,
+      courierName: 'Boutique Express Logistics',
+      awbNumber: `KW-EXP-${Math.floor(100000 + Math.random() * 900000)}`,
+      estimatedDelivery: 'Estimated 4-6 business days',
+      items: orderData.items || [],
+      subtotal: orderData.subtotal || 0,
+      total: orderData.total || 0,
+      ...orderData
+    };
+    setOrders(prev => [newOrder, ...prev]);
+    return newOrder;
+  };
+
   const trackOrder = (query) => {
     if (!query) return null;
     const q = query.trim().toLowerCase();
@@ -251,6 +315,117 @@ export const StoreProvider = ({ children }) => {
     showToast(`Order ${orderId} updated to ${newStatus}`);
   };
 
+  const updateOrderDecision = (orderId, decision) => {
+    const targetOrder = orders.find(o => o.id === orderId);
+    if (!targetOrder) return;
+    const previousDecision = targetOrder.decision;
+
+    // Automatically reduce product stock when admin accepts an order
+    if (decision === 'accepted' && previousDecision !== 'accepted') {
+      if (Array.isArray(targetOrder.items) && targetOrder.items.length > 0) {
+        setProducts(prevProducts => {
+          return prevProducts.map(p => {
+            const orderedItem = targetOrder.items.find(it => it.product?.id === p.id);
+            if (orderedItem) {
+              const qty = Number(orderedItem.quantity) || 1;
+              const currentStock = p.stock !== undefined ? Number(p.stock) : 10;
+              const nextStock = Math.max(0, currentStock - qty);
+              return {
+                ...p,
+                stock: nextStock,
+                inStock: nextStock > 0
+              };
+            }
+            return p;
+          });
+        });
+      }
+    }
+
+    // Restore product stock if a previously accepted order is now rejected or moved to pending
+    if (decision !== 'accepted' && previousDecision === 'accepted') {
+      if (Array.isArray(targetOrder.items) && targetOrder.items.length > 0) {
+        setProducts(prevProducts => {
+          return prevProducts.map(p => {
+            const orderedItem = targetOrder.items.find(it => it.product?.id === p.id);
+            if (orderedItem) {
+              const qty = Number(orderedItem.quantity) || 1;
+              const currentStock = p.stock !== undefined ? Number(p.stock) : 0;
+              const nextStock = currentStock + qty;
+              return {
+                ...p,
+                stock: nextStock,
+                inStock: nextStock > 0
+              };
+            }
+            return p;
+          });
+        });
+      }
+    }
+
+    setOrders(prev => prev.map(o => {
+      if (o.id === orderId) {
+        if (decision === 'rejected') {
+          return {
+            ...o,
+            decision: 'rejected',
+            status: 'rejected',
+            statusTitle: 'Order Rejected',
+            statusDescription: 'This order was declined by the studio. Please contact support on WhatsApp.'
+          };
+        } else if (decision === 'accepted') {
+          const step = o.currentStep || 1;
+          const stage = ORDER_STAGES[step - 1] || ORDER_STAGES[0];
+          return {
+            ...o,
+            decision: 'accepted',
+            status: stage.key,
+            statusTitle: stage.label,
+            statusDescription: stage.desc
+          };
+        } else {
+          return {
+            ...o,
+            decision: 'pending'
+          };
+        }
+      }
+      return o;
+    }));
+
+    if (decision === 'accepted') {
+      showToast(`Order ${orderId} accepted • Stock deducted automatically`, 'success');
+    } else if (decision === 'rejected') {
+      showToast(`Order ${orderId} rejected${previousDecision === 'accepted' ? ' • Stock restored' : ''}`, 'info');
+    } else {
+      showToast(`Order ${orderId} set to pending review`, 'info');
+    }
+  };
+
+  const updateOrderStage = (orderId, stepNumber) => {
+    const step = Math.min(Math.max(1, Number(stepNumber) || 1), 4);
+    const stage = ORDER_STAGES[step - 1];
+    setOrders(prev => prev.map(o => {
+      if (o.id === orderId) {
+        return {
+          ...o,
+          currentStep: step,
+          status: stage.key,
+          statusTitle: stage.label,
+          statusDescription: stage.desc
+        };
+      }
+      return o;
+    }));
+    showToast(`Order ${orderId} fulfillment set to "${stage.label}"`);
+  };
+
+  const deleteOrder = (orderId) => {
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+    showToast(`Order ${orderId} removed`, 'info');
+  };
+
   const resetAllData = () => {
     setCategories(INITIAL_CATEGORIES);
     setProducts(INITIAL_PRODUCTS);
@@ -267,8 +442,13 @@ export const StoreProvider = ({ children }) => {
         products,
         orders,
         setOrders,
+        createOrder,
         trackOrder,
         updateOrderStatus,
+        updateOrderDecision,
+        updateOrderStage,
+        deleteOrder,
+        ORDER_STAGES,
         storeConfig,
         setStoreConfig,
         activeTab,

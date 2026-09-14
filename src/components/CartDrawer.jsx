@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, ShieldAlert } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { FashionPlaceholder } from './Placeholders';
 
@@ -19,7 +19,7 @@ export const CartDrawer = () => {
 
   const handleProceedToCheckout = () => {
     setIsCartOpen(false);
-    navigate('/order');
+    navigate('/checkout');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -90,7 +90,7 @@ export const CartDrawer = () => {
                 >
                   <FashionPlaceholder 
                     type={item.product.placeholderKey || 'kurta'} 
-                    imageUrl={item.product.imageUrl}
+                    imageUrl={(item.product.images && item.product.images[0]) || item.product.imageUrl}
                     alt={item.product.title}
                     className="w-full h-full object-cover"
                   />
@@ -158,30 +158,20 @@ export const CartDrawer = () => {
                 <span>Subtotal</span>
                 <span className="font-serif font-medium">₹{cartSubtotal.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between text-emerald-700">
-                <span>Promotional Discount</span>
-                <span>- ₹500.00</span>
-              </div>
               <div className="flex justify-between">
                 <span>Estimated Shipping</span>
                 <span className="text-emerald-700 font-medium">Free</span>
               </div>
               <div className="flex justify-between text-sm font-semibold text-[#221B16] pt-2 border-t border-[#EAE0D4]">
                 <span>Total Amount</span>
-                <span className="font-serif text-base">₹{Math.max(0, cartSubtotal - 500).toLocaleString('en-IN')}</span>
+                <span className="font-serif text-base">₹{cartSubtotal.toLocaleString('en-IN')}</span>
               </div>
-            </div>
-
-            {/* Gateway Notice Mini Banner */}
-            <div className="bg-[#FAF3EB] p-2.5 rounded-lg border border-[#E2D2C2] text-[11px] text-[#7C5A3E] flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 shrink-0 text-amber-700" />
-              <span>Contact team ShonkuWEB to activate live online payment checkout.</span>
             </div>
 
             {/* Checkout Button */}
             <button
               onClick={handleProceedToCheckout}
-              className="w-full py-3 bg-[#1E1A17] hover:bg-[#342D28] text-white rounded-xl text-xs uppercase tracking-widest font-medium flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+              className="w-full py-3 bg-[#1E1A17] hover:bg-[#342D28] text-white rounded-xl text-xs uppercase tracking-widest font-medium flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
             >
               <span>Proceed to Checkout</span>
               <ArrowRight className="w-4 h-4" />

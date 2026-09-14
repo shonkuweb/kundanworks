@@ -4,6 +4,7 @@ import { useStore } from './context/StoreContext';
 import { Header } from './components/Header';
 import { HomePage } from './pages/HomePage';
 import { ProductPage } from './pages/ProductPage';
+import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderSection } from './components/OrderSection';
 import { AdminPanel } from './components/AdminPanel';
 import { BottomNavigation } from './components/BottomNavigation';
@@ -39,6 +40,7 @@ const Layout = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order" element={<OrderSection />} />
           {/* Fallback route */}
           <Route path="*" element={<HomePage />} />

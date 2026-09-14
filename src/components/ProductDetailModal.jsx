@@ -119,13 +119,22 @@ export const ProductDetailModal = () => {
 
             {/* Actions */}
             <div className="pt-3 flex items-center gap-3">
-              <button
-                onClick={handleAddAndOpenCart}
-                className="flex-1 py-3 px-4 bg-[#1E1A17] hover:bg-[#342D28] text-white rounded-xl text-xs uppercase tracking-widest font-medium flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
-              >
-                <ShoppingBag className="w-4 h-4" />
-                <span>Add to Bag • ₹{(selectedProduct.price * quantity).toLocaleString('en-IN')}</span>
-              </button>
+              {selectedProduct.stock !== undefined && selectedProduct.stock <= 0 ? (
+                <button
+                  disabled
+                  className="flex-1 py-3 px-4 bg-neutral-200 text-neutral-500 rounded-xl text-xs uppercase tracking-widest font-medium flex items-center justify-center gap-2 cursor-not-allowed"
+                >
+                  <span>Out of Stock</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleAddAndOpenCart}
+                  className="flex-1 py-3 px-4 bg-[#1E1A17] hover:bg-[#342D28] text-white rounded-xl text-xs uppercase tracking-widest font-medium flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>Add to Bag • ₹{(selectedProduct.price * quantity).toLocaleString('en-IN')}</span>
+                </button>
+              )}
             </div>
 
           </div>

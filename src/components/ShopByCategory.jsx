@@ -17,6 +17,11 @@ export const ShopByCategory = ({ onSelectCategory }) => {
     }
   };
 
+  // If no categories exist, don't render empty header
+  if (categories.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-6 sm:py-8 bg-[#FAF8F5] transition-all">
       <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4">

@@ -12,7 +12,8 @@ export const ProductCatalog = () => {
     activeCategory, 
     setActiveCategory, 
     searchQuery, 
-    addToCart 
+    addToCart,
+    setIsCartOpen 
   } = useStore();
 
   // Filter products by category and search
@@ -64,16 +65,22 @@ export const ProductCatalog = () => {
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
           <div className="py-16 text-center bg-[#F4ECE3]/50 rounded-2xl border border-dashed border-[#DAC8B8] p-6">
-            <p className="font-serif text-lg text-[#3E3834] mb-2">No designs found</p>
-            <p className="text-xs text-neutral-500 max-w-xs mx-auto mb-4">
-              Try adjusting your category filter or search keywords to explore other boutique pieces.
+            <p className="font-serif text-lg text-[#3E3834] mb-2">
+              {products.length === 0 ? 'No designs added yet' : 'No designs match your filter'}
             </p>
-            <button
-              onClick={() => setActiveCategory('all')}
-              className="px-4 py-2 bg-[#25211E] text-white rounded-md text-xs uppercase tracking-wider font-medium"
-            >
-              Reset to All Collections
-            </button>
+            <p className="text-xs text-neutral-500 max-w-xs mx-auto mb-4">
+              {products.length === 0 
+                ? 'Use the Store Manager Admin Panel to add your boutique designs with direct camera or gallery photos.'
+                : 'Try adjusting your category filter or search keywords to explore other boutique pieces.'}
+            </p>
+            {activeCategory !== 'all' && (
+              <button
+                onClick={() => setActiveCategory('all')}
+                className="px-4 py-2 bg-[#25211E] text-white rounded-md text-xs uppercase tracking-wider font-medium"
+              >
+                Reset to All Collections
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3.5 sm:gap-6">
@@ -92,7 +99,7 @@ export const ProductCatalog = () => {
                   >
                     <FashionPlaceholder 
                       type={product.placeholderKey || 'kurta'} 
-                      imageUrl={product.imageUrl}
+                      imageUrl={(product.images && product.images[0]) || product.imageUrl}
                       alt={product.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -102,6 +109,15 @@ export const ProductCatalog = () => {
                       <div className="absolute top-2.5 left-2.5 z-10">
                         <span className={`text-[9px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full text-white shadow-xs ${product.badgeColor || 'bg-brand-600'}`}>
                           {product.tag}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Stock badge if out of stock */}
+                    {product.stock !== undefined && product.stock <= 0 && (
+                      <div className="absolute top-2.5 right-2.5 z-10">
+                        <span className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-rose-600 text-white shadow-xs">
+                          Sold Out
                         </span>
                       </div>
                     )}
@@ -157,15 +173,24 @@ export const ProductCatalog = () => {
                         )}
                       </div>
 
-                      {/* Add Button */}
-                      <button
-                        onClick={() => addToCart(product, 'M', 1)}
-                        className="p-2 sm:px-3 sm:py-1.5 bg-[#25211E] hover:bg-[#3D3530] text-white rounded-md text-[11px] font-medium tracking-wider uppercase flex items-center gap-1 transition-all active:scale-95 shadow-xs"
-                        aria-label={`Add ${product.title} to bag`}
-                      >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Add</span>
-                      </button>
+                      {/* Add Button or Sold Out indicator */}
+                      {product.stock !== undefined && product.stock <= 0 ? (
+                        <span className="px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                          Sold Out
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            addToCart(product, 'M', 1);
+                            setIsCartOpen(true);
+                          }}
+                          className="p-2 sm:px-3 sm:py-1.5 bg-[#25211E] hover:bg-[#3D3530] text-white rounded-md text-[11px] font-medium tracking-wider uppercase flex items-center gap-1 transition-all active:scale-95 shadow-xs cursor-pointer"
+                          aria-label={`Add ${product.title} to bag`}
+                        >
+                          <ShoppingBag className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Add</span>
+                        </button>
+                      )}
                     </div>
 
                   </div>
