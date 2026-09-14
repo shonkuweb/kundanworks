@@ -18,16 +18,24 @@ export const ProductCatalog = () => {
 
   // Filter products by category and search
   const filteredProducts = products.filter(product => {
+    if (!product) return false;
+    const title = product.title || product.name || '';
+    const desc = product.description || '';
+    const tag = product.tag || '';
+
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.toLowerCase();
-      const matchTitle = product.title.toLowerCase().includes(q);
-      const matchDesc = (product.description || '').toLowerCase().includes(q);
-      const matchTag = (product.tag || '').toLowerCase().includes(q);
+      const matchTitle = title.toLowerCase().includes(q);
+      const matchDesc = desc.toLowerCase().includes(q);
+      const matchTag = tag.toLowerCase().includes(q);
       if (!matchTitle && !matchDesc && !matchTag) return false;
     }
 
     if (activeCategory === 'all') return true;
-    return product.categorySlug === activeCategory || product.subCategorySlug === activeCategory;
+    const catSlug = (product.categorySlug || product.categoryId || '').toLowerCase();
+    const subSlug = (product.subCategorySlug || '').toLowerCase();
+    const target = activeCategory.toLowerCase();
+    return catSlug === target || subSlug === target;
   });
 
   const getDiscount = (price, orig) => {
@@ -135,7 +143,7 @@ export const ProductCatalog = () => {
                   <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <p className="text-[10px] tracking-wider uppercase text-neutral-400 font-medium mb-1 line-clamp-1">
-                        Kundan Works • {product.categorySlug.replace('-', ' ')}
+                        Kundan Works • {(product.category || product.categorySlug || 'Collection').toString().replace(/-/g, ' ')}
                       </p>
                       
                       {/* Title - Links to dedicated product page */}

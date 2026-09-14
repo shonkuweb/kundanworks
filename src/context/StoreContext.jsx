@@ -19,8 +19,10 @@ export const StoreProvider = ({ children }) => {
       const saved = localStorage.getItem('kundan_categories');
       if (saved) {
         const parsed = JSON.parse(saved);
-        const legacyDummyIds = ['cat_ethnic', 'cat_western', 'cat_kurtas', 'cat_tops', 'cat_sarees', 'cat_bottoms'];
-        return parsed.filter(c => !legacyDummyIds.includes(c.id));
+        if (Array.isArray(parsed)) {
+          const legacyDummyIds = ['cat_ethnic', 'cat_western', 'cat_kurtas', 'cat_tops', 'cat_sarees', 'cat_bottoms'];
+          return parsed.filter(c => c && !legacyDummyIds.includes(c.id));
+        }
       }
       return INITIAL_CATEGORIES;
     } catch {
@@ -33,8 +35,24 @@ export const StoreProvider = ({ children }) => {
       const saved = localStorage.getItem('kundan_products');
       if (saved) {
         const parsed = JSON.parse(saved);
-        const legacyDummyIds = ['prod_1', 'prod_2', 'prod_3', 'prod_4', 'prod_5', 'prod_6'];
-        return parsed.filter(p => !legacyDummyIds.includes(p.id));
+        if (Array.isArray(parsed)) {
+          const legacyDummyIds = ['prod_1', 'prod_2', 'prod_3', 'prod_4', 'prod_5', 'prod_6'];
+          return parsed
+            .filter(p => p && !legacyDummyIds.includes(p.id))
+            .map(p => ({
+              ...p,
+              title: p.title || p.name || 'Untitled Piece',
+              name: p.name || p.title || 'Untitled Piece',
+              category: p.category || 'Collection',
+              categorySlug: p.categorySlug || p.categoryId || (p.category ? String(p.category).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'general'),
+              price: Number(p.price) || 0,
+              originalPrice: Number(p.originalPrice || p.price || 0),
+              stock: p.stock !== undefined ? Number(p.stock) : 10,
+              inStock: p.stock !== undefined ? Number(p.stock) > 0 : true,
+              images: Array.isArray(p.images) ? p.images : (p.imageUrl ? [p.imageUrl] : []),
+              imageUrl: (Array.isArray(p.images) && p.images[0]) || p.imageUrl || ''
+            }));
+        }
       }
       return INITIAL_PRODUCTS;
     } catch {
@@ -47,8 +65,10 @@ export const StoreProvider = ({ children }) => {
       const saved = localStorage.getItem('kundan_orders');
       if (saved) {
         const parsed = JSON.parse(saved);
-        const legacyDummyIds = ['KW-1001', 'KW-1002', 'KW-1003'];
-        return parsed.filter(o => !legacyDummyIds.includes(o.id));
+        if (Array.isArray(parsed)) {
+          const legacyDummyIds = ['KW-1001', 'KW-1002', 'KW-1003'];
+          return parsed.filter(o => o && !legacyDummyIds.includes(o.id));
+        }
       }
       return INITIAL_ORDERS;
     } catch {
@@ -120,12 +140,15 @@ export const StoreProvider = ({ children }) => {
       if (pRes.status === 'fulfilled' && Array.isArray(pRes.value)) {
         const dbProducts = pRes.value.map(p => ({
           ...p,
-          title: p.name || p.title,
+          title: p.name || p.title || 'Untitled Piece',
+          name: p.name || p.title || 'Untitled Piece',
+          category: p.category || 'Collection',
+          categorySlug: p.categorySlug || p.categoryId || (p.category ? String(p.category).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'general'),
           price: Number(p.price) || 0,
           originalPrice: Number(p.originalPrice || p.price || 0),
           stock: p.stock !== undefined ? Number(p.stock) : 10,
           inStock: p.stock !== undefined ? Number(p.stock) > 0 : true,
-          images: Array.isArray(p.images) ? p.images : [],
+          images: Array.isArray(p.images) ? p.images : (p.imageUrl ? [p.imageUrl] : []),
           imageUrl: (Array.isArray(p.images) && p.images[0]) || p.imageUrl || ''
         }));
         setProducts(dbProducts);
@@ -139,14 +162,19 @@ export const StoreProvider = ({ children }) => {
         const dbOrders = oRes.value.map(o => ({
           ...o,
           phone: o.customerPhone || o.phone || '',
+          customerPhone: o.customerPhone || o.phone || '',
           name: o.customerName || o.name || '',
+          customerName: o.customerName || o.name || '',
           shippingAddress: o.customerLocation || o.shippingAddress || '',
+          customerLocation: o.customerLocation || o.shippingAddress || '',
           currentStep: o.stage || o.currentStep || 1,
+          stage: o.stage || o.currentStep || 1,
           total: o.totalPrice !== undefined ? Number(o.totalPrice) : (Number(o.total) || 0),
+          totalPrice: o.totalPrice !== undefined ? Number(o.totalPrice) : (Number(o.total) || 0),
           date: o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : (o.date || ''),
           time: o.createdAt ? new Date(o.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : (o.time || ''),
           courierName: o.courierName || 'Boutique Express Logistics',
-          awbNumber: o.awbNumber || `KW-EXP-${o.id.replace(/[^0-9]/g, '') || '102938'}`,
+          awbNumber: o.awbNumber || `KW-EXP-${String(o.id || '').replace(/[^0-9]/g, '') || '102938'}`,
           estimatedDelivery: o.estimatedDelivery || 'Estimated 4-6 business days'
         }));
         setOrders(dbOrders);
@@ -491,12 +519,14 @@ export const StoreProvider = ({ children }) => {
     const q = queryStr.trim();
 
     // 1. Try local memory
-    const foundLocal = orders.find(o => 
-      (o.id && o.id.toLowerCase() === q.toLowerCase()) || 
-      (o.phone && o.phone.replace(/[^0-9]/g, '').includes(q.replace(/[^0-9]/g, ''))) ||
-      (o.customerPhone && o.customerPhone.replace(/[^0-9]/g, '').includes(q.replace(/[^0-9]/g, ''))) ||
-      (o.awbNumber && o.awbNumber.toLowerCase() === q.toLowerCase())
-    );
+    const cleanQ = q.replace(/[^0-9a-zA-Z]/g, '').toLowerCase();
+    const foundLocal = orders.find(o => {
+      if (!o) return false;
+      const orderId = String(o.id || '').toLowerCase();
+      const phone = String(o.phone || o.customerPhone || '').replace(/[^0-9]/g, '');
+      const awb = String(o.awbNumber || '').toLowerCase();
+      return orderId === q.toLowerCase() || (phone && cleanQ && phone.includes(cleanQ)) || awb === q.toLowerCase();
+    });
 
     // 2. Fetch live tracking from PostgreSQL backend
     try {
@@ -504,15 +534,15 @@ export const StoreProvider = ({ children }) => {
       if (dbOrder) {
         const formatted = {
           ...dbOrder,
-          phone: dbOrder.customerPhone || dbOrder.phone,
-          name: dbOrder.customerName || dbOrder.name,
-          shippingAddress: dbOrder.customerLocation || dbOrder.shippingAddress,
+          phone: dbOrder.customerPhone || dbOrder.phone || '',
+          name: dbOrder.customerName || dbOrder.name || '',
+          shippingAddress: dbOrder.customerLocation || dbOrder.shippingAddress || '',
           currentStep: dbOrder.stage || 1,
           total: dbOrder.totalPrice !== undefined ? Number(dbOrder.totalPrice) : Number(dbOrder.total || 0),
           date: dbOrder.createdAt ? new Date(dbOrder.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
           time: dbOrder.createdAt ? new Date(dbOrder.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '',
           courierName: 'Boutique Express Logistics',
-          awbNumber: `KW-EXP-${dbOrder.id.replace(/[^0-9]/g, '') || '102938'}`,
+          awbNumber: `KW-EXP-${String(dbOrder.id || '').replace(/[^0-9]/g, '') || '102938'}`,
           estimatedDelivery: 'Estimated 4-6 business days'
         };
 

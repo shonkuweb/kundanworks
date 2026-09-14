@@ -291,10 +291,13 @@ export const AdminPanel = ({ onClose }) => {
     setIsCategoryModalOpen(false);
   };
 
-  const filteredAdminProducts = products.filter(p => 
-    p.title.toLowerCase().includes(adminSearch.toLowerCase()) ||
-    p.categorySlug.toLowerCase().includes(adminSearch.toLowerCase())
-  );
+  const filteredAdminProducts = products.filter(p => {
+    if (!p) return false;
+    const title = p.title || p.name || '';
+    const cat = p.categorySlug || p.category || p.categoryId || '';
+    const q = (adminSearch || '').toLowerCase();
+    return title.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
+  });
 
   // Orders filtering and counts
   const filteredOrders = orders.filter(order => {
