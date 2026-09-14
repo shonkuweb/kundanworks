@@ -15,8 +15,8 @@ export const ContactModal = () => {
   const [isSuccessAnimating, setIsSuccessAnimating] = useState(false);
   const [progressWidth, setProgressWidth] = useState(0);
 
-  // Business WhatsApp number: 8511556115
-  const BUSINESS_WHATSAPP_NUMBER = '918511556115';
+  // Business WhatsApp number: 8511556155
+  const BUSINESS_WHATSAPP_NUMBER = '918511556155';
 
   useEffect(() => {
     if (!isContactOpen) {
@@ -125,7 +125,7 @@ _Sent via Kundan Works Boutique Portal_`;
                 Contact Kundan Works
               </h3>
               <p className="text-[11px] text-[#796455] font-light mt-0.5">
-                Stylist Desk & Client Concierge • WhatsApp: <strong>8511556115</strong>
+                Stylist Desk & Client Concierge • WhatsApp: <strong>8511556155</strong>
               </p>
             </div>
 
@@ -186,7 +186,7 @@ _Sent via Kundan Works Boutique Portal_`;
                   <span>Send via WhatsApp</span>
                 </button>
                 <p className="text-[10px] text-center text-neutral-500 mt-2">
-                  Opens directly to WhatsApp with <strong>+91 85115 56115</strong>
+                  Opens directly to WhatsApp with <strong>+91 85115 56155</strong>
                 </p>
               </div>
             </form>

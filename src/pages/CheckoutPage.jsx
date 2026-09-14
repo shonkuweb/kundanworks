@@ -38,8 +38,8 @@ export const CheckoutPage = () => {
   const [createdOrderId, setCreatedOrderId] = useState('');
   const [sentWhatsappUrl, setSentWhatsappUrl] = useState('');
 
-  // Target admin WhatsApp number: 8511556115
-  const ADMIN_WHATSAPP_NUMBER = '918511556115';
+  // Target admin WhatsApp number: 8511556155
+  const ADMIN_WHATSAPP_NUMBER = '918511556155';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -417,7 +417,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                     <span>Buy via WhatsApp</span>
                   </button>
                   <p className="text-[10px] text-center text-neutral-500 mt-2">
-                    Tapping Buy opens WhatsApp with your order details and product links addressed to <strong>8511556115</strong>.
+                    Tapping Buy opens WhatsApp with your order details and product links addressed to <strong>8511556155</strong>.
                   </p>
                 </div>
 

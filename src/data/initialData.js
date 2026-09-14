@@ -10,7 +10,7 @@ export const INITIAL_CONFIG = {
   subHeading: 'Tradition Meets Everyday Style',
   heroSubtitle: 'Elegant outfits for every you.',
   promoBanner: 'FLAT ₹500 OFF on your first order',
-  whatsappNumber: '+91 98765 43210',
+  whatsappNumber: '+91 85115 56155',
   supportEmail: 'contact@kundanworks.com',
   shonkuWebDetails: {
     agencyName: 'ShonkuWEB Technologies',

@@ -58,7 +58,18 @@ export const StoreProvider = ({ children }) => {
   const [storeConfig, setStoreConfig] = useState(() => {
     try {
       const saved = localStorage.getItem('kundan_config');
-      return saved ? JSON.parse(saved) : INITIAL_CONFIG;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (
+          parsed.whatsappNumber === '+91 98765 43210' ||
+          parsed.whatsappNumber === '918511556115' ||
+          parsed.whatsappNumber === '+91 85115 56115'
+        ) {
+          parsed.whatsappNumber = '+91 85115 56155';
+        }
+        return parsed;
+      }
+      return INITIAL_CONFIG;
     } catch {
       return INITIAL_CONFIG;
     }
