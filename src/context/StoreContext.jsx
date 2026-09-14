@@ -105,11 +105,35 @@ export const StoreProvider = ({ children }) => {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   
-  // Cart state
+  // Cart state with safe normalization
   const [cart, setCart] = useState(() => {
     try {
       const saved = localStorage.getItem('kundan_cart');
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed
+            .filter(item => item && (item.product || item.id))
+            .map(item => {
+              const product = item.product || item;
+              return {
+                product: {
+                  ...product,
+                  id: product.id || `prod_${Date.now()}`,
+                  title: product.title || product.name || 'Boutique Piece',
+                  name: product.name || product.title || 'Boutique Piece',
+                  price: Number(product.price) || 0,
+                  originalPrice: Number(product.originalPrice || product.price) || 0,
+                  images: Array.isArray(product.images) ? product.images : (product.imageUrl ? [product.imageUrl] : []),
+                  imageUrl: (Array.isArray(product.images) && product.images[0]) || product.imageUrl || ''
+                },
+                size: item.size || 'M',
+                quantity: Math.max(1, parseInt(item.quantity, 10) || 1)
+              };
+            });
+        }
+      }
+      return [];
     } catch {
       return [];
     }
@@ -240,32 +264,68 @@ export const StoreProvider = ({ children }) => {
   // Cart Operations
   // ==========================================
   const addToCart = (product, size = 'M', quantity = 1) => {
+    if (!product) return;
+    const safeProduct = {
+      ...product,
+      id: product.id,
+      title: product.title || product.name || 'Boutique Piece',
+      name: product.name || product.title || 'Boutique Piece',
+      price: Number(product.price) || 0,
+      originalPrice: Number(product.originalPrice || product.price) || 0,
+      stock: product.stock !== undefined ? Number(product.stock) : 10,
+      inStock: product.stock !== undefined ? Number(product.stock) > 0 : true,
+      images: Array.isArray(product.images) ? product.images : (product.imageUrl ? [product.imageUrl] : []),
+      imageUrl: (Array.isArray(product.images) && product.images[0]) || product.imageUrl || ''
+    };
+    const qty = Math.max(1, parseInt(quantity, 10) || 1);
+    const chosenSize = size || 'M';
+
     setCart(prev => {
-      const existingIndex = prev.findIndex(item => item.product.id === product.id && item.size === size);
+      const validPrev = Array.isArray(prev) ? prev.filter(Boolean) : [];
+      const existingIndex = validPrev.findIndex(item => {
+        const itemPId = item.product?.id || item.id;
+        return itemPId === safeProduct.id && item.size === chosenSize;
+      });
+
       if (existingIndex > -1) {
-        const next = [...prev];
-        next[existingIndex].quantity += quantity;
+        const next = [...validPrev];
+        next[existingIndex] = {
+          ...next[existingIndex],
+          product: safeProduct,
+          quantity: (Number(next[existingIndex].quantity) || 1) + qty
+        };
         return next;
       }
-      return [...prev, { product, size, quantity }];
+      return [...validPrev, { product: safeProduct, size: chosenSize, quantity: qty }];
     });
-    showToast(`Added "${product.title}" to bag`);
+    showToast(`Added "${safeProduct.title}" to bag`);
   };
 
   const removeFromCart = (productId, size) => {
-    setCart(prev => prev.filter(item => !(item.product.id === productId && item.size === size)));
+    setCart(prev => {
+      if (!Array.isArray(prev)) return [];
+      return prev.filter(item => {
+        const itemPId = item.product?.id || item.id;
+        return !(itemPId === productId && item.size === size);
+      });
+    });
     showToast('Item removed from bag', 'info');
   };
 
   const updateCartQuantity = (productId, size, delta) => {
     setCart(prev => {
-      return prev.map(item => {
-        if (item.product.id === productId && item.size === size) {
-          const newQty = Math.max(1, item.quantity + delta);
-          return { ...item, quantity: newQty };
-        }
-        return item;
-      });
+      if (!Array.isArray(prev)) return [];
+      return prev
+        .map(item => {
+          const itemPId = item.product?.id || item.id;
+          if (itemPId === productId && item.size === size) {
+            const currentQty = Number(item.quantity) || 1;
+            const newQty = currentQty + delta;
+            return newQty > 0 ? { ...item, quantity: newQty } : null;
+          }
+          return item;
+        })
+        .filter(Boolean);
     });
   };
 
@@ -273,8 +333,18 @@ export const StoreProvider = ({ children }) => {
     setCart([]);
   };
 
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const cartSubtotal = cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+  const cartCount = Array.isArray(cart) 
+    ? cart.reduce((total, item) => total + (Number(item?.quantity) || 1), 0)
+    : 0;
+
+  const cartSubtotal = Array.isArray(cart)
+    ? cart.reduce((total, item) => {
+        const product = item?.product || item;
+        const price = Number(product?.price) || 0;
+        const qty = Number(item?.quantity) || 1;
+        return total + (price * qty);
+      }, 0)
+    : 0;
 
   // ==========================================
   // Product Operations (PostgreSQL Synchronized)

@@ -85,8 +85,14 @@ export const CheckoutPage = () => {
     // Format individual items with direct link
     const origin = window.location.origin;
     const itemsListText = cart.map((item, idx) => {
-      const productLink = `${origin}/product/${item.product.id}`;
-      return `${idx + 1}. *${item.product.title}*\n   • Size: *${item.size}* | Qty: *${item.quantity}*\n   • Price: ₹${(item.product.price * item.quantity).toLocaleString('en-IN')} (₹${item.product.price} each)\n   • Product Link: ${productLink}`;
+      const product = item?.product || item || {};
+      const pid = product.id || item?.id || idx;
+      const title = product.title || product.name || 'Handcrafted Apparel';
+      const price = Number(product.price) || 0;
+      const quantity = Number(item?.quantity) || 1;
+      const size = item?.size || 'Standard';
+      const productLink = `${origin}/product/${pid}`;
+      return `${idx + 1}. *${title}*\n   • Size: *${size}* | Qty: *${quantity}*\n   • Price: ₹${(price * quantity).toLocaleString('en-IN')} (₹${price} each)\n   • Product Link: ${productLink}`;
     }).join('\n\n');
 
     // Structured, clear message for the admin
@@ -201,7 +207,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
 
           <div className="text-right">
             <span className="text-xs text-neutral-500">Stylist WhatsApp</span>
-            <p className="font-mono text-xs font-semibold text-emerald-800">+91 85115 56115</p>
+            <p className="font-mono text-xs font-semibold text-emerald-800">+91 85115 56155</p>
           </div>
         </div>
 
@@ -309,80 +315,86 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
 
                 {/* Items List */}
                 <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
-                  {cart.map((item, idx) => (
-                    <div 
-                      key={`${item.product.id}-${item.size}-${idx}`}
-                      className="flex gap-3 pb-3 border-b border-[#F7F2EC] last:border-b-0"
-                    >
-                      {/* Image Thumbnail */}
-                      <div className="w-16 h-20 rounded-lg overflow-hidden shrink-0 bg-[#F4ECE3] border border-[#E5DACD]">
-                        {(item.product.images && item.product.images.length > 0) ? (
-                          <img 
-                            src={item.product.images[0]} 
-                            alt={item.product.title} 
-                            className="w-full h-full object-cover" 
-                          />
-                        ) : (
+                  {cart.map((item, idx) => {
+                    const product = item?.product || item || {};
+                    const pid = product.id || item?.id || `checkout-item-${idx}`;
+                    const title = product.title || product.name || 'Handcrafted Apparel';
+                    const price = Number(product.price) || 0;
+                    const quantity = Number(item?.quantity) || 1;
+                    const size = item?.size || 'Standard';
+                    const itemTotal = price * quantity;
+                    const imageUrl = (Array.isArray(product.images) && product.images[0]) || product.imageUrl;
+
+                    return (
+                      <div 
+                        key={`${pid}-${size}-${idx}`}
+                        className="flex gap-3 pb-3 border-b border-[#F7F2EC] last:border-b-0"
+                      >
+                        {/* Image Thumbnail */}
+                        <div className="w-16 h-20 rounded-lg overflow-hidden shrink-0 bg-[#F4ECE3] border border-[#E5DACD]">
                           <FashionPlaceholder 
-                            type={item.product.placeholderKey || 'kurta'} 
-                            imageUrl={item.product.imageUrl}
-                            alt={item.product.title}
+                            type={product.placeholderKey || 'kurta'} 
+                            imageUrl={imageUrl}
+                            alt={title}
                             className="w-full h-full object-cover" 
                           />
-                        )}
-                      </div>
-
-                      {/* Item Details */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-between">
-                        <div>
-                          <h4 className="font-serif text-xs font-semibold text-[#221B16] line-clamp-1">
-                            {item.product.title}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-0.5 text-[11px] text-neutral-500">
-                            <span>Size: <strong>{item.size}</strong></span>
-                            <span>•</span>
-                            <span>₹{item.product.price.toLocaleString('en-IN')}</span>
-                          </div>
                         </div>
 
-                        {/* Quantity controls */}
-                        <div className="flex items-center justify-between mt-2">
-                          <div className="inline-flex items-center bg-[#F6F0E8] rounded-md px-1.5 py-0.5 text-xs">
-                            <button
-                              type="button"
-                              onClick={() => updateCartQuantity(item.product.id, item.size, -1)}
-                              className="p-0.5 text-neutral-600 hover:text-black"
-                            >
-                              <Minus className="w-3 h-3" />
-                            </button>
-                            <span className="w-5 text-center font-semibold text-[#25201C]">
-                              {item.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => updateCartQuantity(item.product.id, item.size, 1)}
-                              className="p-0.5 text-neutral-600 hover:text-black"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
+                        {/* Item Details */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          <div>
+                            <h4 className="font-serif text-xs font-semibold text-[#221B16] line-clamp-1">
+                              {title}
+                            </h4>
+                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-neutral-500">
+                              <span>Size: <strong>{size}</strong></span>
+                              <span>•</span>
+                              <span>₹{price.toLocaleString('en-IN')}</span>
+                            </div>
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <span className="font-serif font-semibold text-xs text-[#1E1A17]">
-                              ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => removeFromCart(item.product.id, item.size)}
-                              className="text-neutral-400 hover:text-rose-600 p-0.5"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                          {/* Quantity controls */}
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="inline-flex items-center bg-[#F6F0E8] rounded-md px-1.5 py-0.5 text-xs">
+                              <button
+                                type="button"
+                                onClick={() => updateCartQuantity(pid, size, -1)}
+                                className="p-0.5 text-neutral-600 hover:text-black cursor-pointer"
+                                title="Decrease quantity"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </button>
+                              <span className="w-5 text-center font-semibold text-[#25201C] select-none">
+                                {quantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => updateCartQuantity(pid, size, 1)}
+                                className="p-0.5 text-neutral-600 hover:text-black cursor-pointer"
+                                title="Increase quantity"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </button>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <span className="font-serif font-semibold text-xs text-[#1E1A17]">
+                                ₹{itemTotal.toLocaleString('en-IN')}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeFromCart(pid, size)}
+                                className="text-neutral-400 hover:text-rose-600 p-0.5 cursor-pointer transition-colors"
+                                title="Remove item"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Price Breakdown */}

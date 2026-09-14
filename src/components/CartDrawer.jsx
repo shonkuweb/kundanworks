@@ -71,81 +71,104 @@ export const CartDrawer = () => {
                 Explore our handcrafted ethnic sets and contemporary western apparel to add your favorite looks.
               </p>
               <button
-                onClick={() => setIsCartOpen(false)}
-                className="mt-2 px-5 py-2 bg-[#25211E] text-white rounded-lg text-xs uppercase tracking-wider font-medium"
+                onClick={() => {
+                  setIsCartOpen(false);
+                  navigate('/');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="mt-2 px-5 py-2 bg-[#25211E] hover:bg-[#3D3530] text-white rounded-lg text-xs uppercase tracking-wider font-medium cursor-pointer transition-colors"
               >
                 Browse Catalog
               </button>
             </div>
           ) : (
-            cart.map((item, idx) => (
-              <div 
-                key={`${item.product.id}-${item.size}-${idx}`}
-                className="bg-white p-3 rounded-xl border border-[#EAE0D4] flex gap-3 shadow-xs"
-              >
-                {/* Image */}
+            cart.map((item, idx) => {
+              const product = item?.product || item || {};
+              const pid = product.id || item?.id || `item-${idx}`;
+              const title = product.title || product.name || 'Handcrafted Apparel';
+              const price = Number(product.price) || 0;
+              const quantity = Number(item?.quantity) || 1;
+              const size = item?.size || 'Standard';
+              const itemTotal = price * quantity;
+              const imageUrl = (Array.isArray(product.images) && product.images[0]) || product.imageUrl;
+
+              return (
                 <div 
-                  onClick={() => handleOpenProduct(item.product.id)}
-                  className="w-18 h-22 rounded-lg overflow-hidden shrink-0 bg-[#F4ECE3] cursor-pointer hover:opacity-90 transition-opacity"
+                  key={`${pid}-${size}-${idx}`}
+                  className="bg-white p-3 rounded-xl border border-[#EAE0D4] flex gap-3 shadow-xs"
                 >
-                  <FashionPlaceholder 
-                    type={item.product.placeholderKey || 'kurta'} 
-                    imageUrl={(item.product.images && item.product.images[0]) || item.product.imageUrl}
-                    alt={item.product.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                {/* Details */}
-                <div className="flex-1 flex flex-col justify-between min-w-0">
-                  <div>
-                    <div className="flex items-start justify-between gap-1">
-                      <h4 
-                        onClick={() => handleOpenProduct(item.product.id)}
-                        className="font-serif text-sm font-medium text-[#221B16] line-clamp-1 cursor-pointer hover:text-brand-700"
-                      >
-                        {item.product.title}
-                      </h4>
-                      <button
-                        onClick={() => removeFromCart(item.product.id, item.size)}
-                        className="text-neutral-400 hover:text-rose-600 p-0.5"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <p className="text-[11px] text-neutral-500 mt-0.5">
-                      Size: <span className="font-semibold text-neutral-700">{item.size}</span>
-                    </p>
+                  {/* Image */}
+                  <div 
+                    onClick={() => handleOpenProduct(pid)}
+                    className="w-18 h-22 rounded-lg overflow-hidden shrink-0 bg-[#F4ECE3] cursor-pointer hover:opacity-90 transition-opacity"
+                  >
+                    <FashionPlaceholder 
+                      type={product.placeholderKey || 'kurta'} 
+                      imageUrl={imageUrl}
+                      alt={title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
-                  {/* Quantity and Price */}
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#F7F2EC]">
-                    <div className="flex items-center gap-2 bg-[#F6F0E8] rounded-md px-1.5 py-0.5">
-                      <button
-                        onClick={() => updateCartQuantity(item.product.id, item.size, -1)}
-                        className="p-1 text-neutral-600 hover:text-black"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="text-xs font-semibold text-[#25201C] w-4 text-center">
-                        {item.quantity}
+                  {/* Details */}
+                  <div className="flex-1 flex flex-col justify-between min-w-0">
+                    <div>
+                      <div className="flex items-start justify-between gap-1">
+                        <h4 
+                          onClick={() => handleOpenProduct(pid)}
+                          className="font-serif text-sm font-medium text-[#221B16] line-clamp-1 cursor-pointer hover:text-brand-700"
+                        >
+                          {title}
+                        </h4>
+                        <button
+                          onClick={() => removeFromCart(pid, size)}
+                          className="text-neutral-400 hover:text-rose-600 p-0.5 cursor-pointer transition-colors"
+                          title="Remove item"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <p className="text-[11px] text-neutral-500 mt-0.5">
+                        Size: <span className="font-semibold text-neutral-700">{size}</span>
+                        {price > 0 && (
+                          <span className="text-neutral-400 ml-2">₹{price.toLocaleString('en-IN')} each</span>
+                        )}
+                      </p>
+                    </div>
+
+                    {/* Quantity and Price */}
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#F7F2EC]">
+                      <div className="flex items-center gap-2 bg-[#F6F0E8] rounded-md px-1.5 py-0.5">
+                        <button
+                          type="button"
+                          onClick={() => updateCartQuantity(pid, size, -1)}
+                          className="p-1 text-neutral-600 hover:text-black cursor-pointer"
+                          title="Decrease quantity"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-xs font-semibold text-[#25201C] w-4 text-center select-none">
+                          {quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => updateCartQuantity(pid, size, 1)}
+                          className="p-1 text-neutral-600 hover:text-black cursor-pointer"
+                          title="Increase quantity"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      <span className="font-serif font-semibold text-sm text-[#1E1A17]">
+                        ₹{itemTotal.toLocaleString('en-IN')}
                       </span>
-                      <button
-                        onClick={() => updateCartQuantity(item.product.id, item.size, 1)}
-                        className="p-1 text-neutral-600 hover:text-black"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
                     </div>
-
-                    <span className="font-serif font-semibold text-sm text-[#1E1A17]">
-                      ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
-                    </span>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 

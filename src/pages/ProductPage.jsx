@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, ShoppingBag, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, ArrowRight, Plus, Minus } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { FashionPlaceholder } from '../components/Placeholders';
 
@@ -147,26 +147,58 @@ export const ProductPage = () => {
                 </p>
               </div>
 
-              {/* Simple Size Selector */}
-              <div className="space-y-1.5 pt-1">
-                <span className="text-xs font-semibold text-neutral-700 uppercase tracking-wider block">
-                  Select Size
-                </span>
-                <div className="flex items-center gap-2">
-                  {['XS', 'S', 'M', 'L', 'XL'].map((s) => (
+              {/* Size & Quantity Selectors */}
+              <div className="space-y-4 pt-1">
+                {/* Size Selector */}
+                <div className="space-y-1.5">
+                  <span className="text-xs font-semibold text-neutral-700 uppercase tracking-wider block">
+                    Select Size
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {['XS', 'S', 'M', 'L', 'XL'].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setSelectedSize(s)}
+                        className={`w-10 h-10 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                          selectedSize === s
+                            ? 'bg-[#1E1A17] text-white shadow-xs'
+                            : 'bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50'
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Quantity Selector */}
+                <div className="space-y-1.5">
+                  <span className="text-xs font-semibold text-neutral-700 uppercase tracking-wider block">
+                    Quantity
+                  </span>
+                  <div className="inline-flex items-center bg-[#FAF5EE] border border-[#DECBB8] rounded-xl p-1">
                     <button
-                      key={s}
                       type="button"
-                      onClick={() => setSelectedSize(s)}
-                      className={`w-10 h-10 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                        selectedSize === s
-                          ? 'bg-[#1E1A17] text-white shadow-xs'
-                          : 'bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50'
-                      }`}
+                      disabled={quantity <= 1}
+                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-700 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                      title="Decrease quantity"
                     >
-                      {s}
+                      <Minus className="w-3.5 h-3.5" />
                     </button>
-                  ))}
+                    <span className="w-9 text-center text-xs font-semibold text-[#25201C] select-none">
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity(q => q + 1)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-700 hover:bg-white cursor-pointer transition-colors"
+                      title="Increase quantity"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

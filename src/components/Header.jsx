@@ -102,19 +102,34 @@ export const Header = () => {
             </div>
           </div>
 
-          {/* Right: Search & Admin Access */}
+          {/* Right: Search, Cart & Admin Access */}
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsSearchOpen(prev => !prev)}
-              className="p-1.5 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors"
+              className="p-1.5 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors cursor-pointer"
               aria-label="Search catalog"
             >
               <Search className="w-5 h-5 stroke-[2]" />
             </button>
+
+            {/* Shopping Bag / Cart */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative p-1.5 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors cursor-pointer"
+              aria-label="View Shopping Bag"
+            >
+              <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-[#9D6843] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={() => setIsAdminOpen(true)}
               title="Admin Panel"
-              className="hidden sm:flex items-center gap-1 text-[11px] font-medium tracking-wide uppercase px-2.5 py-1 rounded bg-[#F1E8DF] hover:bg-[#E7DCD0] text-brand-800 border border-[#DAC8B8] transition-colors"
+              className="hidden sm:flex items-center gap-1 text-[11px] font-medium tracking-wide uppercase px-2.5 py-1 rounded bg-[#F1E8DF] hover:bg-[#E7DCD0] text-brand-800 border border-[#DAC8B8] transition-colors cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Admin</span>
@@ -184,10 +199,28 @@ export const Header = () => {
                     navigate('/');
                     setIsDrawerOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-brand-900 hover:bg-[#F2EAE0] transition-colors flex items-center justify-between"
+                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-brand-900 hover:bg-[#F2EAE0] transition-colors flex items-center justify-between cursor-pointer"
                 >
                   <span>Home Collection</span>
                   <Sparkles className="w-4 h-4 text-brand-500" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsDrawerOpen(false);
+                    setIsCartOpen(true);
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-[#2B2522] hover:bg-[#F2EAE0] transition-colors flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <ShoppingBag className="w-4 h-4 text-brand-700" />
+                    <span>Shopping Bag</span>
+                  </div>
+                  {cartCount > 0 && (
+                    <span className="text-[11px] bg-brand-700 text-white px-2 py-0.5 rounded-full font-bold">
+                      {cartCount}
+                    </span>
+                  )}
                 </button>
 
                 <div className="pt-3 pb-1 px-3 text-[11px] font-semibold text-[#8C6F5A] tracking-wider uppercase">
