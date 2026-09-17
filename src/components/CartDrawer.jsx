@@ -147,9 +147,11 @@ export const CartDrawer = () => {
                       </div>
 
                       <div className="flex items-center gap-2 text-[11px] text-neutral-500 mt-1">
-                        <span className="bg-[#FAF5EE] text-[#5F3F2C] font-semibold px-2 py-0.5 rounded border border-[#EAE0D4]">
-                          Size: {size}
-                        </span>
+                        {size && size !== 'Standard' && size !== 'Free Size' && (
+                          <span className="bg-[#FAF5EE] text-[#5F3F2C] font-semibold px-2 py-0.5 rounded border border-[#EAE0D4]">
+                            Size: {size}
+                          </span>
+                        )}
                         {price > 0 && (
                           <span className="text-neutral-400">₹{price.toLocaleString('en-IN')} each</span>
                         )}

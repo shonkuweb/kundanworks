@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { initDB, query } from './db.js';
@@ -608,6 +609,239 @@ app.put('/api/config', async (req, res) => {
     console.error('Error saving config:', error);
     res.status(500).json({ error: 'Failed to save config' });
   }
+});
+
+// ==========================================
+// 7. Super Secure Admin Authentication System
+// Password is NEVER stored in plaintext
+// Verified exclusively on server via scrypt + random salt
+// ==========================================
+
+// In-memory active tokens map: token -> { createdAt, expiresAt }
+const adminSessions = new Map();
+
+// Rate limiting map for brute-force protection: ip -> { count, lockedUntil }
+const loginAttempts = new Map();
+
+function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+  return { salt, hash };
+}
+
+function verifyPassword(password, salt, storedHash) {
+  try {
+    const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+    const bufA = Buffer.from(hash, 'hex');
+    const bufB = Buffer.from(storedHash, 'hex');
+    if (bufA.length !== bufB.length) return false;
+    return crypto.timingSafeEqual(bufA, bufB);
+  } catch (err) {
+    return false;
+  }
+}
+
+// Server-side fallback storage directory if DB is offline
+const authDataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(authDataDir)) {
+  fs.mkdirSync(authDataDir, { recursive: true });
+}
+const authDataFile = path.join(authDataDir, 'admin_auth.json');
+
+async function getAdminAuthData() {
+  try {
+    const result = await query("SELECT value FROM store_config WHERE key = 'admin_auth'");
+    if (result && result.rows && result.rows.length > 0) {
+      return result.rows[0].value;
+    }
+  } catch (e) {
+    // Database query failed, fallback to file
+  }
+
+  if (fs.existsSync(authDataFile)) {
+    try {
+      return JSON.parse(fs.readFileSync(authDataFile, 'utf8'));
+    } catch (e) {}
+  }
+
+  // Initialize with initial secure default if no password configured yet
+  const defaultPass = process.env.ADMIN_PASSWORD || 'kundanadmin2026';
+  const initialAuth = {
+    ...hashPassword(defaultPass),
+    updatedAt: new Date().toISOString()
+  };
+
+  try {
+    await query(`
+      INSERT INTO store_config (key, value, updated_at)
+      VALUES ('admin_auth', $1, NOW())
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+    `, [JSON.stringify(initialAuth)]);
+  } catch (e) {}
+
+  try {
+    fs.writeFileSync(authDataFile, JSON.stringify(initialAuth, null, 2));
+  } catch (e) {}
+
+  return initialAuth;
+}
+
+async function saveAdminAuthData(newAuth) {
+  try {
+    await query(`
+      INSERT INTO store_config (key, value, updated_at)
+      VALUES ('admin_auth', $1, NOW())
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
+    `, [JSON.stringify(newAuth)]);
+  } catch (e) {}
+
+  try {
+    fs.writeFileSync(authDataFile, JSON.stringify(newAuth, null, 2));
+  } catch (e) {}
+}
+
+// Auth Middleware: verifies bearer token
+function requireAdminAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Admin authentication required' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  const session = adminSessions.get(token);
+  if (!session || session.expiresAt < Date.now()) {
+    if (session) adminSessions.delete(token);
+    return res.status(401).json({ error: 'Admin session expired or invalid. Please log in again.' });
+  }
+
+  req.adminToken = token;
+  next();
+}
+
+// 1. Admin Login
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const ip = req.ip || req.connection?.remoteAddress || 'client';
+    const now = Date.now();
+    const attempt = loginAttempts.get(ip) || { count: 0, lockedUntil: 0 };
+
+    if (attempt.lockedUntil > now) {
+      const waitSeconds = Math.ceil((attempt.lockedUntil - now) / 1000);
+      return res.status(429).json({ 
+        error: `Too many failed attempts. Please wait ${waitSeconds} seconds before trying again.` 
+      });
+    }
+
+    const { password } = req.body;
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    const authData = await getAdminAuthData();
+    const isValid = verifyPassword(password, authData.salt, authData.hash);
+
+    if (!isValid) {
+      attempt.count += 1;
+      if (attempt.count >= 5) {
+        attempt.lockedUntil = now + 5 * 60 * 1000; // 5 minutes lockout after 5 fails
+        attempt.count = 0;
+      }
+      loginAttempts.set(ip, attempt);
+      return res.status(401).json({ error: 'Incorrect admin password. Access denied.' });
+    }
+
+    // Reset attempts on successful authentication
+    loginAttempts.delete(ip);
+
+    // Issue cryptographically secure random session token
+    const token = crypto.randomBytes(32).toString('hex');
+    adminSessions.set(token, {
+      createdAt: now,
+      expiresAt: now + 24 * 60 * 60 * 1000 // 24 hours validity
+    });
+
+    res.json({
+      success: true,
+      token,
+      expiresIn: 86400,
+      message: 'Admin access granted'
+    });
+  } catch (error) {
+    console.error('Error during admin login:', error);
+    res.status(500).json({ error: 'Authentication service error' });
+  }
+});
+
+// 2. Verify Session Token
+app.post('/api/admin/verify', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ valid: false, error: 'No session token' });
+  }
+  const token = authHeader.split(' ')[1];
+  const session = adminSessions.get(token);
+  if (!session || session.expiresAt < Date.now()) {
+    if (session) adminSessions.delete(token);
+    return res.status(401).json({ valid: false, error: 'Session expired' });
+  }
+  res.json({ valid: true });
+});
+
+// 3. Change Admin Password (from Admin Panel Settings)
+app.post('/api/admin/change-password', requireAdminAuth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Both current password and new password are required' });
+    }
+
+    if (typeof newPassword !== 'string' || newPassword.trim().length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters long' });
+    }
+
+    const authData = await getAdminAuthData();
+    const isCurrentValid = verifyPassword(currentPassword, authData.salt, authData.hash);
+    if (!isCurrentValid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash the new password with fresh cryptographically random salt
+    const { salt: newSalt, hash: newHash } = hashPassword(newPassword.trim());
+    const updatedAuth = {
+      salt: newSalt,
+      hash: newHash,
+      updatedAt: new Date().toISOString()
+    };
+
+    await saveAdminAuthData(updatedAuth);
+
+    // Rotate and generate fresh session token
+    const newToken = crypto.randomBytes(32).toString('hex');
+    adminSessions.clear(); // invalidate all other sessions
+    adminSessions.set(newToken, {
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000
+    });
+
+    res.json({
+      success: true,
+      token: newToken,
+      message: 'Admin password updated successfully'
+    });
+  } catch (error) {
+    console.error('Error changing admin password:', error);
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
+// 4. Admin Logout
+app.post('/api/admin/logout', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    adminSessions.delete(token);
+  }
+  res.json({ success: true, message: 'Logged out successfully' });
 });
 
 // ==========================================

@@ -11,7 +11,6 @@ export const ProductPage = () => {
 
   const product = products.find(p => p.id === id || p.slug === id);
 
-  const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
 
   // Scroll to top when product changes
@@ -48,13 +47,13 @@ export const ProductPage = () => {
 
   const handleAddToCart = () => {
     if (isSoldOut) return;
-    addToCart(product, selectedSize, quantity);
+    addToCart(product, 'Standard', quantity);
     setIsCartOpen(true);
   };
 
   const handleCheckout = () => {
     if (isSoldOut) return;
-    addToCart(product, selectedSize, quantity);
+    addToCart(product, 'Standard', quantity);
     navigate('/checkout');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -147,32 +146,8 @@ export const ProductPage = () => {
                 </p>
               </div>
 
-              {/* Size & Quantity Selectors */}
-              <div className="space-y-4 pt-1">
-                {/* Size Selector */}
-                <div className="space-y-1.5">
-                  <span className="text-xs font-semibold text-neutral-700 uppercase tracking-wider block">
-                    Select Size
-                  </span>
-                  <div className="flex items-center gap-2">
-                    {['XS', 'S', 'M', 'L', 'XL'].map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setSelectedSize(s)}
-                        className={`w-10 h-10 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                          selectedSize === s
-                            ? 'bg-[#11A0AB] text-white shadow-xs'
-                            : 'bg-white text-neutral-700 border border-neutral-300 hover:border-[#11A0AB]'
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quantity Selector */}
+              {/* Quantity Selector */}
+              <div className="pt-2">
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-neutral-700 uppercase tracking-wider block">
                     Quantity

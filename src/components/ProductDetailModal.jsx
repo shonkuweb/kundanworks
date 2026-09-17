@@ -5,15 +5,12 @@ import { useStore } from '../context/StoreContext';
 
 export const ProductDetailModal = () => {
   const { selectedProduct, setSelectedProduct, addToCart, setIsCartOpen } = useStore();
-  const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
 
   if (!selectedProduct) return null;
 
-  const sizes = ['XS', 'S', 'M', 'L', 'XL'];
-
   const handleAddAndOpenCart = () => {
-    addToCart(selectedProduct, selectedSize, quantity);
+    addToCart(selectedProduct, 'Standard', quantity);
     setSelectedProduct(null);
     setIsCartOpen(true);
   };
@@ -82,28 +79,6 @@ export const ProductDetailModal = () => {
               </span>
             </div>
 
-            {/* Size Selector */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#5B4C41] mb-2">
-                Select Size
-              </label>
-              <div className="flex items-center gap-2">
-                {sizes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSelectedSize(s)}
-                    className={`w-10 h-10 rounded-lg text-xs font-medium transition-all ${
-                      selectedSize === s
-                        ? 'bg-[#241F1C] text-white shadow-xs'
-                        : 'bg-[#F2ECE3] text-[#4F4238] hover:bg-[#EAE0D4]'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Fabric Details */}
             {selectedProduct.fabric && (
               <div className="p-3 bg-[#F4EDE4] rounded-xl text-xs text-[#52443A] space-y-0.5">
@@ -122,14 +97,14 @@ export const ProductDetailModal = () => {
               {selectedProduct.stock !== undefined && selectedProduct.stock <= 0 ? (
                 <button
                   disabled
-                  className="flex-1 py-3 px-4 bg-neutral-200 text-neutral-500 rounded-xl text-xs uppercase tracking-widest font-medium flex items-center justify-center gap-2 cursor-not-allowed"
+                  className="flex-1 py-3.5 px-4 bg-neutral-200 text-neutral-500 rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 cursor-not-allowed"
                 >
                   <span>Out of Stock</span>
                 </button>
               ) : (
                 <button
                   onClick={handleAddAndOpenCart}
-                  className="flex-1 py-3 px-4 bg-[#1E1A17] hover:bg-[#342D28] text-white rounded-xl text-xs uppercase tracking-widest font-medium flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+                  className="flex-1 py-3.5 px-4 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Add to Bag • ₹{(selectedProduct.price * quantity).toLocaleString('en-IN')}</span>

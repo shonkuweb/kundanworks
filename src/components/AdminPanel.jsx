@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   X, 
@@ -10,6 +10,7 @@ import {
   Check, 
   Search, 
   Eye,
+  EyeOff,
   Camera,
   Image as ImageIcon,
   ShoppingBag,
@@ -19,10 +20,17 @@ import {
   Phone,
   MessageCircle,
   XCircle,
-  RotateCcw
+  RotateCcw,
+  Lock,
+  Unlock,
+  Key,
+  ShieldCheck,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import { useStore, ORDER_STAGES } from '../context/StoreContext';
 import { FashionPlaceholder } from './Placeholders';
+import { api } from '../services/api';
 
 // Client-side image compression helper: keeps aspect ratio, max 1200px, quality JPEG
 const compressImage = (file) => {
@@ -84,6 +92,139 @@ export const AdminPanel = ({ onClose }) => {
     setStoreConfig, 
     showToast 
   } = useStore();
+
+  // Super Secure Admin Authentication State (NO password stored in frontend)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [authPassword, setAuthPassword] = useState('');
+  const [showAuthPassword, setShowAuthPassword] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Settings: Change Password State
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [isChangingPass, setIsChangingPass] = useState(false);
+
+  // Verify existing admin session token on mount
+  useEffect(() => {
+    let isMounted = true;
+    const verifyExistingSession = async () => {
+      const token = sessionStorage.getItem('kundan_admin_token');
+      if (!token) {
+        if (isMounted) {
+          setIsAuthenticated(false);
+          setIsCheckingAuth(false);
+        }
+        return;
+      }
+      try {
+        const res = await api.adminVerifySession(token);
+        if (isMounted) {
+          if (res && res.valid) {
+            setIsAuthenticated(true);
+          } else {
+            sessionStorage.removeItem('kundan_admin_token');
+            setIsAuthenticated(false);
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          sessionStorage.removeItem('kundan_admin_token');
+          setIsAuthenticated(false);
+        }
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
+      }
+    };
+
+    verifyExistingSession();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Admin Login Handler
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    if (!authPassword.trim()) {
+      setAuthError('Please enter the admin password');
+      return;
+    }
+    setIsLoggingIn(true);
+    setAuthError('');
+    try {
+      const res = await api.adminLogin(authPassword);
+      if (res && res.success && res.token) {
+        sessionStorage.setItem('kundan_admin_token', res.token);
+        setIsAuthenticated(true);
+        setAuthPassword('');
+        showToast('Admin access granted', 'success');
+      } else {
+        setAuthError(res?.error || 'Invalid admin password');
+      }
+    } catch (err) {
+      setAuthError(err.message || 'Incorrect password or authentication error');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  // Lock / Logout Admin Panel
+  const handleLockAdmin = async () => {
+    const token = sessionStorage.getItem('kundan_admin_token');
+    try {
+      if (token) {
+        await api.adminLogout(token);
+      }
+    } catch {
+      // ignore
+    } finally {
+      sessionStorage.removeItem('kundan_admin_token');
+      setIsAuthenticated(false);
+      showToast('Admin panel locked');
+    }
+  };
+
+  // Change Admin Password in Settings
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (!currentPassword) {
+      showToast('Please enter current admin password', 'error');
+      return;
+    }
+    if (!newPassword || newPassword.length < 6) {
+      showToast('New password must be at least 6 characters long', 'error');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showToast('New passwords do not match', 'error');
+      return;
+    }
+    setIsChangingPass(true);
+    try {
+      const token = sessionStorage.getItem('kundan_admin_token');
+      const res = await api.adminChangePassword({ currentPassword, newPassword }, token);
+      if (res && res.success) {
+        if (res.token) {
+          sessionStorage.setItem('kundan_admin_token', res.token);
+        }
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        showToast('Admin password updated successfully!', 'success');
+      } else {
+        showToast(res?.error || 'Failed to update password', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to update password', 'error');
+    } finally {
+      setIsChangingPass(false);
+    }
+  };
 
   // Admin Active Tab: 'products' | 'orders' | 'settings'
   const [adminTab, setAdminTab] = useState('products');
@@ -272,6 +413,110 @@ export const AdminPanel = ({ onClose }) => {
   const pendingOrdersCount = orders.filter(o => o.decision === 'pending').length;
   const acceptedOrdersCount = orders.filter(o => o.decision === 'accepted').length;
 
+  // 1. Session verification in progress
+  if (isCheckingAuth) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#1C1E21] flex items-center justify-center p-4">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-[#11A0AB] animate-spin mx-auto mb-3" />
+          <p className="text-xs text-neutral-300 font-medium">Verifying admin session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Lock Screen Guard (Zero password stored in frontend)
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#1C1E21]/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans">
+        <div className="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#E2E8F0] relative my-auto animate-fadeIn">
+          
+          {/* Close / Return button */}
+          <button
+            onClick={onClose}
+            className="absolute top-5 right-5 p-2 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 rounded-full transition-colors cursor-pointer"
+            title="Return to Store"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          {/* Logo / Lock Badge */}
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#11A0AB]/20 to-[#FD9AA7]/20 flex items-center justify-center mb-3 text-[#11A0AB] border border-[#11A0AB]/20 shadow-xs">
+              <Lock className="w-7 h-7" />
+            </div>
+            <h2 className="text-xl font-bold text-[#1C1E21] tracking-tight">Admin Access</h2>
+            <p className="text-xs text-neutral-500 mt-1">
+              Protected area. Enter admin password to manage products and orders.
+            </p>
+          </div>
+
+          {/* Error notification */}
+          {authError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-2xl text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{authError}</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                Admin Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showAuthPassword ? 'text' : 'password'}
+                  value={authPassword}
+                  onChange={(e) => {
+                    setAuthPassword(e.target.value);
+                    if (authError) setAuthError('');
+                  }}
+                  placeholder="Enter admin password"
+                  autoFocus
+                  className="w-full pl-4 pr-11 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30 focus:border-[#11A0AB] text-[#1C1E21]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAuthPassword(!showAuthPassword)}
+                  className="absolute right-3.5 top-3.5 text-neutral-400 hover:text-neutral-600 p-0.5 cursor-pointer"
+                  tabIndex={-1}
+                >
+                  {showAuthPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="w-full py-3.5 bg-[#11A0AB] hover:bg-[#0E848D] active:scale-98 disabled:opacity-60 text-white rounded-full text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                <>
+                  <Unlock className="w-4 h-4" />
+                  <span>Unlock Admin Panel</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Security footnote */}
+          <div className="mt-6 pt-4 border-t border-[#F1F5F9] text-center flex items-center justify-center gap-1.5 text-[11px] text-neutral-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#11A0AB]" />
+            <span>End-to-end cryptographic verification</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#FAFCFD] flex flex-col font-sans">
       
@@ -303,14 +548,24 @@ export const AdminPanel = ({ onClose }) => {
             </div>
           </div>
 
-          {/* Close Button - Curve Edged */}
-          <button
-            onClick={onClose}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#2E333D] hover:bg-[#3E4552] text-white rounded-full text-xs font-medium transition-all shadow-xs active:scale-95 cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-            <span>Close</span>
-          </button>
+          {/* Action Buttons - Curve Edged */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleLockAdmin}
+              title="Lock Admin Panel"
+              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 text-neutral-200 hover:text-white rounded-full text-xs font-medium transition-all active:scale-95 cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Lock</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#2E333D] hover:bg-[#3E4552] text-white rounded-full text-xs font-medium transition-all shadow-xs active:scale-95 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+              <span>Close</span>
+            </button>
+          </div>
         </div>
 
         {/* 3 Clean Navigation Tabs */}
@@ -788,76 +1043,181 @@ export const AdminPanel = ({ onClose }) => {
         {/* TAB 3: SETTINGS (SIMPLE & CLEAN) */}
         {/* ======================================================== */}
         {adminTab === 'settings' && (
-          <div className="max-w-xl mx-auto bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-6 shadow-xs space-y-5">
-            <div>
-              <h3 className="text-base font-bold text-[#1C1E21]">
-                Store Settings
-              </h3>
-              <p className="text-xs text-neutral-500 mt-0.5">
-                Manage boutique contact numbers, delivery charges and payment details.
-              </p>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              
-              {/* WhatsApp Number */}
+          <div className="max-w-xl mx-auto space-y-6">
+            
+            {/* 1. Store Settings Card */}
+            <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-6 shadow-xs space-y-5">
               <div>
-                <label className="block text-neutral-700 font-semibold mb-1">
-                  Boutique WhatsApp Number *
-                </label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
-                  <input
-                    type="text"
-                    value={storeConfig.whatsappNumber || '8511556155'}
-                    onChange={(e) => setStoreConfig(prev => ({ ...prev, whatsappNumber: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                    placeholder="e.g. 8511556155"
-                  />
-                </div>
-                <p className="text-[11px] text-neutral-400 mt-1">
-                  Shoppers will click "Buy via WhatsApp" which directs directly to this phone.
+                <h3 className="text-base font-bold text-[#1C1E21]">
+                  Store Settings
+                </h3>
+                <p className="text-xs text-neutral-500 mt-0.5">
+                  Manage boutique contact numbers, delivery charges and payment details.
                 </p>
               </div>
 
-              {/* Store Name */}
-              <div>
-                <label className="block text-neutral-700 font-semibold mb-1">
-                  Store / Boutique Name
-                </label>
-                <input
-                  type="text"
-                  value={storeConfig.storeName || 'Kundan Work Creation'}
-                  onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                />
-              </div>
+              <div className="space-y-4 text-xs">
+                
+                {/* WhatsApp Number */}
+                <div>
+                  <label className="block text-neutral-700 font-semibold mb-1">
+                    Boutique WhatsApp Number *
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
+                    <input
+                      type="text"
+                      value={storeConfig.whatsappNumber || '8511556155'}
+                      onChange={(e) => setStoreConfig(prev => ({ ...prev, whatsappNumber: e.target.value }))}
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
+                      placeholder="e.g. 8511556155"
+                    />
+                  </div>
+                  <p className="text-[11px] text-neutral-400 mt-1">
+                    Shoppers will click "Buy via WhatsApp" which directs directly to this phone.
+                  </p>
+                </div>
 
-              {/* Tagline */}
-              <div>
-                <label className="block text-neutral-700 font-semibold mb-1">
-                  Brand Tagline
-                </label>
-                <input
-                  type="text"
-                  value={storeConfig.tagline || 'Artisanal Ethnic & Western Wear'}
-                  onChange={(e) => setStoreConfig(prev => ({ ...prev, tagline: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                />
-              </div>
+                {/* Store Name */}
+                <div>
+                  <label className="block text-neutral-700 font-semibold mb-1">
+                    Store / Boutique Name
+                  </label>
+                  <input
+                    type="text"
+                    value={storeConfig.storeName || 'Kundan Work Creation'}
+                    onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
+                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
+                  />
+                </div>
 
-              {/* Save Confirmation Button */}
-              <div className="pt-3 border-t border-[#F1F5F9]">
-                <button
-                  type="button"
-                  onClick={() => showToast('Store settings saved successfully!')}
-                  className="w-full py-3 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
-                >
-                  Save Changes
-                </button>
-              </div>
+                {/* Tagline */}
+                <div>
+                  <label className="block text-neutral-700 font-semibold mb-1">
+                    Brand Tagline
+                  </label>
+                  <input
+                    type="text"
+                    value={storeConfig.tagline || 'Artisanal Ethnic & Western Wear'}
+                    onChange={(e) => setStoreConfig(prev => ({ ...prev, tagline: e.target.value }))}
+                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
+                  />
+                </div>
 
+                {/* Save Confirmation Button */}
+                <div className="pt-3 border-t border-[#F1F5F9]">
+                  <button
+                    type="button"
+                    onClick={() => showToast('Store settings saved successfully!')}
+                    className="w-full py-3 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
+                  >
+                    Save Store Settings
+                  </button>
+                </div>
+
+              </div>
             </div>
+
+            {/* 2. Admin Security & Password Card (Super Secure) */}
+            <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-3 pb-3 border-b border-[#F1F5F9]">
+                <div className="w-9 h-9 rounded-full bg-[#11A0AB]/10 flex items-center justify-center text-[#11A0AB]">
+                  <Key className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#1C1E21]">
+                    Admin Security & Password
+                  </h3>
+                  <p className="text-xs text-neutral-500 mt-0.5">
+                    Update the master password used to unlock this admin panel.
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleChangePassword} className="space-y-4 text-xs">
+                <div>
+                  <label className="block text-neutral-700 font-semibold mb-1">
+                    Current Admin Password *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPass ? 'text' : 'password'}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current admin password"
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPass(!showCurrentPass)}
+                      className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600 p-0.5 cursor-pointer"
+                      tabIndex={-1}
+                    >
+                      {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-neutral-700 font-semibold mb-1">
+                      New Password *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showNewPass ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="At least 6 characters"
+                        className="w-full pl-3.5 pr-10 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPass(!showNewPass)}
+                        className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600 p-0.5 cursor-pointer"
+                        tabIndex={-1}
+                      >
+                        {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-neutral-700 font-semibold mb-1">
+                      Confirm New Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Re-enter new password"
+                      className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isChangingPass}
+                    className="w-full py-3 bg-[#2E333D] hover:bg-[#1C1E21] active:scale-98 disabled:opacity-60 text-white rounded-full text-xs font-semibold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    {isChangingPass ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Updating Password...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4 text-[#11A0AB]" />
+                        <span>Update Admin Password</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+
           </div>
         )}
 

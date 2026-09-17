@@ -4,9 +4,13 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 async function request(url, options = {}) {
+  const token = typeof window !== 'undefined' ? sessionStorage.getItem('kundan_admin_token') : null;
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
+      ...authHeaders,
       ...options.headers,
     },
     ...options,
@@ -97,4 +101,27 @@ export const api = {
       body: formData,
     });
   },
+
+  // Admin Authentication (Zero passwords stored in frontend code)
+  adminLogin: (password) => request('/api/admin/login', {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  }),
+
+  adminVerifySession: (token) => request('/api/admin/verify', {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  }),
+
+  adminChangePassword: ({ currentPassword, newPassword }, token) => request('/api/admin/change-password', {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: JSON.stringify({ currentPassword, newPassword }),
+  }),
+
+  adminLogout: (token) => request('/api/admin/logout', {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  }),
 };
+

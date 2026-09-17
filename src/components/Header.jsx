@@ -55,7 +55,6 @@ export const Header = () => {
     storeConfig, 
     searchQuery, 
     setSearchQuery, 
-    categories, 
     setActiveCategory, 
     setIsAdminOpen, 
     setIsContactOpen,
@@ -224,25 +223,6 @@ export const Header = () => {
                   )}
                 </button>
 
-                <div className="pt-3 pb-1 px-3 text-[11px] font-semibold text-[#8C6F5A] tracking-wider uppercase">
-                  Categories
-                </div>
-
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => {
-                      setActiveCategory(cat.slug);
-                      navigate('/');
-                      setIsDrawerOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-lg text-sm text-[#3E3834] hover:bg-[#F2EAE0] hover:text-brand-800 transition-colors flex items-center justify-between"
-                  >
-                    <span>{cat.name}</span>
-                    <span className="text-xs text-neutral-400 font-serif italic">{cat.subtitle}</span>
-                  </button>
-                ))}
-
                 <div className="pt-4 pb-1 px-3 text-[11px] font-semibold text-[#8C6F5A] tracking-wider uppercase">
                   Customer Desk
                 </div>
@@ -277,13 +257,13 @@ export const Header = () => {
                   setIsAdminOpen(true);
                   setIsDrawerOpen(false);
                 }}
-                className="w-full py-2.5 px-3 bg-[#241F1C] hover:bg-[#38312D] text-white rounded-lg text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2 shadow-sm transition-all"
+                className="w-full py-2.5 px-3 bg-[#241F1C] hover:bg-[#38312D] text-white rounded-lg text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4 text-[#D9B58B]" />
                 <span>Open Admin Portal</span>
               </button>
               <p className="text-[10px] text-center text-neutral-500 mt-2.5 font-light">
-                Manage Products & Categories • ShonkuWEB v1.0
+                Manage Products & Orders • Kundan Works
               </p>
             </div>
           </div>

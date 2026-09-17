@@ -347,8 +347,12 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                               {title}
                             </h4>
                             <div className="flex items-center gap-2 mt-0.5 text-[11px] text-neutral-500">
-                              <span>Size: <strong>{size}</strong></span>
-                              <span>•</span>
+                              {size && size !== 'Standard' && size !== 'Free Size' && (
+                                <>
+                                  <span>Size: <strong>{size}</strong></span>
+                                  <span>•</span>
+                                </>
+                              )}
                               <span>₹{price.toLocaleString('en-IN')}</span>
                             </div>
                           </div>
