@@ -115,12 +115,12 @@ export const Header = () => {
             {/* Shopping Bag / Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-1.5 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors cursor-pointer"
+              className="relative p-1.5 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors cursor-pointer touch-manipulation"
               aria-label="View Shopping Bag"
             >
               <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#9D6843] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                <span className="absolute -top-0.5 -right-0.5 bg-[#9D6843] text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs select-none">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, ShoppingCart, Phone, FileText } from 'lucide-react';
+import { Home, ShoppingBag, Phone, FileText } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
 export const BottomNavigation = () => {
@@ -8,31 +8,35 @@ export const BottomNavigation = () => {
   const location = useLocation();
   const { 
     cartCount, 
+    isCartOpen,
     setIsCartOpen, 
     setIsContactOpen,
     setActiveCategory 
   } = useStore();
 
-  const isHomeActive = location.pathname === '/';
-  const isOrderActive = location.pathname === '/order';
+  const isHomeActive = location.pathname === '/' && !isCartOpen;
+  const isOrderActive = location.pathname === '/order' && !isCartOpen;
 
   const handleTabClick = (tab) => {
     if (tab === 'home') {
+      setIsCartOpen(false);
       setActiveCategory('all');
       navigate('/');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (tab === 'cart') {
-      setIsCartOpen(true);
+      setIsCartOpen(prev => !prev);
     } else if (tab === 'contact') {
+      setIsCartOpen(false);
       setIsContactOpen(true);
     } else if (tab === 'order') {
+      setIsCartOpen(false);
       navigate('/order');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-t border-[#EAE0D4] py-2 px-6 shadow-nav transition-all">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-t border-[#EAE0D4] pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] px-6 shadow-nav transition-all">
       <div className="max-w-md md:max-w-xl mx-auto flex items-center justify-between">
         
         {/* 1. HOME TAB */}
@@ -52,21 +56,25 @@ export const BottomNavigation = () => {
           </span>
         </button>
 
-        {/* 2. CART TAB */}
+        {/* 2. BAG TAB */}
         <button
           onClick={() => handleTabClick('cart')}
-          className="flex flex-col items-center justify-center gap-1 group transition-all duration-200 select-none text-[#67564A] hover:text-[#25211E]"
+          className={`flex flex-col items-center justify-center gap-1 group transition-all duration-200 select-none ${
+            isCartOpen ? 'text-[#9D6843]' : 'text-[#67564A] hover:text-[#25211E]'
+          }`}
         >
           <div className="relative p-1">
-            <ShoppingCart className="w-5 h-5 stroke-[1.6] group-hover:scale-105 transition-transform" />
+            <ShoppingBag className={`w-5 h-5 transition-transform ${isCartOpen ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6] group-hover:scale-105'}`} />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-brand-700 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-bounce">
-                {cartCount}
+              <span className="absolute -top-1 -right-1 bg-brand-700 text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs">
+                {cartCount > 99 ? '99+' : cartCount}
               </span>
             )}
           </div>
-          <span className="text-[11px] font-medium tracking-wide">
-            Cart
+          <span className={`text-[11px] tracking-wide transition-all ${
+            isCartOpen ? 'font-semibold text-[#9D6843]' : 'font-medium'
+          }`}>
+            Bag
           </span>
         </button>
 
