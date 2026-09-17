@@ -8,25 +8,17 @@ import {
   Package, 
   Settings, 
   Check, 
-  Sparkles, 
   Search, 
   Eye,
   Camera,
   Image as ImageIcon,
   ShoppingBag,
-  Truck,
-  Coffee,
   CheckCircle2,
   Clock,
-  AlertCircle,
   MapPin,
   Phone,
   MessageCircle,
-  ExternalLink,
-  Lock,
-  Unlock,
   XCircle,
-  ArrowRight,
   RotateCcw
 } from 'lucide-react';
 import { useStore, ORDER_STAGES } from '../context/StoreContext';
@@ -88,34 +80,22 @@ export const AdminPanel = ({ onClose }) => {
     addProduct, 
     updateProduct, 
     deleteProduct, 
-    cafeItems = [],
-    addCafeItem,
-    updateCafeItem,
-    deleteCafeItem,
-    toggleCafeItemStock,
     storeConfig, 
     setStoreConfig, 
     showToast 
   } = useStore();
 
-  // Admin Active Tab: 'products' | 'cafe' | 'orders' | 'settings'
+  // Admin Active Tab: 'products' | 'orders' | 'settings'
   const [adminTab, setAdminTab] = useState('products');
 
   // Search Queries
   const [adminSearch, setAdminSearch] = useState('');
-  const [cafeSearch, setCafeSearch] = useState('');
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState('all'); // 'all' | 'pending' | 'accepted' | 'rejected'
-
-  // Order Details Modal
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
-  const selectedOrder = orders.find(o => o.id === selectedOrderId) || null;
 
   // Ref inputs for camera and gallery
   const fileInputCameraRef = useRef(null);
   const fileInputGalleryRef = useRef(null);
-  const cafeImageCameraRef = useRef(null);
-  const cafeImageGalleryRef = useRef(null);
 
   // Super Simple Product Form State (NO Subtitle, NO Category)
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -127,19 +107,6 @@ export const AdminPanel = ({ onClose }) => {
     stock: '10',
     description: '',
     images: [] // Up to 3 images
-  });
-
-  // Cafe Item Form State
-  const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
-  const [editingCafeId, setEditingCafeId] = useState(null);
-  const [cafeForm, setCafeForm] = useState({
-    name: '',
-    type: 'Beverages',
-    price: '',
-    stock: '25',
-    inStock: true,
-    description: '',
-    imageUrl: ''
   });
 
   // Handle open product modal (Reset fields cleanly)
@@ -264,82 +231,6 @@ export const AdminPanel = ({ onClose }) => {
     showToast(isCurrentlyInStock ? `Marked "${prod.title}" as Out of Stock` : `Marked "${prod.title}" as In Stock`);
   };
 
-  // Cafe Item Handlers
-  const handleOpenAddCafe = () => {
-    setEditingCafeId(null);
-    setCafeForm({
-      name: '',
-      type: 'Beverages',
-      price: '',
-      stock: '25',
-      inStock: true,
-      description: '',
-      imageUrl: ''
-    });
-    setIsCafeModalOpen(true);
-  };
-
-  const handleOpenEditCafe = (item) => {
-    setEditingCafeId(item.id);
-    setCafeForm({
-      name: item.name || '',
-      type: item.type || 'Beverages',
-      price: item.price ?? '',
-      stock: item.stock !== undefined ? String(item.stock) : '25',
-      inStock: item.inStock !== false,
-      description: item.description || '',
-      imageUrl: item.imageUrl || ''
-    });
-    setIsCafeModalOpen(true);
-  };
-
-  const handleCafeImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    showToast('Optimizing cafe photo...', 'info');
-    try {
-      const compressedUrl = await compressImage(file);
-      setCafeForm(prev => ({ ...prev, imageUrl: compressedUrl }));
-      showToast('Cafe item photo updated');
-    } catch (err) {
-      console.error(err);
-      showToast('Failed to process image', 'error');
-    }
-    e.target.value = '';
-  };
-
-  const handleSaveCafe = (e) => {
-    e.preventDefault();
-    if (!cafeForm.name.trim()) {
-      showToast('Item name is required', 'error');
-      return;
-    }
-    if (!cafeForm.price) {
-      showToast('Price is required', 'error');
-      return;
-    }
-
-    const payload = {
-      name: cafeForm.name.trim(),
-      type: cafeForm.type.trim() || 'Beverages',
-      price: Number(cafeForm.price),
-      stock: Math.max(0, parseInt(cafeForm.stock, 10) || 0),
-      inStock: cafeForm.inStock,
-      description: cafeForm.description ? cafeForm.description.trim() : '',
-      imageUrl: cafeForm.imageUrl || ''
-    };
-
-    if (editingCafeId) {
-      if (updateCafeItem) updateCafeItem(editingCafeId, payload);
-      showToast('Cafe item updated!');
-    } else {
-      if (addCafeItem) addCafeItem(payload);
-      showToast('Cafe item added!');
-    }
-    setIsCafeModalOpen(false);
-  };
-
   // Direct WhatsApp Customer Support / Order Notification
   const handleWhatsAppCustomer = (order) => {
     const rawPhone = order.phone || order.customerPhone || '';
@@ -362,13 +253,6 @@ export const AdminPanel = ({ onClose }) => {
     const title = p.title || p.name || '';
     const q = (adminSearch || '').toLowerCase().trim();
     return !q || title.toLowerCase().includes(q);
-  });
-
-  // Filtered Cafe Items
-  const filteredCafeItems = cafeItems.filter(item => {
-    if (!item) return false;
-    const q = (cafeSearch || '').toLowerCase().trim();
-    return !q || item.name?.toLowerCase().includes(q) || item.type?.toLowerCase().includes(q);
   });
 
   // Filtered Orders
@@ -414,7 +298,7 @@ export const AdminPanel = ({ onClose }) => {
                 </span>
               </div>
               <p className="text-[10px] text-neutral-400 font-light hidden sm:block">
-                Super simple management for Boutique, Cafe & Orders
+                Super simple management for Boutique Products & Orders
               </p>
             </div>
           </div>
@@ -429,7 +313,7 @@ export const AdminPanel = ({ onClose }) => {
           </button>
         </div>
 
-        {/* 4 Clean Navigation Tabs (Scrollable on mobile) */}
+        {/* 3 Clean Navigation Tabs */}
         <div className="max-w-5xl mx-auto px-3 flex items-center gap-2 overflow-x-auto no-scrollbar py-2 border-t border-white/10">
           
           {/* 1. Products Tab */}
@@ -445,20 +329,7 @@ export const AdminPanel = ({ onClose }) => {
             <span>Products ({products.length})</span>
           </button>
 
-          {/* 2. Cafe Tab */}
-          <button
-            onClick={() => setAdminTab('cafe')}
-            className={`px-4 py-2 text-xs font-medium rounded-full flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
-              adminTab === 'cafe'
-                ? 'bg-[#11A0AB] text-white shadow-sm font-semibold'
-                : 'text-neutral-300 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <Coffee className="w-4 h-4" />
-            <span>Cafe ({cafeItems.length})</span>
-          </button>
-
-          {/* 3. Orders Tab */}
+          {/* 2. Orders Tab */}
           <button
             onClick={() => setAdminTab('orders')}
             className={`px-4 py-2 text-xs font-medium rounded-full flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
@@ -476,7 +347,7 @@ export const AdminPanel = ({ onClose }) => {
             )}
           </button>
 
-          {/* 4. Settings Tab */}
+          {/* 3. Settings Tab */}
           <button
             onClick={() => setAdminTab('settings')}
             className={`px-4 py-2 text-xs font-medium rounded-full flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
@@ -675,165 +546,7 @@ export const AdminPanel = ({ onClose }) => {
         )}
 
         {/* ======================================================== */}
-        {/* TAB 2: CAFE MANAGEMENT (SUPER SIMPLE & EASY TO USE) */}
-        {/* ======================================================== */}
-        {adminTab === 'cafe' && (
-          <div className="space-y-4">
-            
-            {/* Cafe Top Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-[#E2E8F0] shadow-xs">
-              
-              {/* Search Cafe Items */}
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
-                <input
-                  type="text"
-                  value={cafeSearch}
-                  onChange={(e) => setCafeSearch(e.target.value)}
-                  placeholder="Search cafe items, beverages, bakery..."
-                  className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-full text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30 focus:border-[#11A0AB]"
-                />
-                {cafeSearch && (
-                  <button 
-                    onClick={() => setCafeSearch('')}
-                    className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600 p-0.5"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Add Cafe Item Button */}
-              <button
-                onClick={handleOpenAddCafe}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
-              >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Add Cafe Item</span>
-              </button>
-            </div>
-
-            {/* Cafe Items Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {filteredCafeItems.map(item => {
-                const inStock = item.inStock !== false;
-
-                return (
-                  <div 
-                    key={item.id} 
-                    className="bg-white rounded-2xl border border-[#E2E8F0] p-3.5 shadow-xs hover:border-[#11A0AB]/50 transition-all flex flex-col justify-between"
-                  >
-                    <div>
-                      {/* Top Item Row */}
-                      <div className="flex gap-3 items-start">
-                        {/* Thumbnail or Coffee Icon */}
-                        <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center">
-                          {item.imageUrl ? (
-                            <img 
-                              src={item.imageUrl} 
-                              alt={item.name} 
-                              className="w-full h-full object-cover" 
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-[#E6F6F7] flex items-center justify-center text-[#11A0AB]">
-                              <Coffee className="w-8 h-8 stroke-[1.6]" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Title, Category & Price */}
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[10px] uppercase font-semibold text-[#11A0AB] tracking-wider block">
-                            {item.type || 'Beverages'}
-                          </span>
-                          <h4 className="font-medium text-sm text-[#1C1E21] line-clamp-1 mt-0.5">
-                            {item.name}
-                          </h4>
-                          <span className="font-bold text-base text-[#1C1E21] block mt-1">
-                            ₹{Number(item.price).toLocaleString('en-IN')}
-                          </span>
-
-                          {/* 1-Tap Stock Switch */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (toggleCafeItemStock) {
-                                toggleCafeItemStock(item.id);
-                              } else if (updateCafeItem) {
-                                updateCafeItem(item.id, { ...item, inStock: !inStock });
-                              }
-                              showToast(inStock ? `"${item.name}" marked Out of Stock` : `"${item.name}" marked In Stock`);
-                            }}
-                            className={`mt-1.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-medium transition-all cursor-pointer ${
-                              inStock 
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' 
-                                : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'
-                            }`}
-                            title="Tap to toggle availability"
-                          >
-                            <span className={`w-2 h-2 rounded-full ${inStock ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-                            <span>{inStock ? 'In Stock' : 'Sold Out'}</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Description */}
-                      {item.description && (
-                        <p className="text-[11px] text-neutral-500 line-clamp-2 mt-2 px-0.5 font-light">
-                          {item.description}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center justify-end gap-2 mt-3 pt-2.5 border-t border-[#F1F5F9]">
-                      <button
-                        onClick={() => handleOpenEditCafe(item)}
-                        className="inline-flex items-center gap-1 px-3.5 py-1 text-[11px] font-medium text-[#11A0AB] bg-[#E6F6F7] hover:bg-[#11A0AB] hover:text-white rounded-full transition-colors cursor-pointer"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (window.confirm(`Delete "${item.name}" from cafe menu?`)) {
-                            if (deleteCafeItem) deleteCafeItem(item.id);
-                            showToast('Cafe item deleted');
-                          }
-                        }}
-                        className="inline-flex items-center gap-1 p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-full transition-colors cursor-pointer"
-                        title="Delete Item"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                  </div>
-                );
-              })}
-
-              {filteredCafeItems.length === 0 && (
-                <div className="col-span-full py-12 text-center bg-white rounded-2xl border border-dashed border-[#CBD5E1] p-6">
-                  <Coffee className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
-                  <p className="text-base font-semibold text-neutral-800 mb-1">No cafe items found</p>
-                  <p className="text-xs text-neutral-500 mb-4 max-w-xs mx-auto">
-                    Add coffees, teas, artisan bakery items or snacks to your in-store cafe menu.
-                  </p>
-                  <button
-                    onClick={handleOpenAddCafe}
-                    className="px-5 py-2.5 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs font-semibold shadow-sm cursor-pointer"
-                  >
-                    + Add Cafe Item
-                  </button>
-                </div>
-              )}
-            </div>
-
-          </div>
-        )}
-
-        {/* ======================================================== */}
-        {/* TAB 3: ORDERS (MOBILE-FIRST CARDS & DIRECT WHATSAPP) */}
+        {/* TAB 2: ORDERS (MOBILE-FIRST CARDS & DIRECT WHATSAPP) */}
         {/* ======================================================== */}
         {adminTab === 'orders' && (
           <div className="space-y-4">
@@ -1072,7 +785,7 @@ export const AdminPanel = ({ onClose }) => {
         )}
 
         {/* ======================================================== */}
-        {/* TAB 4: SETTINGS (SIMPLE & CLEAN) */}
+        {/* TAB 3: SETTINGS (SIMPLE & CLEAN) */}
         {/* ======================================================== */}
         {adminTab === 'settings' && (
           <div className="max-w-xl mx-auto bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-6 shadow-xs space-y-5">
@@ -1371,201 +1084,6 @@ export const AdminPanel = ({ onClose }) => {
                   className="px-6 py-2.5 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
                 >
                   {editingProductId ? 'Update Product' : 'Save Product'}
-                </button>
-              </div>
-
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ======================================================== */}
-      {/* POPUP: ADD / EDIT CAFE ITEM */}
-      {/* ======================================================== */}
-      {isCafeModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
-          <div className="bg-white rounded-3xl border border-[#E2E8F0] max-w-md w-full p-5 sm:p-6 shadow-2xl my-auto max-h-[92vh] overflow-y-auto">
-            
-            {/* Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#F1F5F9] mb-4">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-[#1C1E21]">
-                  {editingCafeId ? 'Edit Cafe Item' : 'Add Cafe Item'}
-                </h3>
-                <p className="text-[11px] text-neutral-400">
-                  Manage drinks, pastries and snacks for your cafe menu.
-                </p>
-              </div>
-              <button 
-                onClick={() => setIsCafeModalOpen(false)}
-                className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveCafe} className="space-y-4 text-xs">
-              
-              {/* Cafe Photo Upload */}
-              <div>
-                <label className="block text-neutral-700 font-semibold mb-1">
-                  Item Photo
-                </label>
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] overflow-hidden flex items-center justify-center shrink-0">
-                    {cafeForm.imageUrl ? (
-                      <img src={cafeForm.imageUrl} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <Coffee className="w-6 h-6 text-neutral-300" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => cafeImageCameraRef.current?.click()}
-                      className="px-3.5 py-1.5 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-neutral-800 border border-[#CBD5E1] rounded-full text-xs font-medium flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Camera className="w-3.5 h-3.5 text-[#11A0AB]" />
-                      <span>Camera</span>
-                    </button>
-                    <input
-                      ref={cafeImageCameraRef}
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handleCafeImageUpload}
-                      className="hidden"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => cafeImageGalleryRef.current?.click()}
-                      className="px-3.5 py-1.5 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-neutral-800 border border-[#CBD5E1] rounded-full text-xs font-medium flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <ImageIcon className="w-3.5 h-3.5 text-[#11A0AB]" />
-                      <span>Gallery</span>
-                    </button>
-                    <input
-                      ref={cafeImageGalleryRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleCafeImageUpload}
-                      className="hidden"
-                    />
-
-                    {cafeForm.imageUrl && (
-                      <button
-                        type="button"
-                        onClick={() => setCafeForm(prev => ({ ...prev, imageUrl: '' }))}
-                        className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-full"
-                        title="Remove photo"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Item Name */}
-              <div>
-                <label className="block text-neutral-700 font-semibold mb-1">
-                  Item Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={cafeForm.name}
-                  onChange={(e) => setCafeForm(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g. Rose Cardamom Artisanal Latte"
-                  className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                />
-              </div>
-
-              {/* Type / Category & Price */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-neutral-700 font-semibold mb-1">
-                    Category *
-                  </label>
-                  <select
-                    value={cafeForm.type}
-                    onChange={(e) => setCafeForm(prev => ({ ...prev, type: e.target.value }))}
-                    className="w-full px-3 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                  >
-                    <option value="Beverages">Beverages</option>
-                    <option value="Cold Brews">Cold Brews</option>
-                    <option value="Bakery & Pastry">Bakery & Pastry</option>
-                    <option value="Snacks">Snacks & Small Bites</option>
-                    <option value="Specialties">Specialties</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-neutral-700 font-semibold mb-1">
-                    Price (₹) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={cafeForm.price}
-                    onChange={(e) => setCafeForm(prev => ({ ...prev, price: e.target.value }))}
-                    placeholder="240"
-                    className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                  />
-                </div>
-              </div>
-
-              {/* Availability Switch */}
-              <div className="flex items-center justify-between p-3 bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0]">
-                <div>
-                  <span className="font-semibold text-neutral-800 block text-xs">Currently Available</span>
-                  <span className="text-[11px] text-neutral-400 font-light">Toggle off when sold out for the day</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setCafeForm(prev => ({ ...prev, inStock: !prev.inStock }))}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
-                    cafeForm.inStock ? 'bg-[#11A0AB]' : 'bg-neutral-300'
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
-                      cafeForm.inStock ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-neutral-700 font-semibold mb-1">
-                  Description / Tasting Note <span className="font-normal text-neutral-400 text-[10px]">(optional)</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={cafeForm.description}
-                  onChange={(e) => setCafeForm(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="e.g. Single-origin espresso steeped with cardamom and rose petal reduction..."
-                  className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                />
-              </div>
-
-              {/* Buttons */}
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#F1F5F9]">
-                <button
-                  type="button"
-                  onClick={() => setIsCafeModalOpen(false)}
-                  className="px-5 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-full text-xs font-medium transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
-                >
-                  {editingCafeId ? 'Update Item' : 'Save Item'}
                 </button>
               </div>
 

@@ -29,17 +29,6 @@ export const HeroSection = ({ onShopNowClick }) => {
       scriptNote: "Grace in every fold ♡",
       placeholderType: "ethnic_featured",
       targetCategory: "kurtas-sets"
-    },
-    {
-      tag: "MODERN CLASSICS",
-      titleLine1: "Timeless",
-      titleLine2: "Western",
-      titleLine3: "Silhouettes",
-      subtitle: "Effortless styling for every day.",
-      buttonText: "VIEW EDIT",
-      scriptNote: "Designed with love ♡",
-      placeholderType: "western_featured",
-      targetCategory: "western-wear"
     }
   ];
 
