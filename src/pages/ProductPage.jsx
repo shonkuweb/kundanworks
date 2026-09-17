@@ -160,10 +160,10 @@ export const ProductPage = () => {
                         key={s}
                         type="button"
                         onClick={() => setSelectedSize(s)}
-                        className={`w-10 h-10 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        className={`w-10 h-10 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                           selectedSize === s
-                            ? 'bg-[#1E1A17] text-white shadow-xs'
-                            : 'bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50'
+                            ? 'bg-[#11A0AB] text-white shadow-xs'
+                            : 'bg-white text-neutral-700 border border-neutral-300 hover:border-[#11A0AB]'
                         }`}
                       >
                         {s}
@@ -177,12 +177,12 @@ export const ProductPage = () => {
                   <span className="text-xs font-semibold text-neutral-700 uppercase tracking-wider block">
                     Quantity
                   </span>
-                  <div className="inline-flex items-center bg-[#FAF5EE] border border-[#DECBB8] rounded-xl p-1">
+                  <div className="inline-flex items-center bg-[#FAF5EE] border border-[#DECBB8] rounded-full p-1">
                     <button
                       type="button"
                       disabled={quantity <= 1}
                       onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-700 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-neutral-700 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
                       title="Decrease quantity"
                     >
                       <Minus className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export const ProductPage = () => {
                     <button
                       type="button"
                       onClick={() => setQuantity(q => q + 1)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-700 hover:bg-white cursor-pointer transition-colors"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-neutral-700 hover:bg-white cursor-pointer transition-colors"
                       title="Increase quantity"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -211,9 +211,9 @@ export const ProductPage = () => {
                   type="button"
                   disabled={isSoldOut}
                   onClick={handleAddToCart}
-                  className="py-3.5 px-4 bg-white hover:bg-[#F6EFE8] text-[#1E1A17] border border-[#DECBB8] rounded-xl text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="py-3.5 px-4 bg-white hover:bg-[#F6EFE8] text-[#1E1A17] border border-[#DECBB8] rounded-full text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  <ShoppingBag className="w-4 h-4 text-brand-700" />
+                  <ShoppingBag className="w-4 h-4 text-[#11A0AB]" />
                   <span>{isSoldOut ? 'Sold Out' : 'Add to Bag'}</span>
                 </button>
 
@@ -222,7 +222,7 @@ export const ProductPage = () => {
                   type="button"
                   disabled={isSoldOut}
                   onClick={handleCheckout}
-                  className="py-3.5 px-4 bg-[#181818] hover:bg-[#2C2724] text-white rounded-xl text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="py-3.5 px-4 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <span>{isSoldOut ? 'Unavailable' : 'Checkout'}</span>
                   <ArrowRight className="w-4 h-4" />

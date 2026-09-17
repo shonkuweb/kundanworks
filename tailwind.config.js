@@ -8,22 +8,25 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#FAF8F5',
-          100: '#F4ECE4',
-          200: '#EAE0D4',
-          300: '#DAC6B4',
-          400: '#C5A68F',
-          500: '#A77D5E', // primary warm terracotta / bronze
-          600: '#926749',
-          700: '#754E35',
-          800: '#5F3F2C',
-          900: '#4D3325',
-          dark: '#1C1917',
-          charcoal: '#282422',
-          cream: '#F7F3EE',
-          sand: '#EDE5DB',
-          accent: '#A7734D',
-          gold: '#C29864',
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#11A0AB', // primary vibrant turquoise from logo
+          600: '#0E848D', // hover & focused turquoise
+          700: '#0B6A71',
+          800: '#085157',
+          900: '#053A3E',
+          pink: '#FD9AA7', // sweet blush pink from logo bird & scissors
+          rose: '#F43F5E', // deeper rose accent
+          blush: '#FFF1F2', // soft pastel pink background
+          dark: '#18181B',
+          charcoal: '#1C1E21',
+          cream: '#FAFCFD',
+          sand: '#E6F4F6',
+          accent: '#11A0AB',
+          gold: '#FD9AA7',
         }
       },
       fontFamily: {

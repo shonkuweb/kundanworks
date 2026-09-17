@@ -68,7 +68,7 @@ export const ShopByCategory = ({ onSelectCategory }) => {
                       {card.subtitle}
                     </p>
                     
-                    <div className="inline-flex items-center gap-1.5 self-start bg-black/40 hover:bg-black/70 backdrop-blur-xs border border-white/25 px-2.5 sm:px-3 py-1.5 rounded-sm text-[9px] sm:text-[11px] font-medium tracking-wider uppercase text-white transition-colors">
+                    <div className="inline-flex items-center gap-1.5 self-start bg-black/50 hover:bg-[#11A0AB] backdrop-blur-xs border border-white/30 px-3.5 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-[11px] font-semibold tracking-wider uppercase text-white transition-all shadow-xs">
                       <span>SHOP NOW</span>
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </div>

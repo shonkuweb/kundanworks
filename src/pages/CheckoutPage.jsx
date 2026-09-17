@@ -222,7 +222,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
             </div>
             <Link
               to="/"
-              className="inline-block px-6 py-2.5 bg-[#1E1A17] text-white rounded-xl text-xs uppercase tracking-wider font-medium hover:bg-[#322A25] transition-colors"
+              className="inline-block px-7 py-3 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-sm transition-all"
             >
               Explore Boutique
             </Link>
@@ -423,7 +423,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                     type="submit"
                     form="checkout-form"
                     disabled={isSubmitting}
-                    className="w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] active:scale-98 text-white rounded-xl text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2.5 shadow-md transition-all cursor-pointer"
+                    className="w-full py-4 px-5 bg-[#25D366] hover:bg-[#20bd5a] active:scale-98 text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2.5 shadow-md transition-all cursor-pointer"
                   >
                     <MessageSquare className="w-4 h-4 fill-white" />
                     <span>Buy via WhatsApp</span>

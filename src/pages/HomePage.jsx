@@ -1,7 +1,6 @@
 import React from 'react';
 import { HeroSection } from '../components/HeroSection';
 import { ShopByCategory } from '../components/ShopByCategory';
-import { PromoStrip } from '../components/PromoStrip';
 import { ProductCatalog } from '../components/ProductCatalog';
 import { useStore } from '../context/StoreContext';
 
@@ -25,9 +24,6 @@ export const HomePage = () => {
 
       {/* Shop by Category Section matching screenshot */}
       <ShopByCategory onSelectCategory={handleShopNow} />
-
-      {/* Promotional Strip */}
-      <PromoStrip />
 
       {/* Product Catalog Grid */}
       <ProductCatalog />

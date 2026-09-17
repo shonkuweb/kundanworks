@@ -85,13 +85,13 @@ export const HeroSection = ({ onShopNowClick }) => {
                 {slide.subtitle}
               </p>
 
-              {/* CTA Button matching black rectangular button */}
+              {/* CTA Button matching brand curve-edge button */}
               <button
                 onClick={() => onShopNowClick ? onShopNowClick(slide.targetCategory) : null}
-                className="group inline-flex items-center gap-2 bg-[#181818] hover:bg-[#2B2724] text-[#FAF8F5] px-4 sm:px-5 py-2.5 rounded-sm text-[11px] sm:text-xs font-medium tracking-[0.16em] uppercase transition-all shadow-md active:scale-95 cursor-pointer"
+                className="group inline-flex items-center gap-2.5 bg-[#1C1E21] hover:bg-[#11A0AB] text-white px-5 sm:px-6 py-3 rounded-full text-[11px] sm:text-xs font-semibold tracking-[0.16em] uppercase transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
               >
                 <span>{slide.buttonText}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform stroke-[2]" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform stroke-[2.5]" />
               </button>
             </div>
 

@@ -84,7 +84,7 @@ export const ProductCatalog = () => {
             {activeCategory !== 'all' && (
               <button
                 onClick={() => setActiveCategory('all')}
-                className="px-4 py-2 bg-[#25211E] text-white rounded-md text-xs uppercase tracking-wider font-medium"
+                className="px-5 py-2.5 bg-[#1C1E21] hover:bg-[#11A0AB] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-xs transition-colors cursor-pointer"
               >
                 Reset to All Collections
               </button>
@@ -183,7 +183,7 @@ export const ProductCatalog = () => {
 
                       {/* Add Button or Sold Out indicator */}
                       {product.stock !== undefined && product.stock <= 0 ? (
-                        <span className="px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                        <span className="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-full text-[10px] font-semibold uppercase tracking-wider">
                           Sold Out
                         </span>
                       ) : (
@@ -192,7 +192,7 @@ export const ProductCatalog = () => {
                             addToCart(product, 'M', 1);
                             setIsCartOpen(true);
                           }}
-                          className="p-2 sm:px-3 sm:py-1.5 bg-[#25211E] hover:bg-[#3D3530] text-white rounded-md text-[11px] font-medium tracking-wider uppercase flex items-center gap-1 transition-all active:scale-95 shadow-xs cursor-pointer"
+                          className="p-2 sm:px-4 sm:py-1.5 bg-[#1C1E21] hover:bg-[#11A0AB] text-white rounded-full text-[11px] font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-all active:scale-95 shadow-xs cursor-pointer"
                           aria-label={`Add ${product.title} to bag`}
                         >
                           <ShoppingBag className="w-3.5 h-3.5" />

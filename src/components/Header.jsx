@@ -68,45 +68,39 @@ export const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#EAE0D4]/80 transition-all">
-        <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0]/80 transition-all shadow-xs">
+        <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
           
           {/* Left: Drawer Toggle */}
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="p-1.5 -ml-1 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors"
+            className="p-2 -ml-1 text-[#1C1E21] hover:text-[#11A0AB] hover:bg-[#F0FDFA] rounded-full transition-colors cursor-pointer"
             aria-label="Open Navigation Menu"
           >
             <Menu className="w-6 h-6 stroke-[1.8]" />
           </button>
 
-          {/* Center: Brand Lotus Emblem & Title */}
+          {/* Center: Brand Logo Image */}
           <div 
             onClick={() => {
               setActiveCategory('all');
               navigate('/');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex flex-col items-center cursor-pointer select-none group px-2"
+            className="flex items-center justify-center cursor-pointer select-none group px-2 py-0.5"
           >
-            <LotusIcon className="w-7 h-5 text-brand-600 group-hover:scale-105 transition-transform" />
-            <span className="font-serif text-[17px] sm:text-xl font-medium tracking-[0.22em] text-[#1E1B18] mt-0.5 leading-tight uppercase">
-              {storeConfig.storeName || 'KUNDAN WORKS'}
-            </span>
-            <div className="flex items-center justify-center gap-2 mt-0.5">
-              <span className="h-[0.5px] w-6 sm:w-8 bg-[#A77D5E]/60"></span>
-              <span className="text-[8px] sm:text-[9px] tracking-[0.3em] font-medium text-[#7D6553] uppercase whitespace-nowrap">
-                {storeConfig.tagline || 'WEAR YOUR STORY'}
-              </span>
-              <span className="h-[0.5px] w-6 sm:w-8 bg-[#A77D5E]/60"></span>
-            </div>
+            <img 
+              src="/logo.png" 
+              alt={storeConfig.storeName || 'Kundan Work Creation'} 
+              className="h-11 sm:h-14 md:h-16 max-w-[190px] sm:max-w-[240px] md:max-w-[270px] object-contain group-hover:scale-105 transition-transform duration-300" 
+            />
           </div>
 
-          {/* Right: Search, Cart & Admin Access */}
+          {/* Right: Search, Cart & Admin Access with Curved Edges */}
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsSearchOpen(prev => !prev)}
-              className="p-1.5 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors cursor-pointer"
+              className="p-2 text-[#1C1E21] hover:text-[#11A0AB] hover:bg-[#F0FDFA] rounded-full transition-colors cursor-pointer"
               aria-label="Search catalog"
             >
               <Search className="w-5 h-5 stroke-[2]" />
@@ -115,12 +109,12 @@ export const Header = () => {
             {/* Shopping Bag / Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-1.5 text-[#2B2522] hover:text-brand-600 hover:bg-[#F3ECE4] rounded-lg transition-colors cursor-pointer touch-manipulation"
+              className="relative p-2 text-[#1C1E21] hover:text-[#11A0AB] hover:bg-[#F0FDFA] rounded-full transition-colors cursor-pointer touch-manipulation"
               aria-label="View Shopping Bag"
             >
               <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#9D6843] text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs select-none">
+                <span className="absolute -top-0.5 -right-0.5 bg-[#11A0AB] text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs select-none">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
@@ -129,9 +123,9 @@ export const Header = () => {
             <button
               onClick={() => setIsAdminOpen(true)}
               title="Admin Panel"
-              className="hidden sm:flex items-center gap-1 text-[11px] font-medium tracking-wide uppercase px-2.5 py-1 rounded bg-[#F1E8DF] hover:bg-[#E7DCD0] text-brand-800 border border-[#DAC8B8] transition-colors cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full bg-[#F0FDFA] hover:bg-[#CCFBF1] text-[#0B6A71] border border-[#99F6E4] transition-all cursor-pointer shadow-xs active:scale-95"
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#11A0AB]" />
               <span>Admin</span>
             </button>
           </div>
@@ -177,16 +171,23 @@ export const Header = () => {
           <div className="relative w-72 sm:w-80 max-w-[85vw] bg-[#FAF8F5] h-full shadow-2xl z-10 flex flex-col justify-between overflow-y-auto">
             <div className="p-5">
               <div className="flex items-center justify-between pb-4 border-b border-[#EAE0D4]">
-                <div className="flex items-center gap-2">
-                  <LotusIcon className="w-6 h-5 text-brand-600" />
-                  <div>
-                    <h2 className="font-serif font-medium tracking-widest text-[#241F1C] text-sm uppercase">Kundan Works</h2>
-                    <p className="text-[9px] text-[#866D5B] tracking-wider uppercase">Luxury Boutique</p>
-                  </div>
+                <div 
+                  onClick={() => {
+                    setActiveCategory('all');
+                    navigate('/');
+                    setIsDrawerOpen(false);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <img 
+                    src="/logo.png" 
+                    alt="Kundan Work Creation" 
+                    className="h-9 w-auto object-contain"
+                  />
                 </div>
                 <button 
                   onClick={() => setIsDrawerOpen(false)}
-                  className="p-1 rounded-full text-neutral-500 hover:bg-[#F0E6DC]"
+                  className="p-1.5 rounded-full text-neutral-500 hover:bg-[#F0FDFA] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>

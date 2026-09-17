@@ -139,6 +139,61 @@ export const StoreProvider = ({ children }) => {
     }
   });
 
+  // Boutique Cafe Menu Items
+  const [cafeItems, setCafeItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem('kundan_cafe_items');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to load cafe items', e);
+    }
+    return [
+      {
+        id: 'cafe-1',
+        name: 'Rose Cardamom Artisanal Latte',
+        type: 'Beverages',
+        price: 240,
+        stock: 45,
+        inStock: true,
+        description: 'Espresso infused with pure Damascus rose petal reduction and crushed green cardamom pods, topped with velvety steamed milk.',
+        imageUrl: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'cafe-2',
+        name: 'Kashmiri Saffron Cold Brew',
+        type: 'Cold Brews',
+        price: 260,
+        stock: 30,
+        inStock: true,
+        description: 'Single-origin 18-hour cold brew steeped with delicate Kashmiri saffron strands and organic wildflower honey.',
+        imageUrl: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'cafe-3',
+        name: 'Pistachio Rose Frangipane Tart',
+        type: 'Bakery & Pastry',
+        price: 290,
+        stock: 20,
+        inStock: true,
+        description: 'All-butter flaky pastry crust filled with Iranian pistachio frangipane cream and crystallized edible petals.',
+        imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'cafe-4',
+        name: 'Alphonso Mango Sourdough Brioche',
+        type: 'Bakery & Pastry',
+        price: 220,
+        stock: 18,
+        inStock: true,
+        description: 'Golden brioche bun rolled with slow-simmered Ratnagiri Alphonso mango compote and vanilla bean glaze.',
+        imageUrl: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80'
+      }
+    ];
+  });
+
   // Toast notification
   const [toast, setToast] = useState(null);
 
@@ -259,6 +314,14 @@ export const StoreProvider = ({ children }) => {
       console.error('Failed to persist orders', err);
     }
   }, [orders]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kundan_cafe_items', JSON.stringify(cafeItems));
+    } catch (err) {
+      console.error('Failed to persist cafe items', err);
+    }
+  }, [cafeItems]);
 
   // ==========================================
   // Cart Operations
@@ -522,6 +585,60 @@ export const StoreProvider = ({ children }) => {
     }
 
     showToast(`Category "${catToDelete.name}" removed`, 'info');
+  };
+
+  // ==========================================
+  // Boutique Cafe Operations
+  // ==========================================
+  const addCafeItem = (newItem) => {
+    const stockNum = Math.max(0, parseInt(newItem.stock, 10) || 0);
+    const item = {
+      ...newItem,
+      id: newItem.id || `cafe_${Date.now()}`,
+      name: newItem.name || 'Artisanal Cafe Item',
+      price: Number(newItem.price) || 0,
+      stock: stockNum,
+      inStock: stockNum > 0,
+      type: newItem.type || 'Beverages',
+      description: newItem.description || '',
+      imageUrl: newItem.imageUrl || ''
+    };
+    setCafeItems(prev => [item, ...prev]);
+    showToast(`Added "${item.name}" to Cafe Menu`);
+    return item;
+  };
+
+  const updateCafeItem = (id, updatedFields) => {
+    setCafeItems(prev => prev.map(item => {
+      if (item.id === id) {
+        const stockNum = updatedFields.stock !== undefined ? Math.max(0, Number(updatedFields.stock) || 0) : item.stock;
+        return {
+          ...item,
+          ...updatedFields,
+          stock: stockNum,
+          inStock: stockNum > 0
+        };
+      }
+      return item;
+    }));
+    showToast('Cafe item updated');
+  };
+
+  const deleteCafeItem = (id) => {
+    const toDelete = cafeItems.find(c => c.id === id);
+    setCafeItems(prev => prev.filter(c => c.id !== id));
+    showToast(`Removed "${toDelete?.name || 'Item'}" from Cafe`, 'info');
+  };
+
+  const toggleCafeItemStock = (id) => {
+    setCafeItems(prev => prev.map(item => {
+      if (item.id === id) {
+        const nextInStock = !item.inStock;
+        const newStock = nextInStock ? (item.stock > 0 ? item.stock : 10) : 0;
+        return { ...item, inStock: nextInStock, stock: newStock };
+      }
+      return item;
+    }));
   };
 
   // ==========================================
@@ -854,6 +971,12 @@ export const StoreProvider = ({ children }) => {
         addCategory,
         updateCategory,
         deleteCategory,
+        cafeItems,
+        setCafeItems,
+        addCafeItem,
+        updateCafeItem,
+        deleteCafeItem,
+        toggleCafeItemStock,
         resetAllData,
         toast,
         showToast,
