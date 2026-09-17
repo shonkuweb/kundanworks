@@ -615,7 +615,7 @@ export const StoreProvider = ({ children }) => {
           time: dbOrder.createdAt ? new Date(dbOrder.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '',
           courierName: 'Boutique Express Logistics',
           awbNumber: `KW-EXP-${String(dbOrder.id || '').replace(/[^0-9]/g, '') || '102938'}`,
-          estimatedDelivery: 'Estimated 4-6 business days'
+          estimatedDelivery: (Number(dbOrder.stage) >= 4 || dbOrder.status === 'delivered') ? 'Delivered to Doorstep' : 'Estimated 4-6 business days'
         };
 
         setOrders(prev => {
