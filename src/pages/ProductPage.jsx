@@ -118,13 +118,13 @@ export const ProductPage = () => {
 
   const handleAddToCart = () => {
     if (isSoldOut) return;
-    addToCart(product, 'Standard', quantity);
+    addToCart(product, quantity);
     setIsCartOpen(true);
   };
 
   const handleCheckout = () => {
     if (isSoldOut) return;
-    addToCart(product, 'Standard', quantity);
+    addToCart(product, quantity);
     navigate('/checkout');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

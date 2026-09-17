@@ -56,7 +56,7 @@ export const ProductDetailModal = () => {
   };
 
   const handleAddAndOpenCart = () => {
-    addToCart(selectedProduct, 'Standard', quantity);
+    addToCart(selectedProduct, quantity);
     setSelectedProduct(null);
     setIsCartOpen(true);
   };

@@ -169,7 +169,7 @@ _Sent via Kundan Works Boutique Portal_`;
                 <textarea
                   rows={3}
                   required
-                  placeholder="Tell us what you are looking for (custom sizing, styling, bridal, delivery inquiry)..."
+                  placeholder="Tell us what you are looking for (styling, custom design, bridal, boutique inquiry)..."
                   value={formData.message}
                   onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                   className="w-full p-3 bg-white border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-brand-700"

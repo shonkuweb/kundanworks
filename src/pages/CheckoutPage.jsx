@@ -46,7 +46,7 @@ export const CheckoutPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleBuyViaWhatsApp = (e) => {
+  const handleBuyViaWhatsApp = async (e) => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
@@ -72,7 +72,7 @@ export const CheckoutPage = () => {
     const newOrderId = `KW-${Math.floor(100000 + Math.random() * 900000)}`;
 
     // Create real order in store
-    createOrder({
+    await createOrder({
       id: newOrderId,
       name: formData.name.trim(),
       phone: formData.phone.trim(),
@@ -90,9 +90,8 @@ export const CheckoutPage = () => {
       const title = product.title || product.name || 'Handcrafted Apparel';
       const price = Number(product.price) || 0;
       const quantity = Number(item?.quantity) || 1;
-      const size = item?.size || 'Standard';
       const productLink = `${origin}/product/${pid}`;
-      return `${idx + 1}. *${title}*\n   • Size: *${size}* | Qty: *${quantity}*\n   • Price: ₹${(price * quantity).toLocaleString('en-IN')} (₹${price} each)\n   • Product Link: ${productLink}`;
+      return `${idx + 1}. *${title}*\n   • Qty: *${quantity}*\n   • Price: ₹${(price * quantity).toLocaleString('en-IN')} (₹${price} each)\n   • Product Link: ${productLink}`;
     }).join('\n\n');
 
     // Structured, clear message for the admin
@@ -111,7 +110,7 @@ ${itemsListText}
 
 ━━━━━━━━━━━━━━━━━━━━
 💰 *TOTAL AMOUNT:* ₹${cartSubtotal.toLocaleString('en-IN')}
-🚚 *Delivery:* Complimentary Express Delivery
+🚚 *Delivery:* Decided by the Admin
 ━━━━━━━━━━━━━━━━━━━━
 _Hi Kundan Works, please confirm this order and share delivery / payment steps._`;
 
@@ -321,13 +320,12 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                     const title = product.title || product.name || 'Handcrafted Apparel';
                     const price = Number(product.price) || 0;
                     const quantity = Number(item?.quantity) || 1;
-                    const size = item?.size || 'Standard';
                     const itemTotal = price * quantity;
                     const imageUrl = (Array.isArray(product.images) && product.images[0]) || product.imageUrl;
 
                     return (
                       <div 
-                        key={`${pid}-${size}-${idx}`}
+                        key={`${pid}-${idx}`}
                         className="flex gap-3 pb-3 border-b border-[#F7F2EC] last:border-b-0"
                       >
                         {/* Image Thumbnail */}
@@ -347,13 +345,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                               {title}
                             </h4>
                             <div className="flex items-center gap-2 mt-0.5 text-[11px] text-neutral-500">
-                              {size && size !== 'Standard' && size !== 'Free Size' && (
-                                <>
-                                  <span>Size: <strong>{size}</strong></span>
-                                  <span>•</span>
-                                </>
-                              )}
-                              <span>₹{price.toLocaleString('en-IN')}</span>
+                              <span>₹{price.toLocaleString('en-IN')} each</span>
                             </div>
                           </div>
 
@@ -362,7 +354,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                             <div className="inline-flex items-center bg-[#F6F0E8] rounded-md px-1.5 py-0.5 text-xs">
                               <button
                                 type="button"
-                                onClick={() => updateCartQuantity(pid, size, -1)}
+                                onClick={() => updateCartQuantity(pid, -1)}
                                 className="p-0.5 text-neutral-600 hover:text-black cursor-pointer"
                                 title="Decrease quantity"
                               >
@@ -373,7 +365,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                               </span>
                               <button
                                 type="button"
-                                onClick={() => updateCartQuantity(pid, size, 1)}
+                                onClick={() => updateCartQuantity(pid, 1)}
                                 className="p-0.5 text-neutral-600 hover:text-black cursor-pointer"
                                 title="Increase quantity"
                               >
@@ -387,7 +379,7 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                               </span>
                               <button
                                 type="button"
-                                onClick={() => removeFromCart(pid, size)}
+                                onClick={() => removeFromCart(pid)}
                                 className="text-neutral-400 hover:text-rose-600 p-0.5 cursor-pointer transition-colors"
                                 title="Remove item"
                               >
@@ -409,9 +401,9 @@ _Hi Kundan Works, please confirm this order and share delivery / payment steps._
                       ₹{cartSubtotal.toLocaleString('en-IN')}
                     </span>
                   </div>
-                  <div className="flex justify-between text-emerald-700">
+                  <div className="flex justify-between text-neutral-700">
                     <span>Delivery</span>
-                    <span className="font-medium">Free Express Delivery</span>
+                    <span className="font-medium text-[#1E1A17]">Decided by the Admin</span>
                   </div>
                   <div className="flex justify-between text-sm font-semibold text-[#221B16] pt-2 border-t border-[#EAE0D4]">
                     <span>Total Payable</span>

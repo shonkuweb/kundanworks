@@ -127,7 +127,6 @@ export const StoreProvider = ({ children }) => {
                   images: Array.isArray(product.images) ? product.images : (product.imageUrl ? [product.imageUrl] : []),
                   imageUrl: (Array.isArray(product.images) && product.images[0]) || product.imageUrl || ''
                 },
-                size: item.size || 'M',
                 quantity: Math.max(1, parseInt(item.quantity, 10) || 1)
               };
             });
@@ -202,7 +201,20 @@ export const StoreProvider = ({ children }) => {
           awbNumber: o.awbNumber || `KW-EXP-${String(o.id || '').replace(/[^0-9]/g, '') || '102938'}`,
           estimatedDelivery: o.estimatedDelivery || 'Estimated 4-6 business days'
         }));
-        setOrders(dbOrders);
+
+        // Merge remote orders with local orders - NEVER erase existing local orders!
+        setOrders(prevLocal => {
+          const currentList = Array.isArray(prevLocal) ? prevLocal : [];
+          if (dbOrders.length === 0) return currentList;
+
+          const merged = [...dbOrders];
+          currentList.forEach(loc => {
+            if (loc && loc.id && !merged.some(rem => rem.id === loc.id)) {
+              merged.push(loc);
+            }
+          });
+          return merged;
+        });
       }
 
       if (cfgRes.status === 'fulfilled' && cfgRes.value && typeof cfgRes.value === 'object') {
@@ -212,6 +224,22 @@ export const StoreProvider = ({ children }) => {
       console.warn('[StoreContext] Database sync warning:', err.message);
     }
   };
+
+  // Cross-tab synchronization for orders & live updates
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'kundan_orders' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) {
+            setOrders(parsed);
+          }
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   // Mount sync + periodic background polling (every 15s)
   useEffect(() => {
@@ -262,9 +290,9 @@ export const StoreProvider = ({ children }) => {
   }, [orders]);
 
   // ==========================================
-  // Cart Operations
+  // Cart Operations (No sizes - products are standalone)
   // ==========================================
-  const addToCart = (product, size = 'M', quantity = 1) => {
+  const addToCart = (product, sizeOrQty = 1, maybeQty = 1) => {
     if (!product) return;
     const safeProduct = {
       ...product,
@@ -278,14 +306,15 @@ export const StoreProvider = ({ children }) => {
       images: Array.isArray(product.images) ? product.images : (product.imageUrl ? [product.imageUrl] : []),
       imageUrl: (Array.isArray(product.images) && product.images[0]) || product.imageUrl || ''
     };
-    const qty = Math.max(1, parseInt(quantity, 10) || 1);
-    const chosenSize = size || 'M';
+    const qty = typeof sizeOrQty === 'number'
+      ? Math.max(1, parseInt(sizeOrQty, 10) || 1)
+      : Math.max(1, parseInt(maybeQty, 10) || 1);
 
     setCart(prev => {
       const validPrev = Array.isArray(prev) ? prev.filter(Boolean) : [];
       const existingIndex = validPrev.findIndex(item => {
         const itemPId = item.product?.id || item.id;
-        return itemPId === safeProduct.id && item.size === chosenSize;
+        return itemPId === safeProduct.id;
       });
 
       if (existingIndex > -1) {
@@ -297,29 +326,30 @@ export const StoreProvider = ({ children }) => {
         };
         return next;
       }
-      return [...validPrev, { product: safeProduct, size: chosenSize, quantity: qty }];
+      return [...validPrev, { product: safeProduct, quantity: qty }];
     });
     showToast(`Added "${safeProduct.title}" to bag`);
   };
 
-  const removeFromCart = (productId, size) => {
+  const removeFromCart = (productId) => {
     setCart(prev => {
       if (!Array.isArray(prev)) return [];
       return prev.filter(item => {
         const itemPId = item.product?.id || item.id;
-        return !(itemPId === productId && item.size === size);
+        return itemPId !== productId;
       });
     });
     showToast('Item removed from bag', 'info');
   };
 
-  const updateCartQuantity = (productId, size, delta) => {
+  const updateCartQuantity = (productId, deltaOrSize, deltaParam) => {
+    const delta = typeof deltaOrSize === 'number' ? deltaOrSize : (Number(deltaParam) || 0);
     setCart(prev => {
       if (!Array.isArray(prev)) return [];
       return prev
         .map(item => {
           const itemPId = item.product?.id || item.id;
-          if (itemPId === productId && item.size === size) {
+          if (itemPId === productId) {
             const currentQty = Number(item.quantity) || 1;
             const newQty = currentQty + delta;
             return newQty > 0 ? { ...item, quantity: newQty } : null;
@@ -381,8 +411,7 @@ export const StoreProvider = ({ children }) => {
         description: item.description || '',
         stock: item.stock,
         inStock: item.inStock,
-        images: item.images,
-        sizes: item.sizes || ['Free Size']
+        images: item.images
       });
 
       if (created) {
@@ -527,13 +556,22 @@ export const StoreProvider = ({ children }) => {
 
 
   // ==========================================
-  // Order Operations & Live Tracking (PostgreSQL Synchronized)
+  // Order Operations & Live Tracking (Dual PostgreSQL + Local Synchronized)
   // ==========================================
+  const saveOrdersLocally = (orderList) => {
+    try {
+      localStorage.setItem('kundan_orders', JSON.stringify(orderList));
+    } catch (err) {
+      console.error('Failed to save orders to localStorage:', err);
+    }
+  };
+
   const createOrder = async (orderData) => {
     const stage1 = ORDER_STAGES[0];
-    const orderId = orderData.id || `KW-${Math.floor(100000 + Math.random() * 900000)}`;
+    const rawId = orderData.id || `KW-${Math.floor(100000 + Math.random() * 900000)}`;
+    const orderId = String(rawId).replace(/^#/, '').trim();
+
     const newOrder = {
-      id: orderId,
       date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
       time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       customerName: orderData.name || orderData.customerName || '',
@@ -551,16 +589,22 @@ export const StoreProvider = ({ children }) => {
       awbNumber: `KW-EXP-${Math.floor(100000 + Math.random() * 900000)}`,
       estimatedDelivery: 'Estimated 4-6 business days',
       items: orderData.items || [],
-      subtotal: orderData.subtotal || 0,
+      subtotal: orderData.subtotal || orderData.total || 0,
       total: orderData.total || orderData.subtotal || 0,
       totalPrice: orderData.total || orderData.subtotal || 0,
-      ...orderData
+      ...orderData,
+      id: orderId
     };
 
-    // Optimistic UI update
-    setOrders(prev => [newOrder, ...prev]);
+    // 1. Immediately update state and synchronously write to localStorage
+    setOrders(prev => {
+      const prevList = Array.isArray(prev) ? prev.filter(o => o && o.id !== newOrder.id) : [];
+      const updated = [newOrder, ...prevList];
+      saveOrdersLocally(updated);
+      return updated;
+    });
 
-    // Persist to PostgreSQL
+    // 2. Persist to PostgreSQL backend if reachable
     try {
       await api.createOrder({
         id: newOrder.id,
@@ -576,7 +620,7 @@ export const StoreProvider = ({ children }) => {
         statusDescription: newOrder.statusDescription
       });
     } catch (err) {
-      console.error('[StoreContext] PostgreSQL order creation error:', err);
+      // Backend offline fallback - order remains safe in local state and localStorage
     }
 
     return newOrder;
@@ -584,48 +628,85 @@ export const StoreProvider = ({ children }) => {
 
   /**
    * Live Order Tracking Query:
-   * First searches local cache; if not found or needing fresh status, queries PostgreSQL!
+   * First searches local cache and localStorage; matches order ID, clean digits, phone, or AWB!
    */
   const trackOrder = async (queryStr) => {
     if (!queryStr) return null;
-    const q = queryStr.trim();
+    const q = String(queryStr).trim();
+    if (!q) return null;
 
-    // 1. Try local memory
-    const cleanQ = q.replace(/[^0-9a-zA-Z]/g, '').toLowerCase();
-    const foundLocal = orders.find(o => {
+    const cleanInput = q.replace(/^#/, '').trim().toLowerCase();
+    const cleanDigits = q.replace(/[^0-9]/g, '');
+
+    // Gather all known orders from memory and localStorage
+    const getAllOrders = () => {
+      const map = new Map();
+      try {
+        const fromStorage = JSON.parse(localStorage.getItem('kundan_orders') || '[]');
+        if (Array.isArray(fromStorage)) fromStorage.forEach(o => o?.id && map.set(String(o.id).toLowerCase(), o));
+      } catch {}
+      if (Array.isArray(orders)) orders.forEach(o => o?.id && map.set(String(o.id).toLowerCase(), o));
+      return Array.from(map.values());
+    };
+
+    const allOrders = getAllOrders();
+
+    // 1. Search locally
+    const foundLocal = allOrders.find(o => {
       if (!o) return false;
-      const orderId = String(o.id || '').toLowerCase();
-      const phone = String(o.phone || o.customerPhone || '').replace(/[^0-9]/g, '');
+      const orderId = String(o.id || '').replace(/^#/, '').toLowerCase();
+      const cleanOrderId = orderId.replace(/[^a-z0-9]/gi, '');
       const awb = String(o.awbNumber || '').toLowerCase();
-      return orderId === q.toLowerCase() || (phone && cleanQ && phone.includes(cleanQ)) || awb === q.toLowerCase();
+      const phone = String(o.phone || o.customerPhone || '').replace(/[^0-9]/g, '');
+
+      // Direct or alphanumeric match (e.g. 'KW-123456', '#KW-123456', 'kw123456')
+      if (orderId === cleanInput) return true;
+      if (cleanOrderId === cleanInput.replace(/[^a-z0-9]/gi, '')) return true;
+
+      // Trailing 5-6 digits match (e.g. entering '123456' matches 'KW-123456')
+      if (cleanDigits.length >= 5 && (orderId.includes(cleanDigits) || cleanOrderId.includes(cleanDigits))) return true;
+
+      // Phone number match (last 10 digits)
+      if (cleanDigits.length >= 10 && phone.endsWith(cleanDigits.slice(-10))) return true;
+
+      // AWB match
+      if (awb && (awb === cleanInput || (cleanDigits.length >= 5 && awb.includes(cleanDigits)))) return true;
+
+      return false;
     });
 
-    // 2. Fetch live tracking from PostgreSQL backend
+    if (foundLocal) {
+      return foundLocal;
+    }
+
+    // 2. Query backend API if not found locally
     try {
-      const dbOrder = await api.trackOrder(q);
+      const dbOrder = await api.trackOrder(cleanInput);
       if (dbOrder) {
         const formatted = {
           ...dbOrder,
           phone: dbOrder.customerPhone || dbOrder.phone || '',
+          customerPhone: dbOrder.customerPhone || dbOrder.phone || '',
           name: dbOrder.customerName || dbOrder.name || '',
+          customerName: dbOrder.customerName || dbOrder.name || '',
           shippingAddress: dbOrder.customerLocation || dbOrder.shippingAddress || '',
-          currentStep: dbOrder.stage || 1,
+          customerLocation: dbOrder.customerLocation || dbOrder.shippingAddress || '',
+          currentStep: dbOrder.stage || dbOrder.currentStep || 1,
+          stage: dbOrder.stage || dbOrder.currentStep || 1,
           total: dbOrder.totalPrice !== undefined ? Number(dbOrder.totalPrice) : Number(dbOrder.total || 0),
-          date: dbOrder.createdAt ? new Date(dbOrder.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
-          time: dbOrder.createdAt ? new Date(dbOrder.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '',
-          courierName: 'Boutique Express Logistics',
-          awbNumber: `KW-EXP-${String(dbOrder.id || '').replace(/[^0-9]/g, '') || '102938'}`,
+          totalPrice: dbOrder.totalPrice !== undefined ? Number(dbOrder.totalPrice) : Number(dbOrder.total || 0),
+          date: dbOrder.createdAt ? new Date(dbOrder.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : (dbOrder.date || ''),
+          time: dbOrder.createdAt ? new Date(dbOrder.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : (dbOrder.time || ''),
+          courierName: dbOrder.courierName || 'Boutique Express Logistics',
+          awbNumber: dbOrder.awbNumber || `KW-EXP-${String(dbOrder.id || '').replace(/[^0-9]/g, '') || '102938'}`,
           estimatedDelivery: (Number(dbOrder.stage) >= 4 || dbOrder.status === 'delivered') ? 'Delivered to Doorstep' : 'Estimated 4-6 business days'
         };
 
         setOrders(prev => {
-          const idx = prev.findIndex(o => o.id === formatted.id);
-          if (idx > -1) {
-            const next = [...prev];
-            next[idx] = formatted;
-            return next;
-          }
-          return [formatted, ...prev];
+          const prevList = Array.isArray(prev) ? prev.filter(o => o && o.id !== formatted.id) : [];
+          const next = [formatted, ...prevList];
+          saveOrdersLocally(next);
+          return next;
         });
 
         return formatted;
@@ -634,20 +715,24 @@ export const StoreProvider = ({ children }) => {
       // Backend not reached or not found
     }
 
-    return foundLocal || null;
+    return null;
   };
 
   const updateOrderStatus = (orderId, newStatus, currentStep) => {
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        return {
-          ...o,
-          status: newStatus,
-          currentStep: currentStep ?? o.currentStep
-        };
-      }
-      return o;
-    }));
+    setOrders(prev => {
+      const updated = prev.map(o => {
+        if (o.id === orderId) {
+          return {
+            ...o,
+            status: newStatus,
+            currentStep: currentStep ?? o.currentStep
+          };
+        }
+        return o;
+      });
+      saveOrdersLocally(updated);
+      return updated;
+    });
     showToast(`Order ${orderId} updated to ${newStatus}`);
   };
 
@@ -674,19 +759,23 @@ export const StoreProvider = ({ children }) => {
       newStatus = 'pending';
     }
 
-    // Update local state optimistically
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        return {
-          ...o,
-          decision,
-          status: newStatus,
-          statusTitle: newStatusTitle,
-          statusDescription: newStatusDescription
-        };
-      }
-      return o;
-    }));
+    // Update local state and localStorage immediately
+    setOrders(prev => {
+      const updated = prev.map(o => {
+        if (o.id === orderId) {
+          return {
+            ...o,
+            decision,
+            status: newStatus,
+            statusTitle: newStatusTitle,
+            statusDescription: newStatusDescription
+          };
+        }
+        return o;
+      });
+      saveOrdersLocally(updated);
+      return updated;
+    });
 
     // Update stock locally
     if (decision === 'accepted' && previousDecision !== 'accepted') {
@@ -717,7 +806,7 @@ export const StoreProvider = ({ children }) => {
       }
     }
 
-    // Persist to PostgreSQL backend (which atomically adjusts stock on server)
+    // Persist to PostgreSQL backend if reachable
     try {
       await api.updateOrder(orderId, {
         decision,
@@ -726,7 +815,6 @@ export const StoreProvider = ({ children }) => {
         statusDescription: newStatusDescription
       });
 
-      // Refresh products from PostgreSQL to ensure perfectly synced stock
       const refreshedProducts = await api.getProducts();
       if (Array.isArray(refreshedProducts)) {
         setProducts(refreshedProducts.map(p => ({
@@ -741,7 +829,7 @@ export const StoreProvider = ({ children }) => {
         })));
       }
     } catch (err) {
-      console.error('[StoreContext] PostgreSQL order decision update error:', err);
+      // Backend offline fallback
     }
 
     if (decision === 'accepted') {
@@ -757,19 +845,23 @@ export const StoreProvider = ({ children }) => {
     const step = Math.min(Math.max(1, Number(stepNumber) || 1), 4);
     const stage = ORDER_STAGES[step - 1];
 
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        return {
-          ...o,
-          currentStep: step,
-          stage: step,
-          status: stage.key,
-          statusTitle: stage.label,
-          statusDescription: stage.desc
-        };
-      }
-      return o;
-    }));
+    setOrders(prev => {
+      const updated = prev.map(o => {
+        if (o.id === orderId) {
+          return {
+            ...o,
+            currentStep: step,
+            stage: step,
+            status: stage.key,
+            statusTitle: stage.label,
+            statusDescription: stage.desc
+          };
+        }
+        return o;
+      });
+      saveOrdersLocally(updated);
+      return updated;
+    });
 
     try {
       await api.updateOrder(orderId, {
@@ -779,18 +871,22 @@ export const StoreProvider = ({ children }) => {
         statusDescription: stage.desc
       });
     } catch (err) {
-      console.error('[StoreContext] PostgreSQL order stage update error:', err);
+      // Backend offline fallback
     }
 
     showToast(`Order ${orderId} fulfillment set to "${stage.label}"`);
   };
 
   const deleteOrder = async (orderId) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId));
+    setOrders(prev => {
+      const updated = prev.filter(o => o.id !== orderId);
+      saveOrdersLocally(updated);
+      return updated;
+    });
     try {
       await api.deleteOrder(orderId);
     } catch (err) {
-      console.error('[StoreContext] PostgreSQL order delete error:', err);
+      // Backend offline fallback
     }
     showToast(`Order ${orderId} removed`, 'info');
   };

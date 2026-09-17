@@ -9,7 +9,11 @@ async function request(url, options = {}) {
   const token = typeof window !== 'undefined' ? sessionStorage.getItem('kundan_admin_token') : null;
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2500);
+
   const config = {
+    signal: controller.signal,
     headers: {
       'Content-Type': 'application/json',
       ...authHeaders,
@@ -23,20 +27,31 @@ async function request(url, options = {}) {
     delete config.headers['Content-Type'];
   }
 
-  const res = await fetch(`${API_BASE}${url}`, config);
-  
-  if (!res.ok) {
-    let errorMessage = `HTTP Error ${res.status}`;
-    try {
-      const errJson = await res.json();
-      if (errJson.error) errorMessage = errJson.error;
-    } catch {
-      // ignore
-    }
-    throw new Error(errorMessage);
-  }
+  try {
+    const res = await fetch(`${API_BASE}${url}`, config);
+    clearTimeout(timeoutId);
 
-  return res.json();
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error(`Expected JSON response, got ${contentType}`);
+    }
+
+    if (!res.ok) {
+      let errorMessage = `HTTP Error ${res.status}`;
+      try {
+        const errJson = await res.json();
+        if (errJson.error) errorMessage = errJson.error;
+      } catch {
+        // ignore
+      }
+      throw new Error(errorMessage);
+    }
+
+    return res.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
+  }
 }
 
 export const api = {

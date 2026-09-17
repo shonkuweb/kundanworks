@@ -103,13 +103,12 @@ export const CartDrawer = () => {
               const title = product.title || product.name || 'Handcrafted Apparel';
               const price = Number(product.price) || 0;
               const quantity = Number(item?.quantity) || 1;
-              const size = item?.size || 'Standard';
               const itemTotal = price * quantity;
               const imageUrl = (Array.isArray(product.images) && product.images[0]) || product.imageUrl;
 
               return (
                 <div 
-                  key={`${pid}-${size}-${idx}`}
+                  key={`${pid}-${idx}`}
                   className="bg-white p-3 rounded-xl border border-[#EAE0D4] flex gap-3 shadow-sm hover:border-[#D8C7B5] transition-colors"
                 >
                   {/* Image */}
@@ -137,7 +136,7 @@ export const CartDrawer = () => {
                         </h4>
                         <button
                           type="button"
-                          onClick={() => removeFromCart(pid, size)}
+                          onClick={() => removeFromCart(pid)}
                           className="text-neutral-400 hover:text-rose-600 active:text-rose-700 p-1 -mr-1 cursor-pointer transition-colors touch-manipulation"
                           title="Remove item"
                           aria-label={`Remove ${title} from bag`}
@@ -147,13 +146,8 @@ export const CartDrawer = () => {
                       </div>
 
                       <div className="flex items-center gap-2 text-[11px] text-neutral-500 mt-1">
-                        {size && size !== 'Standard' && size !== 'Free Size' && (
-                          <span className="bg-[#FAF5EE] text-[#5F3F2C] font-semibold px-2 py-0.5 rounded border border-[#EAE0D4]">
-                            Size: {size}
-                          </span>
-                        )}
                         {price > 0 && (
-                          <span className="text-neutral-400">₹{price.toLocaleString('en-IN')} each</span>
+                          <span className="text-neutral-500 font-medium">₹{price.toLocaleString('en-IN')} each</span>
                         )}
                       </div>
                     </div>
@@ -163,7 +157,7 @@ export const CartDrawer = () => {
                       <div className="flex items-center bg-[#F6F0E8] rounded-lg border border-[#E7DCCE] overflow-hidden">
                         <button
                           type="button"
-                          onClick={() => updateCartQuantity(pid, size, -1)}
+                          onClick={() => updateCartQuantity(pid, -1)}
                           className="w-7 h-7 flex items-center justify-center text-neutral-700 hover:text-black active:bg-[#EADFCF] cursor-pointer touch-manipulation transition-colors"
                           title="Decrease quantity"
                           aria-label="Decrease quantity"
@@ -175,7 +169,7 @@ export const CartDrawer = () => {
                         </span>
                         <button
                           type="button"
-                          onClick={() => updateCartQuantity(pid, size, 1)}
+                          onClick={() => updateCartQuantity(pid, 1)}
                           className="w-7 h-7 flex items-center justify-center text-neutral-700 hover:text-black active:bg-[#EADFCF] cursor-pointer touch-manipulation transition-colors"
                           title="Increase quantity"
                           aria-label="Increase quantity"
@@ -205,8 +199,8 @@ export const CartDrawer = () => {
                 <span className="font-serif font-medium text-neutral-800">₹{cartSubtotal.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between">
-                <span>Estimated Shipping</span>
-                <span className="text-emerald-700 font-medium">Free Express Delivery</span>
+                <span>Delivery</span>
+                <span className="text-[#1E1A17] font-medium">Decided by the Admin</span>
               </div>
               <div className="flex justify-between text-sm font-semibold text-[#221B16] pt-2 border-t border-[#EAE0D4]">
                 <span>Total Amount</span>

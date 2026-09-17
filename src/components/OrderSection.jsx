@@ -422,7 +422,7 @@ export const OrderSection = () => {
                           <div>
                             <p className="text-xs font-semibold text-neutral-900 line-clamp-1">{item.product?.title}</p>
                             <p className="text-[11px] text-neutral-500">
-                              {item.size && item.size !== 'Standard' && item.size !== 'Free Size' ? `Size: ${item.size} • ` : ''}Qty: <span className="font-semibold text-neutral-700">{item.quantity}</span>
+                              Qty: <span className="font-semibold text-neutral-700">{item.quantity}</span>
                             </p>
                           </div>
                         </div>

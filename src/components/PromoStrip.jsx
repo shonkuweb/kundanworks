@@ -19,8 +19,8 @@ export const PromoStrip = () => {
     },
     {
       icon: <Truck className="w-4 h-4 text-brand-700" />,
-      title: "FREE EXPRESS DELIVERY",
-      subtext: "across all Indian pincodes"
+      title: "DOORSTEP DELIVERY",
+      subtext: "charges decided by the admin"
     }
   ];
 
