@@ -849,14 +849,19 @@ app.post('/api/admin/logout', (req, res) => {
 // ==========================================
 async function startServer() {
   try {
-    await initDB();
-    app.listen(PORT, () => {
-      console.log(`🚀 [Server] Kundan Works API running on port ${PORT}`);
-    });
+    const dbConnected = await initDB();
+    if (dbConnected) {
+      console.log('✅ [Server] Connected to PostgreSQL');
+    } else {
+      console.log('ℹ️ [Server] Running in standalone file/memory storage mode');
+    }
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
+    console.warn('⚠️ [Server] Database initialization bypassed:', error.message);
   }
+
+  app.listen(PORT, () => {
+    console.log(`🚀 [Server] Kundan Works API running on port ${PORT}`);
+  });
 }
 
 startServer();

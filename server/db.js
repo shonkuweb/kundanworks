@@ -25,7 +25,7 @@ export const query = (text, params) => pool.query(text, params);
 /**
  * Initialize tables with retry mechanism to wait for PostgreSQL container
  */
-export async function initDB(maxRetries = 10, delayMs = 2500) {
+export async function initDB(maxRetries = 2, delayMs = 1000) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       console.log(`[DB] Connecting to PostgreSQL (attempt ${attempt}/${maxRetries})...`);
@@ -50,16 +50,16 @@ export async function initDB(maxRetries = 10, delayMs = 2500) {
         await client.query(`
           CREATE TABLE IF NOT EXISTS products (
             id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
-            subtitle TEXT,
-            price NUMERIC NOT NULL,
-            category TEXT,
+            title TEXT NOT NULL,
             category_id TEXT,
-            description TEXT,
+            category_slug TEXT,
+            price NUMERIC(10, 2) NOT NULL,
+            original_price NUMERIC(10, 2),
             stock INTEGER DEFAULT 10,
             in_stock BOOLEAN DEFAULT true,
             images JSONB DEFAULT '[]'::jsonb,
-            sizes JSONB DEFAULT '["Free Size"]'::jsonb,
+            image_url TEXT,
+            description TEXT,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
           );
@@ -73,7 +73,7 @@ export async function initDB(maxRetries = 10, delayMs = 2500) {
             customer_phone TEXT NOT NULL,
             customer_location TEXT,
             items JSONB NOT NULL DEFAULT '[]'::jsonb,
-            total_price NUMERIC NOT NULL,
+            total_price NUMERIC(10, 2) NOT NULL,
             decision TEXT DEFAULT 'pending',
             stage INTEGER DEFAULT 1,
             status TEXT DEFAULT 'Order Placed',
@@ -102,7 +102,7 @@ export async function initDB(maxRetries = 10, delayMs = 2500) {
 
         await client.query('COMMIT');
         console.log('✅ [DB] PostgreSQL schema initialized successfully.');
-        return;
+        return true;
       } catch (err) {
         await client.query('ROLLBACK');
         throw err;
@@ -110,12 +110,13 @@ export async function initDB(maxRetries = 10, delayMs = 2500) {
         client.release();
       }
     } catch (error) {
-      console.error(`[DB] Connection attempt ${attempt} failed: ${error.message}`);
+      console.warn(`[DB] Connection attempt ${attempt} failed: ${error.message}`);
       if (attempt === maxRetries) {
-        console.error('❌ [DB] Could not connect to PostgreSQL after multiple attempts.');
-        throw error;
+        console.warn('⚠️ [DB] PostgreSQL offline. Server will run in standalone file-storage mode.');
+        return false;
       }
       await new Promise((res) => setTimeout(res, delayMs));
     }
   }
+  return false;
 }

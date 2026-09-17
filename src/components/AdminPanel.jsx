@@ -108,6 +108,7 @@ export const AdminPanel = ({ onClose }) => {
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [isChangingPass, setIsChangingPass] = useState(false);
+  const [passFeedback, setPassFeedback] = useState(null); // { type: 'success' | 'error', message: '' }
 
   // Verify existing admin session token on mount
   useEffect(() => {
@@ -192,16 +193,23 @@ export const AdminPanel = ({ onClose }) => {
   // Change Admin Password in Settings
   const handleChangePassword = async (e) => {
     e.preventDefault();
+    setPassFeedback(null);
     if (!currentPassword) {
-      showToast('Please enter current admin password', 'error');
+      const msg = 'Please enter current admin password';
+      setPassFeedback({ type: 'error', message: msg });
+      showToast(msg, 'error');
       return;
     }
     if (!newPassword || newPassword.length < 6) {
-      showToast('New password must be at least 6 characters long', 'error');
+      const msg = 'New password must be at least 6 characters long';
+      setPassFeedback({ type: 'error', message: msg });
+      showToast(msg, 'error');
       return;
     }
     if (newPassword !== confirmPassword) {
-      showToast('New passwords do not match', 'error');
+      const msg = 'New passwords do not match';
+      setPassFeedback({ type: 'error', message: msg });
+      showToast(msg, 'error');
       return;
     }
     setIsChangingPass(true);
@@ -215,12 +223,18 @@ export const AdminPanel = ({ onClose }) => {
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
+        const msg = 'Admin password updated successfully! Use your new password on next login.';
+        setPassFeedback({ type: 'success', message: msg });
         showToast('Admin password updated successfully!', 'success');
       } else {
-        showToast(res?.error || 'Failed to update password', 'error');
+        const msg = res?.error || 'Failed to update password';
+        setPassFeedback({ type: 'error', message: msg });
+        showToast(msg, 'error');
       }
     } catch (err) {
-      showToast(err.message || 'Failed to update password', 'error');
+      const msg = err.message || 'Failed to update password';
+      setPassFeedback({ type: 'error', message: msg });
+      showToast(msg, 'error');
     } finally {
       setIsChangingPass(false);
     }
@@ -1135,6 +1149,21 @@ export const AdminPanel = ({ onClose }) => {
               </div>
 
               <form onSubmit={handleChangePassword} className="space-y-4 text-xs">
+                {passFeedback && (
+                  <div className={`p-3 rounded-2xl text-xs flex items-center gap-2.5 ${
+                    passFeedback.type === 'success' 
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
+                      : 'bg-rose-50 text-rose-800 border border-rose-200'
+                  }`}>
+                    {passFeedback.type === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    )}
+                    <span className="font-medium">{passFeedback.message}</span>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-neutral-700 font-semibold mb-1">
                     Current Admin Password *

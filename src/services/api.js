@@ -1,3 +1,5 @@
+import { adminAuth } from './adminAuth';
+
 // Kundan Works Central API Service
 // Connects frontend to PostgreSQL backend
 
@@ -103,25 +105,9 @@ export const api = {
   },
 
   // Admin Authentication (Zero passwords stored in frontend code)
-  adminLogin: (password) => request('/api/admin/login', {
-    method: 'POST',
-    body: JSON.stringify({ password }),
-  }),
-
-  adminVerifySession: (token) => request('/api/admin/verify', {
-    method: 'POST',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  }),
-
-  adminChangePassword: ({ currentPassword, newPassword }, token) => request('/api/admin/change-password', {
-    method: 'POST',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: JSON.stringify({ currentPassword, newPassword }),
-  }),
-
-  adminLogout: (token) => request('/api/admin/logout', {
-    method: 'POST',
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  }),
+  adminLogin: (password) => adminAuth.login(password),
+  adminVerifySession: (token) => adminAuth.verifySession(token),
+  adminChangePassword: ({ currentPassword, newPassword }, token) => adminAuth.changePassword({ currentPassword, newPassword }, token),
+  adminLogout: (token) => adminAuth.logout(token),
 };
 
