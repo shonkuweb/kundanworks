@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, Eye, Sparkles } from 'lucide-react';
+import { ShoppingBag, Eye, Sparkles, Camera } from 'lucide-react';
 import { FashionPlaceholder } from './Placeholders';
 import { useStore } from '../context/StoreContext';
 
@@ -126,6 +126,16 @@ export const ProductCatalog = () => {
                       <div className="absolute top-2.5 right-2.5 z-10">
                         <span className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-rose-600 text-white shadow-xs">
                           Sold Out
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Multi-photo indicator */}
+                    {Array.isArray(product.images) && product.images.length > 1 && (
+                      <div className="absolute bottom-2.5 left-2.5 z-10">
+                        <span className="text-[9px] font-medium bg-black/60 backdrop-blur-xs text-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
+                          <Camera className="w-2.5 h-2.5 text-amber-300" />
+                          <span>{product.images.length} photos</span>
                         </span>
                       </div>
                     )}
