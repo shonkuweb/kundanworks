@@ -84,7 +84,7 @@ export const ProductCatalog = () => {
             {activeCategory !== 'all' && (
               <button
                 onClick={() => setActiveCategory('all')}
-                className="px-5 py-2.5 bg-[#1C1E21] hover:bg-[#11A0AB] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-xs transition-colors cursor-pointer"
+                className="px-5 py-2.5 bg-[#1C1E21] hover:bg-[#9B1B30] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-xs transition-colors cursor-pointer"
               >
                 Reset to All Collections
               </button>
@@ -202,7 +202,7 @@ export const ProductCatalog = () => {
                             addToCart(product, 1);
                             setIsCartOpen(true);
                           }}
-                          className="p-2 sm:px-4 sm:py-1.5 bg-[#1C1E21] hover:bg-[#11A0AB] text-white rounded-full text-[11px] font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-all active:scale-95 shadow-xs cursor-pointer"
+                          className="p-2 sm:px-4 sm:py-1.5 bg-[#1C1E21] hover:bg-[#9B1B30] text-white rounded-full text-[11px] font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-all active:scale-95 shadow-xs cursor-pointer"
                           aria-label={`Add ${product.title} to bag`}
                         >
                           <ShoppingBag className="w-3.5 h-3.5" />

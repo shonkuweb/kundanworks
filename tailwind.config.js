@@ -8,25 +8,24 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#F0FDFA',
-          100: '#CCFBF1',
-          200: '#99F6E4',
-          300: '#5EEAD4',
-          400: '#2DD4BF',
-          500: '#11A0AB', // primary vibrant turquoise from logo
-          600: '#0E848D', // hover & focused turquoise
-          700: '#0B6A71',
-          800: '#085157',
-          900: '#053A3E',
-          pink: '#FD9AA7', // sweet blush pink from logo bird & scissors
-          rose: '#F43F5E', // deeper rose accent
-          blush: '#FFF1F2', // soft pastel pink background
-          dark: '#18181B',
-          charcoal: '#1C1E21',
-          cream: '#FAFCFD',
-          sand: '#E6F4F6',
-          accent: '#11A0AB',
-          gold: '#FD9AA7',
+          50: '#FDF2F4',   // Very soft blush/rose tint
+          100: '#FCE4E8',  // Light blush rose
+          200: '#F9CCD4',  // Delicate rose
+          300: '#F2A3B2',  // Rose petal
+          400: '#DF5E79',  // Vibrant rose
+          500: '#9B1B30',  // PRIMARY: Royal Crimson from the Radha Sang hero banner
+          600: '#831427',  // Deep crimson hover
+          700: '#6B0E1E',  // Luxury wine title color
+          800: '#520916',  // Dark espresso wine
+          900: '#38050E',  // Deep midnight wine
+          gold: '#C5A059', // Antique warm gold from hero banner florals
+          goldLight: '#E8CA8A',
+          goldDark: '#967434',
+          cream: '#FAF8F5',
+          sand: '#F3ECE3',
+          dark: '#221215',
+          charcoal: '#1A0D10',
+          accent: '#9B1B30',
         }
       },
       fontFamily: {
@@ -35,8 +34,8 @@ export default {
         script: ['"Caveat"', '"Dancing Script"', 'cursive'],
       },
       boxShadow: {
-        'soft': '0 4px 20px -2px rgba(95, 63, 44, 0.08)',
-        'card': '0 8px 30px -4px rgba(40, 36, 34, 0.12)',
+        'soft': '0 4px 20px -2px rgba(155, 27, 48, 0.08)',
+        'card': '0 8px 30px -4px rgba(34, 18, 21, 0.10)',
         'nav': '0 -4px 25px rgba(0, 0, 0, 0.06)',
       }
     },

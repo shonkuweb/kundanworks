@@ -127,7 +127,7 @@ _Sent via Radha Sang Boutique Portal (Barnala)_`;
               <p className="text-[11px] text-[#796455] font-light mt-0.5">
                 Girlish & Ladies Fashion Hub • WhatsApp: <strong>9855786123</strong>
               </p>
-              <p className="text-[10px] text-[#11A0AB] mt-0.5">
+              <p className="text-[10px] text-[#9B1B30] mt-0.5">
                 📍 Near bansi purri ala, Barnala • @radhasang_barnala
               </p>
             </div>

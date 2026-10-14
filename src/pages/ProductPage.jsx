@@ -238,7 +238,7 @@ export const ProductPage = () => {
                       onClick={() => setActiveImageIndex(idx)}
                       className={`relative w-18 h-22 sm:w-20 sm:h-24 rounded-xl overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 bg-[#F4ECE3] ${
                         activeImageIndex === idx
-                          ? 'border-[#11A0AB] ring-2 ring-[#11A0AB]/30 shadow-md scale-102 opacity-100'
+                          ? 'border-[#9B1B30] ring-2 ring-[#9B1B30]/30 shadow-md scale-102 opacity-100'
                           : 'border-[#E3D7C9] opacity-60 hover:opacity-100 hover:border-neutral-400'
                       }`}
                       title={`View photo ${idx + 1}`}
@@ -252,7 +252,7 @@ export const ProductPage = () => {
                         {idx + 1}
                       </span>
                       {activeImageIndex === idx && (
-                        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#11A0AB] ring-2 ring-white" />
+                        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#9B1B30] ring-2 ring-white" />
                       )}
                     </button>
                   ))}
@@ -347,7 +347,7 @@ export const ProductPage = () => {
                   onClick={handleAddToCart}
                   className="py-3.5 px-4 bg-white hover:bg-[#F6EFE8] text-[#1E1A17] border border-[#DECBB8] rounded-full text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  <ShoppingBag className="w-4 h-4 text-[#11A0AB]" />
+                  <ShoppingBag className="w-4 h-4 text-[#9B1B30]" />
                   <span>{isSoldOut ? 'Sold Out' : 'Add to Bag'}</span>
                 </button>
 
@@ -356,7 +356,7 @@ export const ProductPage = () => {
                   type="button"
                   disabled={isSoldOut}
                   onClick={handleCheckout}
-                  className="py-3.5 px-4 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="py-3.5 px-4 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-[#9B1B30]/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <span>{isSoldOut ? 'Unavailable' : 'Checkout'}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -490,7 +490,7 @@ export const ProductPage = () => {
                   onClick={() => setActiveImageIndex(idx)}
                   className={`w-14 h-18 sm:w-16 sm:h-20 rounded-xl overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 bg-neutral-900 ${
                     activeImageIndex === idx
-                      ? 'border-[#11A0AB] scale-105 ring-2 ring-[#11A0AB]/40 opacity-100'
+                      ? 'border-[#9B1B30] scale-105 ring-2 ring-[#9B1B30]/40 opacity-100'
                       : 'border-white/20 opacity-40 hover:opacity-90'
                   }`}
                   title={`View photo ${idx + 1}`}

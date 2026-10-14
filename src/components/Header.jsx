@@ -74,7 +74,7 @@ export const Header = () => {
           {/* Left: Drawer Toggle */}
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="p-2 -ml-1 text-[#1C1E21] hover:text-[#11A0AB] hover:bg-[#F0FDFA] rounded-full transition-colors cursor-pointer"
+            className="p-2 -ml-1 text-[#1C1E21] hover:text-[#9B1B30] hover:bg-[#FDF2F4] rounded-full transition-colors cursor-pointer"
             aria-label="Open Navigation Menu"
           >
             <Menu className="w-6 h-6 stroke-[1.8]" />
@@ -100,7 +100,7 @@ export const Header = () => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsSearchOpen(prev => !prev)}
-              className="p-2 text-[#1C1E21] hover:text-[#11A0AB] hover:bg-[#F0FDFA] rounded-full transition-colors cursor-pointer"
+              className="p-2 text-[#1C1E21] hover:text-[#9B1B30] hover:bg-[#FDF2F4] rounded-full transition-colors cursor-pointer"
               aria-label="Search catalog"
             >
               <Search className="w-5 h-5 stroke-[2]" />
@@ -109,12 +109,12 @@ export const Header = () => {
             {/* Shopping Bag / Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-[#1C1E21] hover:text-[#11A0AB] hover:bg-[#F0FDFA] rounded-full transition-colors cursor-pointer touch-manipulation"
+              className="relative p-2 text-[#1C1E21] hover:text-[#9B1B30] hover:bg-[#FDF2F4] rounded-full transition-colors cursor-pointer touch-manipulation"
               aria-label="View Shopping Bag"
             >
               <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#11A0AB] text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs select-none">
+                <span className="absolute -top-0.5 -right-0.5 bg-[#9B1B30] text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs select-none">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
@@ -123,9 +123,9 @@ export const Header = () => {
             <button
               onClick={() => setIsAdminOpen(true)}
               title="Admin Panel"
-              className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full bg-[#F0FDFA] hover:bg-[#CCFBF1] text-[#0B6A71] border border-[#99F6E4] transition-all cursor-pointer shadow-xs active:scale-95"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full bg-[#FDF2F4] hover:bg-[#FCE4E8] text-[#831427] border border-[#F9CCD4] transition-all cursor-pointer shadow-xs active:scale-95"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#11A0AB]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#9B1B30]" />
               <span>Admin</span>
             </button>
           </div>
@@ -257,7 +257,7 @@ export const Header = () => {
                   </div>
                   <p className="text-[11px] text-[#67564A]">Near bansi purri ala, Barnala</p>
                   <p className="text-[11px] text-[#67564A]">WhatsApp / Call: <strong className="text-[#1C1E21]">+91 98557 86123</strong></p>
-                  <p className="text-[11px] text-[#11A0AB] font-medium">Instagram: @radhasang_barnala</p>
+                  <p className="text-[11px] text-[#9B1B30] font-medium">Instagram: @radhasang_barnala</p>
                 </div>
               </div>
             </div>

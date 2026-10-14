@@ -145,7 +145,7 @@ export const ProductDetailModal = () => {
                   onClick={() => setActiveImageIndex(idx)}
                   className={`relative w-14 h-16 rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 bg-[#EFE8DE] ${
                     activeImageIndex === idx
-                      ? 'border-[#11A0AB] ring-2 ring-[#11A0AB]/30 scale-102 opacity-100 shadow-xs'
+                      ? 'border-[#9B1B30] ring-2 ring-[#9B1B30]/30 scale-102 opacity-100 shadow-xs'
                       : 'border-[#DACABE] opacity-60 hover:opacity-100'
                   }`}
                   title={`View photo ${idx + 1}`}
@@ -216,7 +216,7 @@ export const ProductDetailModal = () => {
               ) : (
                 <button
                   onClick={handleAddAndOpenCart}
-                  className="flex-1 py-3.5 px-4 bg-[#11A0AB] hover:bg-[#0E848D] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+                  className="flex-1 py-3.5 px-4 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md shadow-[#9B1B30]/25 transition-all active:scale-95 cursor-pointer"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Add to Bag • ₹{(selectedProduct.price * quantity).toLocaleString('en-IN')}</span>

@@ -91,7 +91,7 @@ export const CartDrawer = () => {
                   navigate('/');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="mt-2 px-7 py-3 bg-[#11A0AB] hover:bg-[#0E848D] active:scale-95 text-white rounded-full text-xs uppercase tracking-wider font-semibold cursor-pointer transition-all shadow-sm"
+                className="mt-2 px-7 py-3 bg-[#9B1B30] hover:bg-[#831427] active:scale-95 text-white rounded-full text-xs uppercase tracking-wider font-semibold cursor-pointer transition-all shadow-sm"
               >
                 Browse Catalog
               </button>
@@ -212,7 +212,7 @@ export const CartDrawer = () => {
             <button
               type="button"
               onClick={handleProceedToCheckout}
-              className="w-full py-4 bg-[#11A0AB] hover:bg-[#0E848D] active:bg-[#0B6970] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-98 cursor-pointer touch-manipulation"
+              className="w-full py-4 bg-[#9B1B30] hover:bg-[#831427] active:bg-[#6B0E1E] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg shadow-[#9B1B30]/25 transition-all active:scale-98 cursor-pointer touch-manipulation"
             >
               <span>Proceed to Checkout</span>
               <ArrowRight className="w-4 h-4" />

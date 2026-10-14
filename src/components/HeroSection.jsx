@@ -1,129 +1,116 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Sparkles } from 'lucide-react';
-import { FashionPlaceholder } from './Placeholders';
+import React from 'react';
+import { ArrowRight, Sparkles, Heart, ShieldCheck, Truck, Tag } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
-export const HeroSection = ({ onShopNowClick }) => {
-  const { storeConfig } = useStore();
-  const [currentSlide, setCurrentSlide] = useState(0);
+const R2_HERO_BANNER_URL = 'https://pub-ce8688bc6c654bcfb99716f7c9373bcd.r2.dev/radha-sang/hero-banner.jpg';
+const LOCAL_FALLBACK_URL = '/hero-banner.jpg';
 
-  const slides = [
-    {
-      tag: "NEW COLLECTION",
-      titleLine1: "Tradition",
-      titleLine2: "Meets",
-      titleLine3: "Everyday Style",
-      subtitle: "Elegant outfits for every you.",
-      buttonText: "SHOP NOW",
-      scriptNote: "Clothes for a kinder you ♡",
-      placeholderType: "hero_anarkali",
-      targetCategory: "ethnic-wear"
-    },
-    {
-      tag: "ARTISANAL EDIT",
-      titleLine1: "Bespoke",
-      titleLine2: "Linen &",
-      titleLine3: "Pure Silks",
-      subtitle: "Handcrafted comfort that tells a story.",
-      buttonText: "EXPLORE NOW",
-      scriptNote: "Grace in every fold ♡",
-      placeholderType: "ethnic_featured",
-      targetCategory: "kurtas-sets"
-    }
+export const HeroSection = ({ onShopNowClick }) => {
+  const { setActiveCategory } = useStore();
+
+  const categories = [
+    { label: 'All Collection', slug: 'all' },
+    { label: 'Ethnic Wear', slug: 'ethnic-wear' },
+    { label: 'Kurtis', slug: 'kurtas-sets' },
+    { label: 'Co-ord Sets', slug: 'co-ord-sets' },
+    { label: 'Tops', slug: 'tops-western' }
   ];
 
-  // Auto-advance slides periodically
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % slides.length);
-    }, 6500);
-    return () => clearInterval(timer);
-  }, [slides.length]);
-
-  const slide = slides[currentSlide];
+  const handleCategoryClick = (slug) => {
+    if (setActiveCategory) {
+      setActiveCategory(slug);
+    }
+    if (onShopNowClick) {
+      onShopNowClick(slug);
+    }
+    const catalogElement = document.getElementById('catalog-section');
+    if (catalogElement) {
+      catalogElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#ECE4DC] pb-5 pt-3 transition-colors duration-700">
-      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4">
+    <section className="relative w-full bg-[#FAF6F0] py-4 sm:py-6 transition-colors">
+      <div className="max-w-md md:max-w-3xl lg:max-w-4xl mx-auto px-4">
         
-        {/* Main Hero Card Container */}
-        <div className="relative min-h-[460px] sm:min-h-[500px] md:min-h-[520px] rounded-2xl overflow-hidden bg-gradient-to-b from-[#F2EAE2] to-[#E8DDD2] shadow-sm border border-[#DFD1C4]/70 flex flex-col justify-between">
+        {/* 1:1 SQUARE HERO BANNER CONTAINER */}
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#E8DCCF] bg-white group">
           
-          {/* Top content area with 2-column layout on medium+, stacked on mobile */}
-          <div className="grid grid-cols-12 h-full z-10 p-5 sm:p-7 md:p-9 relative">
-            
-            {/* Left Content Column */}
-            <div className="col-span-7 sm:col-span-6 flex flex-col justify-center items-start pr-2 z-20">
+          {/* Main 1:1 Image */}
+          <div className="relative w-full aspect-square overflow-hidden bg-[#F5EEE6]">
+            <img 
+              src={R2_HERO_BANNER_URL} 
+              onError={(e) => {
+                // Fallback to local image if R2 URL has network interruption
+                if (e.target.src !== window.location.origin + LOCAL_FALLBACK_URL) {
+                  e.target.src = LOCAL_FALLBACK_URL;
+                }
+              }}
+              alt="Radha Sang — Ethnic Wear, Kurtis, Co-ord Sets, Tops" 
+              className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+              loading="eager"
+            />
+
+            {/* Subtle Gradient Overlay at bottom for seamless interaction */}
+            <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-t from-black/60 via-black/25 to-transparent pointer-events-none" />
+
+            {/* Floating Action Bar inside Banner on Mobile & Desktop */}
+            <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-3 z-10">
               
-              {/* Tag / Collection badge */}
-              <div className="inline-block mb-2">
-                <span className="text-[9px] sm:text-[10px] tracking-[0.25em] font-semibold text-[#866D5B] uppercase block">
-                  {slide.tag}
+              {/* Studio Pill */}
+              <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#C5A059]/40 shadow-md">
+                <span className="w-2 h-2 rounded-full bg-[#9B1B30] animate-pulse" />
+                <span className="text-[11px] font-semibold tracking-wide text-[#221215]">
+                  Barnala Boutique Collection • Near bansi purri ala
                 </span>
               </div>
 
-              {/* Display Headline matching the exact screenshot */}
-              <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1E1A17] font-normal leading-[1.12] tracking-tight mb-2.5">
-                <span className="block">{slide.titleLine1}</span>
-                <span className="block">{slide.titleLine2}</span>
-                <span className="block italic font-serif">{slide.titleLine3}</span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-xs sm:text-sm text-[#67564A] font-light leading-relaxed mb-5 max-w-[210px] sm:max-w-xs">
-                {slide.subtitle}
-              </p>
-
-              {/* CTA Button matching brand curve-edge button */}
+              {/* Shop Now CTA Button */}
               <button
-                onClick={() => onShopNowClick ? onShopNowClick(slide.targetCategory) : null}
-                className="group inline-flex items-center gap-2.5 bg-[#1C1E21] hover:bg-[#11A0AB] text-white px-5 sm:px-6 py-3 rounded-full text-[11px] sm:text-xs font-semibold tracking-[0.16em] uppercase transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
+                type="button"
+                onClick={() => handleCategoryClick('all')}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-[#9B1B30] hover:bg-[#831427] active:scale-95 text-white text-xs uppercase tracking-widest font-bold shadow-lg shadow-[#9B1B30]/30 transition-all cursor-pointer"
               >
-                <span>{slide.buttonText}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform stroke-[2.5]" />
+                <span>Explore Pieces</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
-            </div>
 
-            {/* Right Visual / Model Placeholder Column */}
-            <div className="col-span-5 sm:col-span-6 relative flex items-center justify-end">
-              
-              {/* Script accent badge floating on top right: "Clothes for a kinder you ♡" */}
-              <div className="absolute -top-1 sm:top-2 right-0 sm:right-2 z-30 pointer-events-none select-none text-right">
-                <p className="font-script text-[#3D332D] text-sm sm:text-base md:text-lg leading-tight transform -rotate-3">
-                  Clothes<br />
-                  for a<br />
-                  kinder you<br />
-                  <span className="inline-block text-xs text-brand-600">♡</span>
-                </p>
-              </div>
-
-              {/* Model & Attire Fashion Placeholder Graphic */}
-              <div className="w-full h-full min-h-[360px] sm:min-h-[420px] rounded-xl overflow-hidden relative shadow-inner">
-                <FashionPlaceholder 
-                  type={slide.placeholderType} 
-                  className="w-full h-full object-cover transition-opacity duration-500"
-                />
-              </div>
             </div>
 
           </div>
 
-          {/* Slider Pagination Dots (bottom center) */}
-          <div className="relative z-20 pb-4 flex items-center justify-center gap-1.5">
-            {slides.map((_, idx) => (
+          {/* Quick Categories Bar underneath matching banner categories */}
+          <div className="p-3 sm:p-4 bg-white border-t border-[#F0E6DA] flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
+            {categories.map((cat) => (
               <button
-                key={idx}
-                onClick={() => setCurrentSlide(idx)}
-                className={`transition-all duration-300 rounded-full h-1.5 ${
-                  currentSlide === idx 
-                    ? 'w-6 bg-[#241F1C]' 
-                    : 'w-1.5 bg-[#9C8B7D]/50 hover:bg-[#9C8B7D]'
-                }`}
-                aria-label={`Slide ${idx + 1}`}
-              />
+                key={cat.slug}
+                type="button"
+                onClick={() => handleCategoryClick(cat.slug)}
+                className="px-3 sm:px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border border-[#E8DCCF] bg-[#FAF8F5] text-[#4A3236] hover:bg-[#9B1B30] hover:text-white hover:border-[#9B1B30] active:scale-95 cursor-pointer shadow-2xs"
+              >
+                {cat.label}
+              </button>
             ))}
           </div>
 
+        </div>
+
+        {/* Feature Badges Strip directly tuned to the boutique banner */}
+        <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3 text-center text-xs">
+          <div className="p-2.5 sm:p-3 rounded-xl bg-white border border-[#EAE0D4] shadow-2xs space-y-0.5">
+            <span className="text-[#C5A059] block font-serif font-bold text-sm sm:text-base">✨ Artisanal</span>
+            <span className="text-[10px] sm:text-[11px] text-[#6E565B] block font-medium">Zari & Handcrafted</span>
+          </div>
+
+          <div className="p-2.5 sm:p-3 rounded-xl bg-white border border-[#EAE0D4] shadow-2xs space-y-0.5">
+            <span className="text-[#9B1B30] block font-serif font-bold text-sm sm:text-base">💸 Best Price</span>
+            <span className="text-[10px] sm:text-[11px] text-[#6E565B] block font-medium">Guaranteed Quality</span>
+          </div>
+
+          <div className="p-2.5 sm:p-3 rounded-xl bg-white border border-[#EAE0D4] shadow-2xs space-y-0.5">
+            <span className="text-[#C5A059] block font-serif font-bold text-sm sm:text-base">📦 Pan India</span>
+            <span className="text-[10px] sm:text-[11px] text-[#6E565B] block font-medium">Express Doorstep</span>
+          </div>
         </div>
 
       </div>
