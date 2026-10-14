@@ -164,7 +164,7 @@ export const ProductDetailModal = () => {
             
             <div>
               <p className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#866D5B] mb-1">
-                Kundan Works Exclusive
+                Radha Sang Exclusive
               </p>
               <h2 className="font-serif text-xl sm:text-2xl text-[#221B16] font-normal leading-snug">
                 {selectedProduct.title}

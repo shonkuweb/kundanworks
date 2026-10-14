@@ -35,7 +35,7 @@ export const OrderSection = () => {
   const [searchError, setSearchError] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  const rawPhone = storeConfig?.whatsappNumber || '8511556155';
+  const rawPhone = storeConfig?.whatsappNumber || '9855786123';
   const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
   const whatsappPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
@@ -195,7 +195,7 @@ export const OrderSection = () => {
                       </h2>
 
                       <p className="text-xs sm:text-sm text-emerald-50/90 font-light mt-1.5 max-w-lg leading-relaxed">
-                        Your handcrafted Kundan Works pieces have arrived safely. We hope you cherish every thread of your new ensemble!
+                        Your handcrafted Radha Sang pieces have arrived safely. We hope you cherish every thread of your new ensemble!
                       </p>
                     </div>
                   </div>
@@ -273,17 +273,17 @@ export const OrderSection = () => {
                   </div>
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-[#1C1E21]">
-                      Thank You for Choosing Kundan Works!
+                      Thank You for Choosing Radha Sang!
                     </h4>
                     <p className="text-[11px] text-neutral-600 mt-0.5">
-                      Need alterations, custom styling advice, or want to share a look photo with us?
+                      Need alterations, styling advice, or assistance from our Barnala boutique?
                     </p>
                   </div>
                 </div>
 
                 <a
                   href={`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(
-                    `Hello Kundan Works! I received my order #${searchedOrder.id} and would love to share feedback / get styling assistance.`
+                    `Hello Radha Sang! I received my order #${searchedOrder.id} and would love to share feedback / get styling assistance.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

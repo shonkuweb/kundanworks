@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Elegant SVG placeholders tuned directly to the Kundan Works luxury fashion palette
+// Elegant SVG placeholders tuned directly to the Radha Sang fashion palette
 export const FashionPlaceholder = ({ 
   type = 'ethnic_featured', 
   className = '', 
@@ -190,7 +190,7 @@ export const FashionPlaceholder = ({
         <div className={`w-full h-full bg-[#EFE9E2] flex items-center justify-center ${className}`}>
           <div className="text-center p-4">
             <span className="text-2xl text-brand-600 block mb-1">✦</span>
-            <span className="text-xs uppercase tracking-widest text-brand-700 font-serif">Kundan Works</span>
+            <span className="text-xs uppercase tracking-widest text-brand-700 font-serif">Radha Sang</span>
           </div>
         </div>
       );

@@ -153,7 +153,7 @@ export const ProductCatalog = () => {
                   <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <p className="text-[10px] tracking-wider uppercase text-neutral-400 font-medium mb-1 line-clamp-1">
-                        Kundan Works • {(product.category || product.categorySlug || 'Collection').toString().replace(/-/g, ' ')}
+                        Radha Sang • {(product.category || product.categorySlug || 'Collection').toString().replace(/-/g, ' ')}
                       </p>
                       
                       {/* Title - Links to dedicated product page */}

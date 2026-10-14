@@ -84,10 +84,33 @@ export const StoreProvider = ({ children }) => {
         if (
           parsed.whatsappNumber === '+91 98765 43210' ||
           parsed.whatsappNumber === '918511556115' ||
-          parsed.whatsappNumber === '+91 85115 56115'
+          parsed.whatsappNumber === '+91 85115 56115' ||
+          parsed.whatsappNumber === '+91 85115 56155' ||
+          parsed.whatsappNumber === '8511556155' ||
+          !parsed.whatsappNumber
         ) {
-          parsed.whatsappNumber = '+91 85115 56155';
+          parsed.whatsappNumber = '+91 98557 86123';
         }
+        if (
+          !parsed.storeName ||
+          parsed.storeName === 'KUNDAN WORKS' ||
+          parsed.storeName === 'Kundan Work Creation' ||
+          parsed.storeName === 'Kundan Works'
+        ) {
+          parsed.storeName = 'RADHA SANG';
+        }
+        if (
+          !parsed.tagline ||
+          parsed.tagline === 'WEAR YOUR STORY' ||
+          parsed.tagline === 'Artisanal Ethnic & Western Wear'
+        ) {
+          parsed.tagline = 'GIRLISH & LADIES FASHION HUB';
+        }
+        if (!parsed.subHeading || parsed.subHeading === 'Tradition Meets Everyday Style') {
+          parsed.subHeading = 'Kurti | Cord Set | Tops';
+        }
+        parsed.location = 'Near bansi purri ala, Barnala';
+        parsed.instagram = 'radhasang_barnala';
         return parsed;
       }
       return INITIAL_CONFIG;
@@ -568,7 +591,7 @@ export const StoreProvider = ({ children }) => {
 
   const createOrder = async (orderData) => {
     const stage1 = ORDER_STAGES[0];
-    const rawId = orderData.id || `KW-${Math.floor(100000 + Math.random() * 900000)}`;
+    const rawId = orderData.id || `RS-${Math.floor(100000 + Math.random() * 900000)}`;
     const orderId = String(rawId).replace(/^#/, '').trim();
 
     const newOrder = {
@@ -586,8 +609,11 @@ export const StoreProvider = ({ children }) => {
       statusTitle: stage1.label,
       statusDescription: stage1.desc,
       courierName: 'Boutique Express Logistics',
-      awbNumber: `KW-EXP-${Math.floor(100000 + Math.random() * 900000)}`,
-      estimatedDelivery: 'Estimated 4-6 business days',
+      awbNumber: `RS-EXP-${Math.floor(100000 + Math.random() * 900000)}`,
+      estimatedDelivery: 'Estimated 3-5 business days',
+      paymentMethod: orderData.paymentMethod || 'UPI',
+      paymentStatus: orderData.paymentStatus || 'Paid (Demo Gateway)',
+      transactionId: orderData.transactionId || `TXN_${Date.now().toString(36).toUpperCase()}`,
       items: orderData.items || [],
       subtotal: orderData.subtotal || orderData.total || 0,
       total: orderData.total || orderData.subtotal || 0,

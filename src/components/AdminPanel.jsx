@@ -396,7 +396,7 @@ export const AdminPanel = ({ onClose }) => {
       .map(i => `• ${i.product?.title || i.title || 'Item'} (x${i.quantity || 1})`)
       .join('\n');
 
-    const msg = `Hello ${order.customerName || 'Customer'}! Thank you for ordering from Kundan Works (Order #${order.id}).\n\nItems:\n${itemsText}\n\nTotal: ₹${(order.total || 0).toLocaleString('en-IN')}\nStatus: ${order.statusTitle || 'Processing'}\n\nWe are preparing your package!`;
+    const msg = `Hello ${order.customerName || 'Customer'}! Thank you for ordering from Radha Sang (Order #${order.id}).\n\nItems:\n${itemsText}\n\nTotal: ₹${(order.total || 0).toLocaleString('en-IN')}\nStatus: ${order.statusTitle || 'Processing'}\n\nWe are preparing your package!`;
     
     const url = `https://wa.me/${phoneWithCode}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
@@ -543,7 +543,7 @@ export const AdminPanel = ({ onClose }) => {
             <div className="bg-white/10 p-1.5 rounded-full backdrop-blur-xs">
               <img 
                 src="/logo.png" 
-                alt="Kundan Works" 
+                alt="Radha Sang" 
                 className="h-7 w-auto object-contain" 
               />
             </div>
@@ -1081,14 +1081,14 @@ export const AdminPanel = ({ onClose }) => {
                     <Phone className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
                     <input
                       type="text"
-                      value={storeConfig.whatsappNumber || '8511556155'}
+                      value={storeConfig.whatsappNumber || '9855786123'}
                       onChange={(e) => setStoreConfig(prev => ({ ...prev, whatsappNumber: e.target.value }))}
                       className="w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
-                      placeholder="e.g. 8511556155"
+                      placeholder="e.g. 9855786123"
                     />
                   </div>
                   <p className="text-[11px] text-neutral-400 mt-1">
-                    Shoppers will click "Buy via WhatsApp" which directs directly to this phone.
+                    Direct customer assistance & order inquiry phone number.
                   </p>
                 </div>
 
@@ -1099,7 +1099,7 @@ export const AdminPanel = ({ onClose }) => {
                   </label>
                   <input
                     type="text"
-                    value={storeConfig.storeName || 'Kundan Work Creation'}
+                    value={storeConfig.storeName || 'Radha Sang'}
                     onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
                     className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
                   />
@@ -1108,12 +1108,25 @@ export const AdminPanel = ({ onClose }) => {
                 {/* Tagline */}
                 <div>
                   <label className="block text-neutral-700 font-semibold mb-1">
-                    Brand Tagline
+                    Brand Tagline / Subtitle
                   </label>
                   <input
                     type="text"
-                    value={storeConfig.tagline || 'Artisanal Ethnic & Western Wear'}
+                    value={storeConfig.tagline || 'Girlish & Ladies Fashion Hub'}
                     onChange={(e) => setStoreConfig(prev => ({ ...prev, tagline: e.target.value }))}
+                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
+                  />
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="block text-neutral-700 font-semibold mb-1">
+                    Boutique Location / Address
+                  </label>
+                  <input
+                    type="text"
+                    value={storeConfig.location || 'Near bansi purri ala, Barnala'}
+                    onChange={(e) => setStoreConfig(prev => ({ ...prev, location: e.target.value }))}
                     className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#11A0AB]/30"
                   />
                 </div>

@@ -15,8 +15,8 @@ export const ContactModal = () => {
   const [isSuccessAnimating, setIsSuccessAnimating] = useState(false);
   const [progressWidth, setProgressWidth] = useState(0);
 
-  // Business WhatsApp number: 8511556155
-  const BUSINESS_WHATSAPP_NUMBER = '918511556155';
+  // Business WhatsApp number: 9855786123 (Radha Sang Barnala)
+  const BUSINESS_WHATSAPP_NUMBER = '919855786123';
 
   useEffect(() => {
     if (!isContactOpen) {
@@ -46,7 +46,7 @@ export const ContactModal = () => {
 
     // Prepare formatted WhatsApp message
     const formattedMessage = 
-`✨ *NEW INQUIRY - KUNDAN WORKS* ✨
+`✨ *NEW INQUIRY - RADHA SANG* ✨
 ━━━━━━━━━━━━━━━━━━━━
 👤 *Customer Name:* ${formData.name.trim()}
 📱 *Phone Number:* ${formData.phone.trim()}
@@ -54,7 +54,7 @@ export const ContactModal = () => {
 💬 *Message:*
 ${formData.message.trim()}
 ━━━━━━━━━━━━━━━━━━━━
-_Sent via Kundan Works Boutique Portal_`;
+_Sent via Radha Sang Boutique Portal (Barnala)_`;
 
     const whatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(formattedMessage)}`;
 
@@ -102,7 +102,7 @@ _Sent via Kundan Works Boutique Portal_`;
                 Message Received!
               </h3>
               <p className="text-xs text-neutral-600 mt-1">
-                Redirecting to Kundan Works WhatsApp in a moment...
+                Redirecting to Radha Sang WhatsApp in a moment...
               </p>
             </div>
 
@@ -122,10 +122,13 @@ _Sent via Kundan Works Boutique Portal_`;
                 <LotusIcon className="w-8 h-6 text-brand-700" />
               </div>
               <h3 className="font-serif text-xl font-medium text-[#221B16]">
-                Contact Kundan Works
+                Contact Radha Sang
               </h3>
               <p className="text-[11px] text-[#796455] font-light mt-0.5">
-                Stylist Desk & Client Concierge • WhatsApp: <strong>8511556155</strong>
+                Girlish & Ladies Fashion Hub • WhatsApp: <strong>9855786123</strong>
+              </p>
+              <p className="text-[10px] text-[#11A0AB] mt-0.5">
+                📍 Near bansi purri ala, Barnala • @radhasang_barnala
               </p>
             </div>
 
@@ -154,7 +157,7 @@ _Sent via Kundan Works Boutique Portal_`;
                 <input
                   type="tel"
                   required
-                  placeholder="e.g. 9876543210"
+                  placeholder="e.g. 9855786123"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                   className="w-full p-3 bg-white border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-brand-700"
@@ -169,7 +172,7 @@ _Sent via Kundan Works Boutique Portal_`;
                 <textarea
                   rows={3}
                   required
-                  placeholder="Tell us what you are looking for (styling, custom design, bridal, boutique inquiry)..."
+                  placeholder="Inquire about Kurti, Cord Sets, Tops, or custom orders..."
                   value={formData.message}
                   onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                   className="w-full p-3 bg-white border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-brand-700"
@@ -186,7 +189,7 @@ _Sent via Kundan Works Boutique Portal_`;
                   <span>Send via WhatsApp</span>
                 </button>
                 <p className="text-[10px] text-center text-neutral-500 mt-2">
-                  Opens directly to WhatsApp with <strong>+91 85115 56155</strong>
+                  Opens directly to WhatsApp with <strong>+91 98557 86123</strong>
                 </p>
               </div>
             </form>

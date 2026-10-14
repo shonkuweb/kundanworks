@@ -90,7 +90,7 @@ export const Header = () => {
           >
             <img 
               src="/logo.png" 
-              alt={storeConfig.storeName || 'Kundan Work Creation'} 
+              alt={storeConfig.storeName || 'Radha Sang'} 
               className="h-11 sm:h-14 md:h-16 max-w-[190px] sm:max-w-[240px] md:max-w-[270px] object-contain group-hover:scale-105 transition-transform duration-300" 
             />
           </div>
@@ -180,7 +180,7 @@ export const Header = () => {
                 >
                   <img 
                     src="/logo.png" 
-                    alt="Kundan Work Creation" 
+                    alt="Radha Sang" 
                     className="h-9 w-auto object-contain"
                   />
                 </div>
@@ -235,7 +235,7 @@ export const Header = () => {
                   className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-[#3E3834] hover:bg-[#F2EAE0] transition-colors flex items-center gap-2.5"
                 >
                   <FileText className="w-4 h-4 text-brand-600" />
-                  <span>Orders & Payment Gateway Status</span>
+                  <span>Orders & Live Tracking</span>
                 </button>
 
                 <button
@@ -246,8 +246,18 @@ export const Header = () => {
                   className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-[#3E3834] hover:bg-[#F2EAE0] transition-colors flex items-center gap-2.5"
                 >
                   <Phone className="w-4 h-4 text-brand-600" />
-                  <span>Contact Kundan Works</span>
+                  <span>Contact Radha Sang</span>
                 </button>
+
+                {/* Boutique Barnala Info Card */}
+                <div className="mt-4 p-3 rounded-xl bg-[#F4ECE3] border border-[#E7DCCE] text-xs space-y-1">
+                  <div className="font-semibold text-[#2B2522] flex items-center gap-1.5">
+                    <span>📍 Barnala Boutique Studio</span>
+                  </div>
+                  <p className="text-[11px] text-[#67564A]">Near bansi purri ala, Barnala</p>
+                  <p className="text-[11px] text-[#67564A]">WhatsApp / Call: <strong className="text-[#1C1E21]">+91 98557 86123</strong></p>
+                  <p className="text-[11px] text-[#11A0AB] font-medium">Instagram: @radhasang_barnala</p>
+                </div>
               </div>
             </div>
 
@@ -263,7 +273,7 @@ export const Header = () => {
                 <span>Open Admin Portal</span>
               </button>
               <p className="text-[10px] text-center text-neutral-500 mt-2.5 font-light">
-                Manage Products & Orders • Kundan Works
+                Manage Products & Orders • Radha Sang
               </p>
             </div>
           </div>
