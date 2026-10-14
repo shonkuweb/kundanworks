@@ -5,7 +5,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
-import { initDB, query } from './db.js';
+import { initDB, query, isDBConnected } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +18,13 @@ const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+// Ensure data backup directory exists
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+const productsBackupFile = path.join(dataDir, 'products_backup.json');
 
 // Multer storage setup for image uploads
 const storage = multer.diskStorage({
@@ -32,16 +39,40 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 25 * 1024 * 1024 } // 25MB max per image
+  limits: { fileSize: 30 * 1024 * 1024 } // 30MB max per image
 });
 
 // Middlewares
 app.use(cors());
-app.use(express.json({ limit: '30mb' }));
-app.use(express.urlencoded({ extended: true, limit: '30mb' }));
+app.use(express.json({ limit: '35mb' }));
+app.use(express.urlencoded({ extended: true, limit: '35mb' }));
 
 // Serve uploaded images statically
 app.use('/uploads', express.static(uploadDir));
+
+// Helper: Backup products to disk as emergency fail-safe
+function backupProductsToDisk(products) {
+  try {
+    if (Array.isArray(products)) {
+      fs.writeFileSync(productsBackupFile, JSON.stringify(products, null, 2), 'utf8');
+    }
+  } catch (err) {
+    console.warn('[Backup] Failed to backup products to disk:', err.message);
+  }
+}
+
+// Helper: Read backup products if DB is temporarily offline
+function readBackupProductsFromDisk() {
+  try {
+    if (fs.existsSync(productsBackupFile)) {
+      const content = fs.readFileSync(productsBackupFile, 'utf8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.warn('[Backup] Failed to read backup products:', err.message);
+  }
+  return [];
+}
 
 // ==========================================
 // 1. Health & Status
@@ -49,9 +80,22 @@ app.use('/uploads', express.static(uploadDir));
 app.get('/api/healthz', async (req, res) => {
   try {
     await query('SELECT 1');
-    res.json({ status: 'healthy', database: 'connected', time: new Date().toISOString() });
+    const pCountRes = await query('SELECT COUNT(*) FROM products');
+    const oCountRes = await query('SELECT COUNT(*) FROM orders');
+    res.json({
+      status: 'healthy',
+      database: 'connected',
+      productsCount: parseInt(pCountRes.rows[0].count, 10),
+      ordersCount: parseInt(oCountRes.rows[0].count, 10),
+      time: new Date().toISOString()
+    });
   } catch (error) {
-    res.status(500).json({ status: 'unhealthy', error: error.message });
+    res.json({
+      status: 'degraded',
+      database: 'offline',
+      error: error.message,
+      time: new Date().toISOString()
+    });
   }
 });
 
@@ -66,12 +110,13 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     const fileUrl = `/uploads/${req.file.filename}`;
     res.json({ url: fileUrl, filename: req.file.filename });
   } catch (error) {
+    console.error('Upload error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
 // ==========================================
-// 3. Products Endpoints
+// 3. Products Endpoints (PostgreSQL Production)
 // ==========================================
 
 // GET all products
@@ -80,25 +125,38 @@ app.get('/api/products', async (req, res) => {
     const result = await query(`
       SELECT 
         id, 
-        name, 
-        subtitle, 
-        price::float as price, 
-        category, 
-        category_id as "categoryId", 
-        description, 
-        stock, 
-        in_stock as "inStock", 
-        images, 
-        sizes, 
-        created_at as "createdAt", 
+        COALESCE(name, title, 'Untitled Piece') as name,
+        COALESCE(title, name, 'Untitled Piece') as title,
+        COALESCE(subtitle, '') as subtitle,
+        COALESCE(price, 0)::float as price,
+        COALESCE(original_price, price, 0)::float as "originalPrice",
+        COALESCE(category, 'Collection') as category,
+        COALESCE(category_id, category_slug, '') as "categoryId",
+        COALESCE(category_slug, category_id, '') as "categorySlug",
+        COALESCE(description, '') as description,
+        COALESCE(stock, 10)::int as stock,
+        COALESCE(in_stock, true) as "inStock",
+        COALESCE(images, '[]'::jsonb) as images,
+        COALESCE(image_url, '') as "imageUrl",
+        COALESCE(sizes, '["Free Size"]'::jsonb) as sizes,
+        COALESCE(tag, '') as tag,
+        COALESCE(badge_color, '') as "badgeColor",
+        created_at as "createdAt",
         updated_at as "updatedAt"
       FROM products 
       ORDER BY created_at DESC
     `);
+    
+    // Backup successful fetch to disk
+    backupProductsToDisk(result.rows);
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    console.error('[Products] Error querying PostgreSQL:', error.message);
+    const diskFallback = readBackupProductsFromDisk();
+    if (diskFallback.length > 0) {
+      return res.json(diskFallback);
+    }
+    res.status(500).json({ error: 'Failed to fetch products from database' });
   }
 });
 
@@ -109,17 +167,23 @@ app.get('/api/products/:id', async (req, res) => {
     const result = await query(`
       SELECT 
         id, 
-        name, 
-        subtitle, 
-        price::float as price, 
-        category, 
-        category_id as "categoryId", 
-        description, 
-        stock, 
-        in_stock as "inStock", 
-        images, 
-        sizes, 
-        created_at as "createdAt", 
+        COALESCE(name, title, 'Untitled Piece') as name,
+        COALESCE(title, name, 'Untitled Piece') as title,
+        COALESCE(subtitle, '') as subtitle,
+        COALESCE(price, 0)::float as price,
+        COALESCE(original_price, price, 0)::float as "originalPrice",
+        COALESCE(category, 'Collection') as category,
+        COALESCE(category_id, category_slug, '') as "categoryId",
+        COALESCE(category_slug, category_id, '') as "categorySlug",
+        COALESCE(description, '') as description,
+        COALESCE(stock, 10)::int as stock,
+        COALESCE(in_stock, true) as "inStock",
+        COALESCE(images, '[]'::jsonb) as images,
+        COALESCE(image_url, '') as "imageUrl",
+        COALESCE(sizes, '["Free Size"]'::jsonb) as sizes,
+        COALESCE(tag, '') as tag,
+        COALESCE(badge_color, '') as "badgeColor",
+        created_at as "createdAt",
         updated_at as "updatedAt"
       FROM products 
       WHERE id = $1
@@ -130,7 +194,7 @@ app.get('/api/products/:id', async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error('[Products] Error fetching single product:', error.message);
     res.status(500).json({ error: 'Failed to fetch product' });
   }
 });
@@ -141,47 +205,107 @@ app.post('/api/products', async (req, res) => {
     const {
       id = `prod_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       name,
+      title,
       subtitle = '',
       price = 0,
-      category = 'Uncategorized',
+      originalPrice,
+      category = 'Collection',
       categoryId = '',
+      categorySlug = '',
       description = '',
       stock = 10,
       inStock = true,
       images = [],
-      sizes = ['Free Size']
+      imageUrl = '',
+      sizes = ['Free Size'],
+      tag = '',
+      badgeColor = ''
     } = req.body;
 
-    if (!name || price === undefined) {
-      return res.status(400).json({ error: 'Product name and price are required' });
+    const prodName = (name || title || 'Untitled Piece').trim();
+    if (!prodName) {
+      return res.status(400).json({ error: 'Product name is required' });
     }
 
-    const calculatedInStock = stock > 0 && inStock;
+    const regPrice = Number(price) || 0;
+    const origPrice = originalPrice !== undefined ? Number(originalPrice) : regPrice;
+    const numStock = Math.max(0, parseInt(stock, 10) || 0);
+    const calculatedInStock = numStock > 0 && (inStock !== false);
+
+    const safeImages = Array.isArray(images) ? images : (imageUrl ? [imageUrl] : []);
+    const primaryImg = safeImages[0] || imageUrl || '';
+    const safeSizes = Array.isArray(sizes) && sizes.length > 0 ? sizes : ['Free Size'];
+    const safeCatId = categoryId || categorySlug || '';
+    const safeCatSlug = categorySlug || categoryId || '';
 
     const result = await query(`
       INSERT INTO products (
-        id, name, subtitle, price, category, category_id, description, stock, in_stock, images, sizes, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+        id, 
+        name, 
+        title, 
+        subtitle, 
+        price, 
+        original_price, 
+        category, 
+        category_id, 
+        category_slug, 
+        description, 
+        stock, 
+        in_stock, 
+        images, 
+        image_url, 
+        sizes, 
+        tag, 
+        badge_color, 
+        created_at, 
+        updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, NOW(), NOW())
       RETURNING 
-        id, name, subtitle, price::float as price, category, category_id as "categoryId", description, stock, in_stock as "inStock", images, sizes, created_at as "createdAt", updated_at as "updatedAt"
+        id, 
+        name, 
+        title, 
+        subtitle, 
+        price::float as price, 
+        original_price::float as "originalPrice", 
+        category, 
+        category_id as "categoryId", 
+        category_slug as "categorySlug", 
+        description, 
+        stock, 
+        in_stock as "inStock", 
+        images, 
+        image_url as "imageUrl", 
+        sizes, 
+        tag, 
+        badge_color as "badgeColor", 
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
     `, [
       id,
-      name,
+      prodName,
+      prodName,
       subtitle,
-      Number(price),
+      regPrice,
+      origPrice,
       category,
-      categoryId,
+      safeCatId,
+      safeCatSlug,
       description,
-      parseInt(stock, 10) || 0,
+      numStock,
       calculatedInStock,
-      JSON.stringify(Array.isArray(images) ? images : []),
-      JSON.stringify(Array.isArray(sizes) ? sizes : ['Free Size'])
+      JSON.stringify(safeImages),
+      primaryImg,
+      JSON.stringify(safeSizes),
+      tag,
+      badgeColor
     ]);
 
-    res.status(201).json(result.rows[0]);
+    const created = result.rows[0];
+    console.log(`✅ [Products] Created product "${created.name}" (ID: ${created.id}) in PostgreSQL`);
+    res.status(201).json(created);
   } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(500).json({ error: 'Failed to create product' });
+    console.error('[Products] Error creating product:', error);
+    res.status(500).json({ error: `Failed to create product: ${error.message}` });
   }
 });
 
@@ -191,15 +315,21 @@ app.put('/api/products/:id', async (req, res) => {
     const { id } = req.params;
     const {
       name,
+      title,
       subtitle,
       price,
+      originalPrice,
       category,
       categoryId,
+      categorySlug,
       description,
       stock,
       inStock,
       images,
-      sizes
+      imageUrl,
+      sizes,
+      tag,
+      badgeColor
     } = req.body;
 
     const existing = await query('SELECT * FROM products WHERE id = $1', [id]);
@@ -208,43 +338,81 @@ app.put('/api/products/:id', async (req, res) => {
     }
 
     const current = existing.rows[0];
-    const newStock = stock !== undefined ? parseInt(stock, 10) : current.stock;
+    const newStock = stock !== undefined ? Math.max(0, parseInt(stock, 10) || 0) : current.stock;
     const newInStock = inStock !== undefined ? inStock : (newStock > 0);
+    const prodName = name || title || current.name || current.title;
+
+    let safeImages = undefined;
+    if (images !== undefined) {
+      safeImages = Array.isArray(images) ? images : [];
+    }
+    const newImageUrl = imageUrl !== undefined ? imageUrl : (safeImages && safeImages[0] ? safeImages[0] : current.image_url);
 
     const result = await query(`
       UPDATE products SET
         name = COALESCE($1, name),
+        title = COALESCE($1, title),
         subtitle = COALESCE($2, subtitle),
         price = COALESCE($3, price),
-        category = COALESCE($4, category),
-        category_id = COALESCE($5, category_id),
-        description = COALESCE($6, description),
-        stock = $7,
-        in_stock = $8,
-        images = COALESCE($9, images),
-        sizes = COALESCE($10, sizes),
+        original_price = COALESCE($4, original_price),
+        category = COALESCE($5, category),
+        category_id = COALESCE($6, category_id),
+        category_slug = COALESCE($7, category_slug),
+        description = COALESCE($8, description),
+        stock = $9,
+        in_stock = $10,
+        images = COALESCE($11, images),
+        image_url = COALESCE($12, image_url),
+        sizes = COALESCE($13, sizes),
+        tag = COALESCE($14, tag),
+        badge_color = COALESCE($15, badge_color),
         updated_at = NOW()
-      WHERE id = $11
+      WHERE id = $16
       RETURNING 
-        id, name, subtitle, price::float as price, category, category_id as "categoryId", description, stock, in_stock as "inStock", images, sizes, created_at as "createdAt", updated_at as "updatedAt"
+        id, 
+        name, 
+        title, 
+        subtitle, 
+        price::float as price, 
+        original_price::float as "originalPrice", 
+        category, 
+        category_id as "categoryId", 
+        category_slug as "categorySlug", 
+        description, 
+        stock, 
+        in_stock as "inStock", 
+        images, 
+        image_url as "imageUrl", 
+        sizes, 
+        tag, 
+        badge_color as "badgeColor", 
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
     `, [
-      name,
+      prodName,
       subtitle,
       price !== undefined ? Number(price) : null,
+      originalPrice !== undefined ? Number(originalPrice) : null,
       category,
       categoryId,
+      categorySlug,
       description,
       newStock,
       newStock > 0 && newInStock,
-      images !== undefined ? JSON.stringify(images) : null,
+      safeImages !== undefined ? JSON.stringify(safeImages) : null,
+      newImageUrl,
       sizes !== undefined ? JSON.stringify(sizes) : null,
+      tag,
+      badgeColor,
       id
     ]);
 
-    res.json(result.rows[0]);
+    const updated = result.rows[0];
+    console.log(`✅ [Products] Updated product "${updated.name}" (ID: ${updated.id}) in PostgreSQL`);
+    res.json(updated);
   } catch (error) {
-    console.error('Error updating product:', error);
-    res.status(500).json({ error: 'Failed to update product' });
+    console.error('[Products] Error updating product:', error);
+    res.status(500).json({ error: `Failed to update product: ${error.message}` });
   }
 });
 
@@ -256,9 +424,10 @@ app.delete('/api/products/:id', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Product not found' });
     }
+    console.log(`✅ [Products] Deleted product ID ${id} from PostgreSQL`);
     res.json({ success: true, id });
   } catch (error) {
-    console.error('Error deleting product:', error);
+    console.error('[Products] Error deleting product:', error);
     res.status(500).json({ error: 'Failed to delete product' });
   }
 });
@@ -283,7 +452,7 @@ app.get('/api/categories', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error('[Categories] Error fetching categories:', error.message);
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
 });
@@ -313,7 +482,7 @@ app.post('/api/categories', async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Error creating category:', error);
+    console.error('[Categories] Error creating category:', error);
     res.status(500).json({ error: 'Failed to create category' });
   }
 });
@@ -339,7 +508,7 @@ app.put('/api/categories/:id', async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error updating category:', error);
+    console.error('[Categories] Error updating category:', error);
     res.status(500).json({ error: 'Failed to update category' });
   }
 });
@@ -354,7 +523,7 @@ app.delete('/api/categories/:id', async (req, res) => {
     }
     res.json({ success: true, id });
   } catch (error) {
-    console.error('Error deleting category:', error);
+    console.error('[Categories] Error deleting category:', error);
     res.status(500).json({ error: 'Failed to delete category' });
   }
 });
@@ -374,11 +543,17 @@ app.get('/api/orders', async (req, res) => {
         customer_location as "customerLocation", 
         items, 
         total_price::float as "totalPrice", 
+        payment_method as "paymentMethod",
+        payment_status as "paymentStatus",
+        transaction_id as "transactionId",
         decision, 
         stage, 
         status, 
         status_title as "statusTitle", 
         status_description as "statusDescription", 
+        courier_name as "courierName",
+        awb_number as "awbNumber",
+        estimated_delivery as "estimatedDelivery",
         created_at as "createdAt", 
         updated_at as "updatedAt"
       FROM orders 
@@ -386,12 +561,12 @@ app.get('/api/orders', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching orders:', error);
+    console.error('[Orders] Error fetching orders:', error.message);
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
 
-// TRACKING ENDPOINT: GET order by ID or Phone (for Customer Order Tracking Page)
+// TRACKING ENDPOINT: GET order by ID or Phone
 app.get('/api/orders/:identifier', async (req, res) => {
   try {
     const { identifier } = req.params;
@@ -405,11 +580,17 @@ app.get('/api/orders/:identifier', async (req, res) => {
         customer_location as "customerLocation", 
         items, 
         total_price::float as "totalPrice", 
+        payment_method as "paymentMethod",
+        payment_status as "paymentStatus",
+        transaction_id as "transactionId",
         decision, 
         stage, 
         status, 
         status_title as "statusTitle", 
         status_description as "statusDescription", 
+        courier_name as "courierName",
+        awb_number as "awbNumber",
+        estimated_delivery as "estimatedDelivery",
         created_at as "createdAt", 
         updated_at as "updatedAt"
       FROM orders 
@@ -427,29 +608,31 @@ app.get('/api/orders/:identifier', async (req, res) => {
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    // Return the latest matching order
     res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error tracking order:', error);
+    console.error('[Orders] Error tracking order:', error.message);
     res.status(500).json({ error: 'Failed to track order' });
   }
 });
 
-// CREATE order (called immediately upon WhatsApp checkout)
+// CREATE order
 app.post('/api/orders', async (req, res) => {
   try {
     const {
-      id = `KW-${Math.floor(100000 + Math.random() * 900000)}`,
+      id = `RS-${Math.floor(100000 + Math.random() * 900000)}`,
       customerName,
       customerPhone,
       customerLocation = '',
       items = [],
       totalPrice = 0,
+      paymentMethod = 'UPI',
+      paymentStatus = 'Completed',
+      transactionId = '',
       decision = 'pending',
       stage = 1,
       status = 'Order Placed',
       statusTitle = 'Order Placed & Logged',
-      statusDescription = 'Your order has been recorded. Our boutique team will review and confirm availability.'
+      statusDescription = 'Your order has been recorded in the Radha Sang boutique system.'
     } = req.body;
 
     if (!customerName || !customerPhone) {
@@ -458,10 +641,40 @@ app.post('/api/orders', async (req, res) => {
 
     const result = await query(`
       INSERT INTO orders (
-        id, customer_name, customer_phone, customer_location, items, total_price, decision, stage, status, status_title, status_description, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+        id, 
+        customer_name, 
+        customer_phone, 
+        customer_location, 
+        items, 
+        total_price, 
+        payment_method,
+        payment_status,
+        transaction_id,
+        decision, 
+        stage, 
+        status, 
+        status_title, 
+        status_description, 
+        created_at, 
+        updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())
       RETURNING 
-        id, customer_name as "customerName", customer_phone as "customerPhone", customer_location as "customerLocation", items, total_price::float as "totalPrice", decision, stage, status, status_title as "statusTitle", status_description as "statusDescription", created_at as "createdAt", updated_at as "updatedAt"
+        id, 
+        customer_name as "customerName", 
+        customer_phone as "customerPhone", 
+        customer_location as "customerLocation", 
+        items, 
+        total_price::float as "totalPrice", 
+        payment_method as "paymentMethod",
+        payment_status as "paymentStatus",
+        transaction_id as "transactionId",
+        decision, 
+        stage, 
+        status, 
+        status_title as "statusTitle", 
+        status_description as "statusDescription", 
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
     `, [
       id,
       customerName,
@@ -469,6 +682,9 @@ app.post('/api/orders', async (req, res) => {
       customerLocation,
       JSON.stringify(items),
       Number(totalPrice),
+      paymentMethod,
+      paymentStatus,
+      transactionId,
       decision,
       parseInt(stage, 10) || 1,
       status,
@@ -478,7 +694,7 @@ app.post('/api/orders', async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Error creating order:', error);
+    console.error('[Orders] Error creating order:', error);
     res.status(500).json({ error: 'Failed to create order' });
   }
 });
@@ -487,7 +703,7 @@ app.post('/api/orders', async (req, res) => {
 // When decision changes to 'accepted', automatically deducts stock in products table!
 app.put('/api/orders/:id', async (req, res) => {
   const { id } = req.params;
-  const { decision, stage, status, statusTitle, statusDescription } = req.body;
+  const { decision, stage, status, statusTitle, statusDescription, courierName, awbNumber, estimatedDelivery } = req.body;
 
   try {
     const existingOrderRes = await query('SELECT * FROM orders WHERE id = $1', [id]);
@@ -505,14 +721,17 @@ app.put('/api/orders/:id', async (req, res) => {
     if (prevDecision !== 'accepted' && nextDecision === 'accepted' && Array.isArray(items)) {
       for (const item of items) {
         const qty = parseInt(item.quantity, 10) || 1;
-        await query(`
-          UPDATE products 
-          SET 
-            stock = GREATEST(0, stock - $1),
-            in_stock = CASE WHEN (stock - $1) > 0 THEN true ELSE false END,
-            updated_at = NOW()
-          WHERE id = $2
-        `, [qty, item.id]);
+        const itemId = item.product?.id || item.id;
+        if (itemId) {
+          await query(`
+            UPDATE products 
+            SET 
+              stock = GREATEST(0, stock - $1),
+              in_stock = CASE WHEN (stock - $1) > 0 THEN true ELSE false END,
+              updated_at = NOW()
+            WHERE id = $2
+          `, [qty, itemId]);
+        }
       }
     }
 
@@ -520,14 +739,17 @@ app.put('/api/orders/:id', async (req, res) => {
     if (prevDecision === 'accepted' && nextDecision !== 'accepted' && Array.isArray(items)) {
       for (const item of items) {
         const qty = parseInt(item.quantity, 10) || 1;
-        await query(`
-          UPDATE products 
-          SET 
-            stock = stock + $1,
-            in_stock = true,
-            updated_at = NOW()
-          WHERE id = $2
-        `, [qty, item.id]);
+        const itemId = item.product?.id || item.id;
+        if (itemId) {
+          await query(`
+            UPDATE products 
+            SET 
+              stock = stock + $1,
+              in_stock = true,
+              updated_at = NOW()
+            WHERE id = $2
+          `, [qty, itemId]);
+        }
       }
     }
 
@@ -539,22 +761,46 @@ app.put('/api/orders/:id', async (req, res) => {
         status = COALESCE($3, status),
         status_title = COALESCE($4, status_title),
         status_description = COALESCE($5, status_description),
+        courier_name = COALESCE($6, courier_name),
+        awb_number = COALESCE($7, awb_number),
+        estimated_delivery = COALESCE($8, estimated_delivery),
         updated_at = NOW()
-      WHERE id = $6
+      WHERE id = $9
       RETURNING 
-        id, customer_name as "customerName", customer_phone as "customerPhone", customer_location as "customerLocation", items, total_price::float as "totalPrice", decision, stage, status, status_title as "statusTitle", status_description as "statusDescription", created_at as "createdAt", updated_at as "updatedAt"
+        id, 
+        customer_name as "customerName", 
+        customer_phone as "customerPhone", 
+        customer_location as "customerLocation", 
+        items, 
+        total_price::float as "totalPrice", 
+        payment_method as "paymentMethod",
+        payment_status as "paymentStatus",
+        transaction_id as "transactionId",
+        decision, 
+        stage, 
+        status, 
+        status_title as "statusTitle", 
+        status_description as "statusDescription", 
+        courier_name as "courierName",
+        awb_number as "awbNumber",
+        estimated_delivery as "estimatedDelivery",
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
     `, [
       nextDecision,
       stage !== undefined ? parseInt(stage, 10) : null,
       status,
       statusTitle,
       statusDescription,
+      courierName,
+      awbNumber,
+      estimatedDelivery,
       id
     ]);
 
     res.json(result.rows[0]);
   } catch (error) {
-    console.error('Error updating order:', error);
+    console.error('[Orders] Error updating order:', error);
     res.status(500).json({ error: 'Failed to update order' });
   }
 });
@@ -569,7 +815,7 @@ app.delete('/api/orders/:id', async (req, res) => {
     }
     res.json({ success: true, id });
   } catch (error) {
-    console.error('Error deleting order:', error);
+    console.error('[Orders] Error deleting order:', error);
     res.status(500).json({ error: 'Failed to delete order' });
   }
 });
@@ -587,7 +833,7 @@ app.get('/api/config', async (req, res) => {
     }
     res.json(result.rows[0].value);
   } catch (error) {
-    console.error('Error fetching config:', error);
+    console.error('[Config] Error fetching config:', error);
     res.status(500).json({ error: 'Failed to fetch config' });
   }
 });
@@ -606,21 +852,16 @@ app.put('/api/config', async (req, res) => {
 
     res.json(result.rows[0].value);
   } catch (error) {
-    console.error('Error saving config:', error);
+    console.error('[Config] Error saving config:', error);
     res.status(500).json({ error: 'Failed to save config' });
   }
 });
 
 // ==========================================
-// 7. Super Secure Admin Authentication System
-// Password is NEVER stored in plaintext
-// Verified exclusively on server via scrypt + random salt
+// 7. Secure Admin Authentication System
 // ==========================================
 
-// In-memory active tokens map: token -> { createdAt, expiresAt }
 const adminSessions = new Map();
-
-// Rate limiting map for brute-force protection: ip -> { count, lockedUntil }
 const loginAttempts = new Map();
 
 function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
@@ -640,12 +881,7 @@ function verifyPassword(password, salt, storedHash) {
   }
 }
 
-// Server-side fallback storage directory if DB is offline
-const authDataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(authDataDir)) {
-  fs.mkdirSync(authDataDir, { recursive: true });
-}
-const authDataFile = path.join(authDataDir, 'admin_auth.json');
+const authDataFile = path.join(dataDir, 'admin_auth.json');
 
 async function getAdminAuthData() {
   try {
@@ -653,9 +889,7 @@ async function getAdminAuthData() {
     if (result && result.rows && result.rows.length > 0) {
       return result.rows[0].value;
     }
-  } catch (e) {
-    // Database query failed, fallback to file
-  }
+  } catch (e) {}
 
   if (fs.existsSync(authDataFile)) {
     try {
@@ -663,7 +897,6 @@ async function getAdminAuthData() {
     } catch (e) {}
   }
 
-  // Initialize with initial secure default if no password configured yet
   const defaultPass = process.env.ADMIN_PASSWORD || 'kundanadmin2026';
   const initialAuth = {
     ...hashPassword(defaultPass),
@@ -699,7 +932,6 @@ async function saveAdminAuthData(newAuth) {
   } catch (e) {}
 }
 
-// Auth Middleware: verifies bearer token
 function requireAdminAuth(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -717,7 +949,7 @@ function requireAdminAuth(req, res, next) {
   next();
 }
 
-// 1. Admin Login
+// Admin Login
 app.post('/api/admin/login', async (req, res) => {
   try {
     const ip = req.ip || req.connection?.remoteAddress || 'client';
@@ -742,21 +974,19 @@ app.post('/api/admin/login', async (req, res) => {
     if (!isValid) {
       attempt.count += 1;
       if (attempt.count >= 5) {
-        attempt.lockedUntil = now + 5 * 60 * 1000; // 5 minutes lockout after 5 fails
+        attempt.lockedUntil = now + 5 * 60 * 1000;
         attempt.count = 0;
       }
       loginAttempts.set(ip, attempt);
       return res.status(401).json({ error: 'Incorrect admin password. Access denied.' });
     }
 
-    // Reset attempts on successful authentication
     loginAttempts.delete(ip);
 
-    // Issue cryptographically secure random session token
     const token = crypto.randomBytes(32).toString('hex');
     adminSessions.set(token, {
       createdAt: now,
-      expiresAt: now + 24 * 60 * 60 * 1000 // 24 hours validity
+      expiresAt: now + 24 * 60 * 60 * 1000
     });
 
     res.json({
@@ -771,7 +1001,7 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
-// 2. Verify Session Token
+// Verify Session
 app.post('/api/admin/verify', (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -786,7 +1016,7 @@ app.post('/api/admin/verify', (req, res) => {
   res.json({ valid: true });
 });
 
-// 3. Change Admin Password (from Admin Panel Settings)
+// Change Password
 app.post('/api/admin/change-password', requireAdminAuth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -805,7 +1035,6 @@ app.post('/api/admin/change-password', requireAdminAuth, async (req, res) => {
       return res.status(401).json({ error: 'Current password is incorrect' });
     }
 
-    // Hash the new password with fresh cryptographically random salt
     const { salt: newSalt, hash: newHash } = hashPassword(newPassword.trim());
     const updatedAuth = {
       salt: newSalt,
@@ -815,9 +1044,8 @@ app.post('/api/admin/change-password', requireAdminAuth, async (req, res) => {
 
     await saveAdminAuthData(updatedAuth);
 
-    // Rotate and generate fresh session token
     const newToken = crypto.randomBytes(32).toString('hex');
-    adminSessions.clear(); // invalidate all other sessions
+    adminSessions.clear();
     adminSessions.set(newToken, {
       createdAt: Date.now(),
       expiresAt: Date.now() + 24 * 60 * 60 * 1000
@@ -834,7 +1062,7 @@ app.post('/api/admin/change-password', requireAdminAuth, async (req, res) => {
   }
 });
 
-// 4. Admin Logout
+// Admin Logout
 app.post('/api/admin/logout', (req, res) => {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -851,16 +1079,16 @@ async function startServer() {
   try {
     const dbConnected = await initDB();
     if (dbConnected) {
-      console.log('✅ [Server] Connected to PostgreSQL');
+      console.log('🚀 [Server] Connected to PostgreSQL production database');
     } else {
-      console.log('ℹ️ [Server] Running in standalone file/memory storage mode');
+      console.log('ℹ️ [Server] PostgreSQL standby / fallback mode active');
     }
   } catch (error) {
     console.warn('⚠️ [Server] Database initialization bypassed:', error.message);
   }
 
   app.listen(PORT, () => {
-    console.log(`🚀 [Server] Kundan Works API running on port ${PORT}`);
+    console.log(`🚀 [Server] Radha Sang API running on port ${PORT}`);
   });
 }
 

@@ -91,8 +91,12 @@ export const AdminPanel = ({ onClose }) => {
     deleteProduct, 
     storeConfig, 
     setStoreConfig, 
-    showToast 
+    showToast,
+    dbStatus,
+    syncWithDatabase
   } = useStore();
+
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Super Secure Admin Authentication State (NO password stored in frontend)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -296,7 +300,19 @@ export const AdminPanel = ({ onClose }) => {
     setIsProductModalOpen(true);
   };
 
-  // Uploading photos (up to 3)
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      await syncWithDatabase();
+      showToast('Database synced with PostgreSQL', 'success');
+    } catch {
+      showToast('Failed to sync with database', 'error');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Uploading photos (up to 3) - Directly to /api/upload with fallback
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -308,17 +324,30 @@ export const AdminPanel = ({ onClose }) => {
     }
 
     const filesToProcess = files.slice(0, remainingSlots);
-    showToast('Optimizing and loading photo(s)...', 'info');
+    showToast('Uploading photo(s) to production storage...', 'info');
 
     try {
-      const compressedUrls = await Promise.all(
-        filesToProcess.map(file => compressImage(file))
-      );
+      const uploadedUrls = [];
+      for (const file of filesToProcess) {
+        try {
+          const res = await api.uploadImage(file);
+          if (res && res.url) {
+            uploadedUrls.push(res.url);
+          } else {
+            const fallback = await compressImage(file);
+            uploadedUrls.push(fallback);
+          }
+        } catch {
+          const fallback = await compressImage(file);
+          uploadedUrls.push(fallback);
+        }
+      }
+
       setProductForm(prev => ({
         ...prev,
-        images: [...prev.images, ...compressedUrls].slice(0, 3)
+        images: [...prev.images, ...uploadedUrls].slice(0, 3)
       }));
-      showToast(`Added ${compressedUrls.length} photo${compressedUrls.length > 1 ? 's' : ''}`);
+      showToast(`Added ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''}`);
     } catch (err) {
       console.error('Failed to process photos', err);
       showToast('Failed to load photos. Please try another image.', 'error');
@@ -333,7 +362,7 @@ export const AdminPanel = ({ onClose }) => {
     }));
   };
 
-  const handleSaveProduct = (e) => {
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productForm.title.trim()) {
       showToast('Product title is required', 'error');
@@ -352,9 +381,10 @@ export const AdminPanel = ({ onClose }) => {
     const payload = {
       title: productForm.title.trim(),
       name: productForm.title.trim(),
-      subtitle: '',
-      category: 'Collection',
-      categorySlug: 'collection',
+      subtitle: productForm.subtitle ? productForm.subtitle.trim() : '',
+      category: productForm.category || 'Collection',
+      categorySlug: (productForm.category || 'collection').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      categoryId: (productForm.category || 'collection').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       price: regularPrice,
       originalPrice: origPrice,
       stock: stockNum,
@@ -366,11 +396,9 @@ export const AdminPanel = ({ onClose }) => {
     };
 
     if (editingProductId) {
-      updateProduct(editingProductId, payload);
-      showToast('Product updated successfully!');
+      await updateProduct(editingProductId, payload);
     } else {
-      addProduct(payload);
-      showToast('New product added to store!');
+      await addProduct(payload);
     }
     setIsProductModalOpen(false);
   };
@@ -565,6 +593,30 @@ export const AdminPanel = ({ onClose }) => {
 
           {/* Action Buttons - Curve Edged */}
           <div className="flex items-center gap-2">
+            {/* Database Connection Status Badge */}
+            <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white/10 text-[11px] font-medium border border-white/15">
+              <span className={`w-2 h-2 rounded-full ${
+                dbStatus === 'connected' 
+                  ? 'bg-emerald-400 animate-pulse' 
+                  : dbStatus === 'checking' 
+                    ? 'bg-amber-400' 
+                    : 'bg-rose-400'
+              }`} />
+              <span className="hidden md:inline text-neutral-300">Database:</span>
+              <span className="text-white font-semibold">
+                {dbStatus === 'connected' ? 'PostgreSQL Live' : dbStatus === 'checking' ? 'Syncing...' : 'Local Cache'}
+              </span>
+              <button
+                type="button"
+                onClick={handleManualSync}
+                disabled={isSyncing}
+                title="Sync with PostgreSQL"
+                className="p-0.5 hover:text-emerald-300 transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                <RotateCcw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+
             <button
               onClick={handleLockAdmin}
               title="Lock Admin Panel"

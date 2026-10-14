@@ -10,7 +10,9 @@ async function request(url, options = {}) {
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 2500);
+  const isUpload = options.body instanceof FormData;
+  const timeoutMs = isUpload ? 30000 : 8000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   const config = {
     signal: controller.signal,
@@ -23,7 +25,7 @@ async function request(url, options = {}) {
   };
 
   // If body is FormData, delete Content-Type so the browser sets the boundary correctly
-  if (options.body instanceof FormData) {
+  if (isUpload) {
     delete config.headers['Content-Type'];
   }
 

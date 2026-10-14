@@ -172,25 +172,36 @@ export const StoreProvider = ({ children }) => {
     }, 3200);
   };
 
-  // ==========================================
-  // PostgreSQL Live Sync Engine
-  // ==========================================
+  // PostgreSQL Live Sync Engine & Connection State
+  const [dbStatus, setDbStatus] = useState('checking'); // 'connected' | 'checking' | 'offline'
+
   const syncWithDatabase = async () => {
     try {
-      const [pRes, cRes, oRes, cfgRes] = await Promise.allSettled([
+      const [healthRes, pRes, cRes, oRes, cfgRes] = await Promise.allSettled([
+        api.checkHealth(),
         api.getProducts(),
         api.getCategories(),
         api.getOrders(),
         api.getConfig()
       ]);
 
+      if (healthRes.status === 'fulfilled' && healthRes.value?.database === 'connected') {
+        setDbStatus('connected');
+      } else if (pRes.status === 'fulfilled') {
+        setDbStatus('connected');
+      } else {
+        setDbStatus('offline');
+      }
+
       if (pRes.status === 'fulfilled' && Array.isArray(pRes.value)) {
         const dbProducts = pRes.value.map(p => ({
           ...p,
           title: p.name || p.title || 'Untitled Piece',
           name: p.name || p.title || 'Untitled Piece',
+          subtitle: p.subtitle || '',
           category: p.category || 'Collection',
-          categorySlug: p.categorySlug || p.categoryId || (p.category ? String(p.category).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'general'),
+          categorySlug: p.categorySlug || p.categoryId || (p.category ? String(p.category).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'collection'),
+          categoryId: p.categoryId || p.categorySlug || '',
           price: Number(p.price) || 0,
           originalPrice: Number(p.originalPrice || p.price || 0),
           stock: p.stock !== undefined ? Number(p.stock) : 10,
@@ -221,7 +232,7 @@ export const StoreProvider = ({ children }) => {
           date: o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : (o.date || ''),
           time: o.createdAt ? new Date(o.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : (o.time || ''),
           courierName: o.courierName || 'Boutique Express Logistics',
-          awbNumber: o.awbNumber || `KW-EXP-${String(o.id || '').replace(/[^0-9]/g, '') || '102938'}`,
+          awbNumber: o.awbNumber || `RS-EXP-${String(o.id || '').replace(/[^0-9]/g, '') || '102938'}`,
           estimatedDelivery: o.estimatedDelivery || 'Estimated 4-6 business days'
         }));
 
@@ -245,6 +256,7 @@ export const StoreProvider = ({ children }) => {
       }
     } catch (err) {
       console.warn('[StoreContext] Database sync warning:', err.message);
+      setDbStatus('offline');
     }
   };
 
@@ -409,12 +421,17 @@ export const StoreProvider = ({ children }) => {
     const item = {
       ...newProduct,
       id: newProduct.id || `prod_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-      name: newProduct.title || newProduct.name || 'Untitled Piece',
-      title: newProduct.title || newProduct.name || 'Untitled Piece',
+      name: (newProduct.title || newProduct.name || 'Untitled Piece').trim(),
+      title: (newProduct.title || newProduct.name || 'Untitled Piece').trim(),
+      subtitle: (newProduct.subtitle || '').trim(),
       stock: stockNum,
       inStock: stockNum > 0,
       price: Number(newProduct.price) || 0,
       originalPrice: Number(newProduct.originalPrice) || Number(newProduct.price) || 0,
+      category: newProduct.category || 'Collection',
+      categorySlug: newProduct.categorySlug || (newProduct.category ? String(newProduct.category).toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'collection'),
+      categoryId: newProduct.categoryId || '',
+      description: newProduct.description || '',
       images,
       imageUrl: images[0] || newProduct.imageUrl || ''
     };
@@ -427,14 +444,19 @@ export const StoreProvider = ({ children }) => {
       const created = await api.createProduct({
         id: item.id,
         name: item.name,
-        subtitle: item.subtitle || '',
+        title: item.title,
+        subtitle: item.subtitle,
         price: item.price,
-        category: item.category || 'Uncategorized',
-        categoryId: item.categoryId || item.categorySlug || '',
-        description: item.description || '',
+        originalPrice: item.originalPrice,
+        category: item.category,
+        categoryId: item.categoryId,
+        categorySlug: item.categorySlug,
+        description: item.description,
         stock: item.stock,
         inStock: item.inStock,
-        images: item.images
+        images: item.images,
+        imageUrl: item.imageUrl,
+        sizes: item.sizes || ['Free Size']
       });
 
       if (created) {
@@ -445,12 +467,13 @@ export const StoreProvider = ({ children }) => {
           stock: created.stock !== undefined ? Number(created.stock) : item.stock,
           inStock: created.inStock !== undefined ? created.inStock : item.inStock
         } : p));
+        setDbStatus('connected');
       }
     } catch (err) {
       console.error('[StoreContext] PostgreSQL product save error:', err);
     }
 
-    showToast(`Product "${item.title}" created (Stock: ${stockNum} units)`);
+    showToast(`Product "${item.title}" saved to database (Stock: ${stockNum})`);
     return item;
   };
 
@@ -485,31 +508,37 @@ export const StoreProvider = ({ children }) => {
     try {
       await api.updateProduct(id, {
         name: updatedFields.title || updatedFields.name,
+        title: updatedFields.title || updatedFields.name,
         subtitle: updatedFields.subtitle,
         price: updatedFields.price,
+        originalPrice: updatedFields.originalPrice,
         category: updatedFields.category,
         categoryId: updatedFields.categoryId || updatedFields.categorySlug,
+        categorySlug: updatedFields.categorySlug || updatedFields.categoryId,
         description: updatedFields.description,
         stock: stockNum,
         inStock: stockNum !== undefined ? stockNum > 0 : undefined,
         images,
+        imageUrl: images && images[0] ? images[0] : updatedFields.imageUrl,
         sizes: updatedFields.sizes
       });
+      setDbStatus('connected');
     } catch (err) {
       console.error('[StoreContext] PostgreSQL product update error:', err);
     }
 
-    showToast('Product updated successfully');
+    showToast('Product updated in database');
   };
 
   const deleteProduct = async (id) => {
     setProducts(prev => prev.filter(p => p.id !== id));
     try {
       await api.deleteProduct(id);
+      setDbStatus('connected');
     } catch (err) {
       console.error('[StoreContext] PostgreSQL product delete error:', err);
     }
-    showToast('Product deleted', 'info');
+    showToast('Product deleted from database', 'info');
   };
 
   // ==========================================
@@ -981,7 +1010,8 @@ export const StoreProvider = ({ children }) => {
         resetAllData,
         toast,
         showToast,
-        syncWithDatabase
+        syncWithDatabase,
+        dbStatus
       }}
     >
       {children}
