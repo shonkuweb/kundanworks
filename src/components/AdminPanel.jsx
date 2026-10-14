@@ -31,6 +31,7 @@ import {
 import { useStore, ORDER_STAGES } from '../context/StoreContext';
 import { FashionPlaceholder } from './Placeholders';
 import { api } from '../services/api';
+import radhaSangLogo from '../assets/radha_sang_logo.png';
 
 // Client-side image compression helper: keeps aspect ratio, max 1200px, quality JPEG
 const compressImage = (file) => {
@@ -542,9 +543,9 @@ export const AdminPanel = ({ onClose }) => {
           <div className="flex items-center gap-3">
             <div className="bg-white/10 p-1.5 rounded-full backdrop-blur-xs">
               <img 
-                src="/logo.png" 
+                src={radhaSangLogo} 
                 alt="Radha Sang" 
-                className="h-7 w-auto object-contain" 
+                className="h-8 w-auto object-contain" 
               />
             </div>
             <div>

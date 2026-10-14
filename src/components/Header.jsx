@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Search, X, ShieldCheck, ShoppingBag, Sparkles, Phone, FileText } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import radhaSangLogo from '../assets/radha_sang_logo.png';
 
 export const LotusIcon = ({ className = "w-6 h-6", color = "#A77D5E" }) => (
   <svg 
@@ -89,9 +90,9 @@ export const Header = () => {
             className="flex items-center justify-center cursor-pointer select-none group px-2 py-0.5"
           >
             <img 
-              src="/logo.png" 
+              src={radhaSangLogo} 
               alt={storeConfig.storeName || 'Radha Sang'} 
-              className="h-11 sm:h-14 md:h-16 max-w-[190px] sm:max-w-[240px] md:max-w-[270px] object-contain group-hover:scale-105 transition-transform duration-300" 
+              className="h-12 sm:h-15 md:h-18 max-w-[200px] sm:max-w-[260px] md:max-w-[290px] object-contain group-hover:scale-105 transition-transform duration-300" 
             />
           </div>
 
@@ -179,9 +180,9 @@ export const Header = () => {
                   className="cursor-pointer"
                 >
                   <img 
-                    src="/logo.png" 
+                    src={radhaSangLogo} 
                     alt="Radha Sang" 
-                    className="h-9 w-auto object-contain"
+                    className="h-11 w-auto object-contain"
                   />
                 </div>
                 <button 
