@@ -72,23 +72,43 @@ export const ProductCatalog = () => {
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="py-16 text-center bg-[#F4ECE3]/50 rounded-2xl border border-dashed border-[#DAC8B8] p-6">
-            <p className="font-serif text-lg text-[#3E3834] mb-2">
-              {products.length === 0 ? 'No designs added yet' : 'No designs match your filter'}
-            </p>
-            <p className="text-xs text-neutral-500 max-w-xs mx-auto mb-4">
-              {products.length === 0 
-                ? 'Use the Store Manager Admin Panel to add your boutique designs with direct camera or gallery photos.'
-                : 'Try adjusting your category filter or search keywords to explore other boutique pieces.'}
-            </p>
-            {activeCategory !== 'all' && (
-              <button
-                onClick={() => setActiveCategory('all')}
-                className="px-5 py-2.5 bg-[#1C1E21] hover:bg-[#9B1B30] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-xs transition-colors cursor-pointer"
-              >
-                Reset to All Collections
-              </button>
-            )}
+          <div className="py-14 sm:py-18 text-center bg-white rounded-3xl border border-[#EAE0D4] p-6 sm:p-10 shadow-xs max-w-xl mx-auto space-y-4">
+            <div className="w-14 h-14 mx-auto rounded-full bg-[#FDF2F4] border border-[#F9CCD4] flex items-center justify-center text-[#9B1B30]">
+              <Sparkles className="w-6 h-6 text-[#9B1B30]" />
+            </div>
+            <div>
+              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-[#C5A059] block mb-1">
+                Radha Sang • Barnala Studio
+              </span>
+              <h3 className="font-serif text-xl sm:text-2xl text-[#1E1A17] font-medium">
+                {products.length === 0 ? 'Fresh Boutique Arrivals Daily' : 'No pieces match your filter'}
+              </h3>
+              <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto mt-2 font-light leading-relaxed">
+                {products.length === 0 
+                  ? 'Our Barnala studio curates new Kurtis, Co-ord Sets, and Tops daily. Reach out directly on WhatsApp to explore today’s collection or place custom orders.'
+                  : 'Try clearing your search query or category filter to view our complete collection.'}
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              {activeCategory !== 'all' ? (
+                <button
+                  onClick={() => setActiveCategory('all')}
+                  className="px-6 py-3 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-xs transition-colors cursor-pointer"
+                >
+                  View All Collections
+                </button>
+              ) : (
+                <a
+                  href="https://wa.me/919855786123?text=Hello%20Radha%20Sang!%20I%20would%20like%20to%20see%20latest%20pieces%20available%20in%20the%20Barnala%20studio."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-6 py-3 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-widest font-semibold shadow-md transition-all active:scale-95 inline-flex items-center justify-center gap-2"
+                >
+                  <span>WhatsApp Boutique (9855786123)</span>
+                </a>
+              )}
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3.5 sm:gap-6">
