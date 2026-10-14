@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
 # ================================================================
-# Automated Deployment Script for Kundan Works on VPS
-# Domain: kundanworks.shonku.site
+# Automated Deployment Script for Radha Sang on VPS
+# Domain: radhasang.shonku.site
 # Stack: PostgreSQL 16 + Express REST API + React SPA Nginx
 # ================================================================
 
 set -e
 
 echo "=========================================="
-echo " Starting Kundan Works Full-Stack Deploy  "
-echo " Domain: kundanworks.shonku.site          "
+echo " Starting Radha Sang Full-Stack Deploy   "
+echo " Domain: radhasang.shonku.site           "
 echo " Stack: PostgreSQL + Node API + Web SPA   "
 echo "=========================================="
 
@@ -62,13 +62,13 @@ else
 fi
 
 echo ""
-echo "Next Steps to link with kundanworks.shonku.site:"
-echo "1. Point DNS A-Record for 'kundanworks.shonku.site' to your VPS IP."
+echo "Next Steps to link with radhasang.shonku.site:"
+echo "1. Point DNS A-Record for 'radhasang.shonku.site' to your VPS IP."
 echo "2. If using host Nginx, run:"
-echo "   sudo cp vps/kundanworks.shonku.site.conf /etc/nginx/sites-available/"
-echo "   sudo ln -s /etc/nginx/sites-available/kundanworks.shonku.site.conf /etc/nginx/sites-enabled/"
+echo "   sudo cp vps/radhasang.shonku.site.conf /etc/nginx/sites-available/"
+echo "   sudo ln -sf /etc/nginx/sites-available/radhasang.shonku.site.conf /etc/nginx/sites-enabled/"
 echo "   sudo nginx -t && sudo systemctl reload nginx"
 echo "3. Issue free SSL Certificate with Certbot:"
-echo "   sudo certbot --nginx -d kundanworks.shonku.site"
+echo "   sudo certbot --nginx -d radhasang.shonku.site"
 echo ""
-echo "Done! Your site will be live at: https://kundanworks.shonku.site"
+echo "Done! Your site will be live at: https://radhasang.shonku.site"

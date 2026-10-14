@@ -121,7 +121,7 @@ export const Header = () => {
             </button>
 
             <button
-              onClick={() => setIsAdminOpen(true)}
+              onClick={() => navigate('/admin')}
               title="Admin Panel"
               className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full bg-[#FDF2F4] hover:bg-[#FCE4E8] text-[#831427] border border-[#F9CCD4] transition-all cursor-pointer shadow-xs active:scale-95"
             >
@@ -265,7 +265,7 @@ export const Header = () => {
             <div className="p-5 border-t border-[#EAE0D4] bg-[#F4ECE3]/50">
               <button
                 onClick={() => {
-                  setIsAdminOpen(true);
+                  navigate('/admin');
                   setIsDrawerOpen(false);
                 }}
                 className="w-full py-2.5 px-3 bg-[#241F1C] hover:bg-[#38312D] text-white rounded-lg text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"

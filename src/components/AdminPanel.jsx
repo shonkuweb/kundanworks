@@ -98,6 +98,11 @@ export const AdminPanel = ({ onClose }) => {
 
   const [isSyncing, setIsSyncing] = useState(false);
 
+  const handleClose = () => {
+    if (onClose) onClose();
+    navigate('/');
+  };
+
   // Super Secure Admin Authentication State (NO password stored in frontend)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -476,7 +481,7 @@ export const AdminPanel = ({ onClose }) => {
           
           {/* Close / Return button */}
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-5 right-5 p-2 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 rounded-full transition-colors cursor-pointer"
             title="Return to Store"
           >
@@ -626,7 +631,7 @@ export const AdminPanel = ({ onClose }) => {
               <span className="hidden sm:inline">Lock</span>
             </button>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="flex items-center gap-1.5 px-4 py-2 bg-[#2E333D] hover:bg-[#3E4552] text-white rounded-full text-xs font-medium transition-all shadow-xs active:scale-95 cursor-pointer"
             >
               <X className="w-4 h-4" />
@@ -811,7 +816,7 @@ export const AdminPanel = ({ onClose }) => {
                     <div className="flex items-center justify-between gap-1.5 mt-3 pt-2.5 border-t border-[#F1F5F9]">
                       <button
                         onClick={() => {
-                          onClose();
+                          if (onClose) onClose();
                           navigate(`/product/${prod.id}`);
                         }}
                         className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium text-neutral-600 hover:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors cursor-pointer"

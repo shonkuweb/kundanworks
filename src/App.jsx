@@ -39,6 +39,7 @@ const Layout = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/admin" element={<AdminPanel onClose={() => setIsAdminOpen(false)} />} />
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order" element={<OrderSection />} />

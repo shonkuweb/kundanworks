@@ -1,6 +1,6 @@
 # Deployment Guide: Kundan Works on VPS with PostgreSQL
 
-This guide explains how to deploy the full-stack **Kundan Works** application with **PostgreSQL Database** and **REST API** on your VPS alongside your other projects and connect it with **`kundanworks.shonku.site`**.
+This guide explains how to deploy the full-stack **Kundan Works** application with **PostgreSQL Database** and **REST API** on your VPS alongside your other projects and connect it with **`radhasang.shonku.site`**.
 
 ---
 
@@ -15,7 +15,7 @@ The application runs as an isolated 3-service Docker Compose stack:
  Internet (HTTPS)
        │
        ▼
-[DNS: kundanworks.shonku.site] ──> [ VPS Public IP ]
+[DNS: radhasang.shonku.site] ──> [ VPS Public IP ]
                                           │
                                           ▼
                                    [ Host Nginx / NPM ]
@@ -42,11 +42,11 @@ The application runs as an isolated 3-service Docker Compose stack:
 
 ## 🚀 Quick Deployment (3 Simple Steps)
 
-### Step 1: DNS Setup (for `kundanworks.shonku.site`)
+### Step 1: DNS Setup (for `radhasang.shonku.site`)
 Log in to your DNS provider (Cloudflare, Namecheap, GoDaddy, or Hostinger DNS):
 1. Add an **A Record**:
    - **Type**: `A`
-   - **Name**: `kundanworks` (or `kundanworks.shonku.site`)
+   - **Name**: `radhasang` (or `radhasang.shonku.site`)
    - **Target / Value**: Your VPS Public IPv4 address
    - **TTL**: Auto or 300s
 2. If using Cloudflare, set proxy (Orange Cloud) **ON** for automatic SSL and CDN caching.
@@ -83,25 +83,25 @@ curl http://127.0.0.1:3040/api/healthz
 
 ---
 
-### Step 3: Connect Domain `kundanworks.shonku.site`
+### Step 3: Connect Domain `radhasang.shonku.site`
 
 #### Option A: Host Nginx (Recommended)
 ```bash
 # 1. Copy virtual host configuration
-sudo cp vps/kundanworks.shonku.site.conf /etc/nginx/sites-available/
+sudo cp vps/radhasang.shonku.site.conf /etc/nginx/sites-available/
 
 # 2. Enable the site
-sudo ln -s /etc/nginx/sites-available/kundanworks.shonku.site.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/radhasang.shonku.site.conf /etc/nginx/sites-enabled/
 
 # 3. Test and reload Nginx
 sudo nginx -t && sudo systemctl reload nginx
 
 # 4. Generate free SSL Certificate with Certbot
-sudo certbot --nginx -d kundanworks.shonku.site
+sudo certbot --nginx -d radhasang.shonku.site
 ```
 
 #### Option B: Nginx Proxy Manager (GUI)
-1. Add Proxy Host for `kundanworks.shonku.site`
+1. Add Proxy Host for `radhasang.shonku.site`
 2. Forward Hostname: `127.0.0.1`, Port: `3040`
 3. Request SSL Certificate with Force SSL.
 

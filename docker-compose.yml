@@ -65,8 +65,8 @@ services:
     depends_on:
       - kundanworks-api
     labels:
-      - "project=kundanworks"
-      - "domain=kundanworks.shonku.site"
+      - "project=radhasang"
+      - "domain=radhasang.shonku.site"
     networks:
       - kundan-net
 
