@@ -80,6 +80,23 @@ export const Header = () => {
             <Menu className="w-6 h-6 stroke-[1.8]" />
           </button>
 
+          {/* Center: Beautiful Golden Pooja Lace Hub Branding */}
+          <div 
+            onClick={() => {
+              setActiveCategory('all');
+              navigate('/');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex flex-col items-center justify-center cursor-pointer select-none group px-2 py-0.5 text-center"
+          >
+            <span className="font-serif text-base sm:text-lg md:text-xl font-bold tracking-[0.16em] sm:tracking-[0.22em] uppercase bg-gradient-to-r from-[#B8860B] via-[#F7E096] to-[#B8860B] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_1px_1px_rgba(212,175,55,0.2)]">
+              Pooja Lace Hub
+            </span>
+            <span className="text-[8px] sm:text-[9.5px] font-sans font-bold tracking-[0.35em] uppercase text-[#C59B27] -mt-0.5 opacity-90">
+              Surat
+            </span>
+          </div>
+
           {/* Right: Search, Cart & Admin Access with Curved Edges */}
           <div className="flex items-center gap-1.5">
             <button
