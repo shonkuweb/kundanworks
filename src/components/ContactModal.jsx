@@ -4,7 +4,7 @@ import { useStore } from '../context/StoreContext';
 import { LotusIcon } from './Header';
 
 export const ContactModal = () => {
-  const { isContactOpen, setIsContactOpen, showToast } = useStore();
+  const { isContactOpen, setIsContactOpen, showToast, storeConfig } = useStore();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -15,8 +15,8 @@ export const ContactModal = () => {
   const [isSuccessAnimating, setIsSuccessAnimating] = useState(false);
   const [progressWidth, setProgressWidth] = useState(0);
 
-  // Business WhatsApp number: 9855786123 (Radha Sang Barnala)
-  const BUSINESS_WHATSAPP_NUMBER = '919855786123';
+  // Business WhatsApp number: 9313306258 (Pooja Lace HUB Surat)
+  const BUSINESS_WHATSAPP_NUMBER = (storeConfig?.whatsappNumber || '919313306258').replace(/[^0-9]/g, '');
 
   useEffect(() => {
     if (!isContactOpen) {
@@ -46,7 +46,7 @@ export const ContactModal = () => {
 
     // Prepare formatted WhatsApp message
     const formattedMessage = 
-`✨ *NEW INQUIRY - RADHA SANG* ✨
+`✨ *NEW INQUIRY - POOJA LACE HUB SURAT* ✨
 ━━━━━━━━━━━━━━━━━━━━
 👤 *Customer Name:* ${formData.name.trim()}
 📱 *Phone Number:* ${formData.phone.trim()}
@@ -54,7 +54,7 @@ export const ContactModal = () => {
 💬 *Message:*
 ${formData.message.trim()}
 ━━━━━━━━━━━━━━━━━━━━
-_Sent via Radha Sang Boutique Portal (Barnala)_`;
+_Sent via Pooja Lace HUB Boutique Portal (Surat)_`;
 
     const whatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(formattedMessage)}`;
 
@@ -74,7 +74,7 @@ _Sent via Radha Sang Boutique Portal (Barnala)_`;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-      <div className="bg-[#FAF8F5] rounded-2xl border border-[#D7BEA8] max-w-md w-full p-6 shadow-2xl relative my-6">
+      <div className="bg-[#FAF7F2] rounded-2xl border border-[#D7BEA8] max-w-md w-full p-6 shadow-2xl relative my-6">
         
         {/* Close Button */}
         {!isSuccessAnimating && (
@@ -102,7 +102,7 @@ _Sent via Radha Sang Boutique Portal (Barnala)_`;
                 Message Received!
               </h3>
               <p className="text-xs text-neutral-600 mt-1">
-                Redirecting to Radha Sang WhatsApp in a moment...
+                Redirecting to Pooja Lace HUB WhatsApp in a moment...
               </p>
             </div>
 
@@ -119,16 +119,16 @@ _Sent via Radha Sang Boutique Portal (Barnala)_`;
             {/* Modal Header */}
             <div className="text-center pb-4 border-b border-[#EAE0D4] mb-5">
               <div className="flex justify-center mb-1">
-                <LotusIcon className="w-8 h-6 text-brand-700" />
+                <LotusIcon className="w-8 h-6 text-[#D4AF37]" />
               </div>
               <h3 className="font-serif text-xl font-medium text-[#221B16]">
-                Contact Radha Sang
+                Contact Pooja Lace HUB Surat
               </h3>
               <p className="text-[11px] text-[#796455] font-light mt-0.5">
-                Girlish & Ladies Fashion Hub • WhatsApp: <strong>9855786123</strong>
+                Surat Wholesale & Retail Hub • WhatsApp: <strong>+91 93133 06258</strong>
               </p>
-              <p className="text-[10px] text-[#9B1B30] mt-0.5">
-                📍 Near bansi purri ala, Barnala • @radhasang_barnala
+              <p className="text-[10px] text-[#7A112A] mt-0.5">
+                📍 U-2A, Regent Arcade, Ghod Dod Road, Surat • @pooja_lace_hub_surat
               </p>
             </div>
 
@@ -157,7 +157,7 @@ _Sent via Radha Sang Boutique Portal (Barnala)_`;
                 <input
                   type="tel"
                   required
-                  placeholder="e.g. 9855786123"
+                  placeholder="e.g. 9313306258"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                   className="w-full p-3 bg-white border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-brand-700"
@@ -172,7 +172,7 @@ _Sent via Radha Sang Boutique Portal (Barnala)_`;
                 <textarea
                   rows={3}
                   required
-                  placeholder="Inquire about Kurti, Cord Sets, Tops, or custom orders..."
+                  placeholder="Inquire about Unique Laces, Latkans, Brooches, Banjara patches, Gota work, custom orders..."
                   value={formData.message}
                   onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                   className="w-full p-3 bg-white border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-brand-700"
@@ -189,7 +189,7 @@ _Sent via Radha Sang Boutique Portal (Barnala)_`;
                   <span>Send via WhatsApp</span>
                 </button>
                 <p className="text-[10px] text-center text-neutral-500 mt-2">
-                  Opens directly to WhatsApp with <strong>+91 98557 86123</strong>
+                  Opens directly to WhatsApp with <strong>+91 93133 06258</strong>
                 </p>
               </div>
             </form>

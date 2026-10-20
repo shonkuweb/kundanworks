@@ -42,8 +42,8 @@ export const CheckoutPage = () => {
     name: '',
     phone: '',
     address: '',
-    city: 'Barnala',
-    pincode: '148101',
+    city: 'Surat',
+    pincode: '395007',
     notes: ''
   });
 
@@ -66,7 +66,7 @@ export const CheckoutPage = () => {
   const [completedOrder, setCompletedOrder] = useState(null);
   const [copiedId, setCopiedId] = useState(false);
 
-  const boutiquePhone = storeConfig?.whatsappNumber || '+91 98557 86123';
+  const boutiquePhone = storeConfig?.whatsappNumber || '+91 93133 06258';
   const cleanPhone = boutiquePhone.replace(/[^0-9]/g, '');
   const waTarget = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
@@ -178,12 +178,12 @@ export const CheckoutPage = () => {
   // ==========================================
   if (orderCompleted && completedOrder) {
     return (
-      <div className="bg-[#FAF8F5] min-h-[90vh] py-8 sm:py-12 animate-fadeIn">
+      <div className="bg-[#FAF7F2] min-h-[90vh] py-8 sm:py-12 animate-fadeIn">
         <div className="max-w-2xl mx-auto px-4">
           
           <div className="bg-white rounded-3xl border border-[#DECBB8] p-6 sm:p-9 shadow-xl relative overflow-hidden">
             {/* Top Accent Ribbon */}
-            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#9B1B30] via-[#C5A059] to-[#831427]" />
+            <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#7A112A] via-[#C5A059] to-[#640B20]" />
 
             {/* Success Icon & Heading */}
             <div className="text-center space-y-3 pt-2">
@@ -202,18 +202,18 @@ export const CheckoutPage = () => {
                   Thank You for Your Order!
                 </h1>
                 <p className="text-xs sm:text-sm text-neutral-600 max-w-md mx-auto mt-1 font-light">
-                  Your order has been recorded in the <strong>Radha Sang</strong> boutique system. Our Barnala studio is preparing your pieces.
+                  Your order has been recorded in the <strong>Pooja Lace HUB</strong> system. Our Surat studio is preparing your pieces.
                 </p>
               </div>
             </div>
 
             {/* Order Reference Box */}
-            <div className="mt-6 p-4 rounded-2xl bg-[#FAF8F5] border border-[#EAE0D4] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <div className="mt-6 p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE0D4] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <div>
                 <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold block">
                   Order Tracking Reference
                 </span>
-                <span className="font-mono text-xl font-bold text-[#9B1B30] tracking-wide">
+                <span className="font-mono text-xl font-bold text-[#7A112A] tracking-wide">
                   #{completedOrder.id}
                 </span>
               </div>
@@ -238,19 +238,19 @@ export const CheckoutPage = () => {
 
             {/* Transaction & Payment Metadata */}
             <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-[#FAF8F5] border border-[#EAE0D4]">
+              <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#EAE0D4]">
                 <span className="text-[10px] text-neutral-500 block uppercase font-medium">Payment Mode</span>
                 <span className="font-semibold text-[#25201C] mt-0.5 block truncate">
                   {completedOrder.paymentMethod}
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAF8F5] border border-[#EAE0D4]">
+              <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#EAE0D4]">
                 <span className="text-[10px] text-neutral-500 block uppercase font-medium">Payment Status</span>
                 <span className="font-semibold text-emerald-700 mt-0.5 block truncate">
                   {completedOrder.paymentStatus.includes('Paid') ? '✓ Paid' : 'Pending COD'}
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAF8F5] border border-[#EAE0D4] col-span-2 sm:col-span-1">
+              <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#EAE0D4] col-span-2 sm:col-span-1">
                 <span className="text-[10px] text-neutral-500 block uppercase font-medium">Transaction Ref</span>
                 <span className="font-mono text-[11px] font-semibold text-[#5A4A3E] mt-0.5 block truncate">
                   {completedOrder.transactionId}
@@ -282,7 +282,7 @@ export const CheckoutPage = () => {
                   const imageUrl = (Array.isArray(product.images) && product.images[0]) || product.imageUrl;
 
                   return (
-                    <div key={idx} className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FAF8F5] border border-[#F0E6DC]">
+                    <div key={idx} className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FAF7F2] border border-[#F0E6DC]">
                       <div className="w-12 h-14 rounded-lg bg-[#EFE9E2] overflow-hidden shrink-0 border border-[#DECBB8]">
                         <FashionPlaceholder
                           type={product.placeholderKey || 'kurta'}
@@ -320,7 +320,7 @@ export const CheckoutPage = () => {
               <button
                 type="button"
                 onClick={() => navigate(`/order?id=${completedOrder.id}`)}
-                className="w-full py-3.5 bg-[#9B1B30] hover:bg-[#831427] active:scale-98 text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
+                className="w-full py-3.5 bg-[#7A112A] hover:bg-[#640B20] active:scale-98 text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
               >
                 <Truck className="w-4 h-4" />
                 <span>Track Order Live (4 Stages)</span>
@@ -335,20 +335,20 @@ export const CheckoutPage = () => {
               </button>
             </div>
 
-            {/* Barnala Studio Concierge Note */}
+            {/* Surat Studio Concierge Note */}
             <div className="mt-6 pt-5 border-t border-[#EAE0D4] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <div>
                 <p className="text-xs font-semibold text-[#25201C]">
-                  Radha Sang Barnala Studio
+                  Pooja Lace HUB Surat Studio
                 </p>
                 <p className="text-[11px] text-neutral-500">
-                  Near bansi purri ala, Barnala • Call / WhatsApp: <strong>{boutiquePhone}</strong>
+                  U-2A, Regent Arcade, Ghod Dod Road, Surat • Call / WhatsApp: <strong>{boutiquePhone}</strong>
                 </p>
               </div>
 
               <a
                 href={`https://wa.me/${waTarget}?text=${encodeURIComponent(
-                  `Hello Radha Sang! I just placed order #${completedOrder.id} and would love to confirm details.`
+                  `Hello Pooja Lace HUB Surat! I just placed order #${completedOrder.id} and would love to confirm details.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -370,19 +370,19 @@ export const CheckoutPage = () => {
   // VIEW: CHECKOUT FORM WITH DUMMY GATEWAY
   // ==========================================
   return (
-    <div className="bg-[#FAF8F5] min-h-[85vh] py-6 sm:py-10 animate-fadeIn">
+    <div className="bg-[#FAF7F2] min-h-[85vh] py-6 sm:py-10 animate-fadeIn">
       
       {/* SIMULATED PAYMENT PROCESSING OVERLAY */}
       {isProcessing && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
           <div className="bg-white rounded-3xl border border-[#DECBB8] p-8 max-w-sm w-full text-center space-y-5 shadow-2xl animate-scaleIn">
-            <div className="w-16 h-16 bg-[#9B1B30]/10 text-[#9B1B30] rounded-full flex items-center justify-center mx-auto relative">
-              <span className="absolute inset-0 rounded-full border-4 border-[#9B1B30] border-t-transparent animate-spin" />
+            <div className="w-16 h-16 bg-[#7A112A]/10 text-[#7A112A] rounded-full flex items-center justify-center mx-auto relative">
+              <span className="absolute inset-0 rounded-full border-4 border-[#7A112A] border-t-transparent animate-spin" />
               <Lock className="w-7 h-7" />
             </div>
 
             <div>
-              <span className="text-[10px] uppercase font-bold tracking-widest text-[#9B1B30] bg-[#FDF2F4] px-2.5 py-1 rounded-full border border-[#F9CCD4]">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-[#7A112A] bg-[#FDF5F6] px-2.5 py-1 rounded-full border border-[#F6CCD5]">
                 256-Bit SSL Secured Sandbox
               </span>
               <h3 className="font-serif text-xl font-medium text-[#1E1A17] mt-3">
@@ -394,7 +394,7 @@ export const CheckoutPage = () => {
             </div>
 
             <div className="w-full bg-[#F2ECE4] h-2 rounded-full overflow-hidden">
-              <div className="bg-gradient-to-r from-[#9B1B30] via-[#C5A059] to-[#831427] h-full w-full animate-pulse" />
+              <div className="bg-gradient-to-r from-[#7A112A] via-[#C5A059] to-[#640B20] h-full w-full animate-pulse" />
             </div>
 
             <div className="text-[11px] text-neutral-400 font-mono">
@@ -420,8 +420,8 @@ export const CheckoutPage = () => {
         <div className="flex items-center justify-between pb-4 border-b border-[#EAE0D4] mb-6">
           <div>
             <div className="flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase font-semibold text-[#866D5B] mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
-              <span>Radha Sang • Barnala</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>Pooja Lace HUB • Surat</span>
             </div>
             <h1 className="font-serif text-2xl sm:text-3xl text-[#1E1A17] font-normal tracking-tight">
               Order & Payment Checkout
@@ -430,7 +430,7 @@ export const CheckoutPage = () => {
 
           <div className="text-right hidden sm:block">
             <span className="text-xs text-neutral-500 block">Boutique Desk</span>
-            <p className="font-mono text-xs font-semibold text-[#9B1B30]">{boutiquePhone}</p>
+            <p className="font-mono text-xs font-semibold text-[#7A112A]">{boutiquePhone}</p>
           </div>
         </div>
 
@@ -445,7 +445,7 @@ export const CheckoutPage = () => {
             </div>
             <Link
               to="/"
-              className="inline-block px-7 py-3 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-sm transition-all"
+              className="inline-block px-7 py-3 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-sm transition-all"
             >
               Explore Boutique Collection
             </Link>
@@ -460,7 +460,7 @@ export const CheckoutPage = () => {
               <div className="bg-white rounded-2xl border border-[#EAE0D4] p-5 sm:p-6 shadow-xs space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-[#F2EAE1]">
                   <h2 className="font-serif text-lg font-medium text-[#221B16] flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-[#9B1B30] text-white text-xs flex items-center justify-center font-bold">1</span>
+                    <span className="w-6 h-6 rounded-full bg-[#7A112A] text-white text-xs flex items-center justify-center font-bold">1</span>
                     <span>Delivery Address & Contact</span>
                   </h2>
                 </div>
@@ -478,7 +478,7 @@ export const CheckoutPage = () => {
                       placeholder="e.g. Radhika Sharma"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full p-3 bg-[#FAF8F5] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                      className="w-full p-3 bg-[#FAF7F2] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                     />
                   </div>
 
@@ -494,7 +494,7 @@ export const CheckoutPage = () => {
                       placeholder="e.g. 9855786123"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full p-3 bg-[#FAF8F5] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                      className="w-full p-3 bg-[#FAF7F2] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                     />
                     <p className="text-[10px] text-neutral-400 mt-1">
                       Our boutique studio will send order status and live tracking link to this number.
@@ -513,7 +513,7 @@ export const CheckoutPage = () => {
                       placeholder="Flat, House no., Building, Street, Landmark"
                       value={formData.address}
                       onChange={handleInputChange}
-                      className="w-full p-3 bg-[#FAF8F5] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                      className="w-full p-3 bg-[#FAF7F2] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                     />
                   </div>
 
@@ -527,10 +527,10 @@ export const CheckoutPage = () => {
                         type="text"
                         name="city"
                         required
-                        placeholder="e.g. Barnala"
+                        placeholder="e.g. Surat"
                         value={formData.city}
                         onChange={handleInputChange}
-                        className="w-full p-3 bg-[#FAF8F5] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                        className="w-full p-3 bg-[#FAF7F2] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                       />
                     </div>
                     <div>
@@ -544,7 +544,7 @@ export const CheckoutPage = () => {
                         placeholder="e.g. 148101"
                         value={formData.pincode}
                         onChange={handleInputChange}
-                        className="w-full p-3 bg-[#FAF8F5] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                        className="w-full p-3 bg-[#FAF7F2] border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                       />
                     </div>
                   </div>
@@ -555,7 +555,7 @@ export const CheckoutPage = () => {
               <div className="bg-white rounded-2xl border border-[#EAE0D4] p-5 sm:p-6 shadow-xs space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-[#F2EAE1]">
                   <h2 className="font-serif text-lg font-medium text-[#221B16] flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-[#9B1B30] text-white text-xs flex items-center justify-center font-bold">2</span>
+                    <span className="w-6 h-6 rounded-full bg-[#7A112A] text-white text-xs flex items-center justify-center font-bold">2</span>
                     <span>Select Payment Method (Sandbox Gateway)</span>
                   </h2>
                   <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
@@ -570,11 +570,11 @@ export const CheckoutPage = () => {
                     onClick={() => setPaymentMethod('upi')}
                     className={`p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
                       paymentMethod === 'upi'
-                        ? 'border-[#9B1B30] bg-[#FDF2F4] text-[#831427] shadow-xs ring-1 ring-[#9B1B30]'
-                        : 'border-[#EAE0D4] bg-[#FAF8F5] text-neutral-600 hover:bg-[#F2ECE4]'
+                        ? 'border-[#7A112A] bg-[#FDF5F6] text-[#640B20] shadow-xs ring-1 ring-[#7A112A]'
+                        : 'border-[#EAE0D4] bg-[#FAF7F2] text-neutral-600 hover:bg-[#F2ECE4]'
                     }`}
                   >
-                    <Smartphone className="w-5 h-5 text-[#9B1B30]" />
+                    <Smartphone className="w-5 h-5 text-[#7A112A]" />
                     <span>UPI / QR</span>
                   </button>
 
@@ -583,11 +583,11 @@ export const CheckoutPage = () => {
                     onClick={() => setPaymentMethod('card')}
                     className={`p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
                       paymentMethod === 'card'
-                        ? 'border-[#9B1B30] bg-[#FDF2F4] text-[#831427] shadow-xs ring-1 ring-[#9B1B30]'
-                        : 'border-[#EAE0D4] bg-[#FAF8F5] text-neutral-600 hover:bg-[#F2ECE4]'
+                        ? 'border-[#7A112A] bg-[#FDF5F6] text-[#640B20] shadow-xs ring-1 ring-[#7A112A]'
+                        : 'border-[#EAE0D4] bg-[#FAF7F2] text-neutral-600 hover:bg-[#F2ECE4]'
                     }`}
                   >
-                    <CreditCard className="w-5 h-5 text-[#9B1B30]" />
+                    <CreditCard className="w-5 h-5 text-[#7A112A]" />
                     <span>Cards</span>
                   </button>
 
@@ -596,11 +596,11 @@ export const CheckoutPage = () => {
                     onClick={() => setPaymentMethod('netbanking')}
                     className={`p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
                       paymentMethod === 'netbanking'
-                        ? 'border-[#9B1B30] bg-[#FDF2F4] text-[#831427] shadow-xs ring-1 ring-[#9B1B30]'
-                        : 'border-[#EAE0D4] bg-[#FAF8F5] text-neutral-600 hover:bg-[#F2ECE4]'
+                        ? 'border-[#7A112A] bg-[#FDF5F6] text-[#640B20] shadow-xs ring-1 ring-[#7A112A]'
+                        : 'border-[#EAE0D4] bg-[#FAF7F2] text-neutral-600 hover:bg-[#F2ECE4]'
                     }`}
                   >
-                    <Building2 className="w-5 h-5 text-[#9B1B30]" />
+                    <Building2 className="w-5 h-5 text-[#7A112A]" />
                     <span>Net Banking</span>
                   </button>
 
@@ -609,33 +609,33 @@ export const CheckoutPage = () => {
                     onClick={() => setPaymentMethod('cod')}
                     className={`p-3 rounded-xl border text-xs font-semibold flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
                       paymentMethod === 'cod'
-                        ? 'border-[#9B1B30] bg-[#FDF2F4] text-[#831427] shadow-xs ring-1 ring-[#9B1B30]'
-                        : 'border-[#EAE0D4] bg-[#FAF8F5] text-neutral-600 hover:bg-[#F2ECE4]'
+                        ? 'border-[#7A112A] bg-[#FDF5F6] text-[#640B20] shadow-xs ring-1 ring-[#7A112A]'
+                        : 'border-[#EAE0D4] bg-[#FAF7F2] text-neutral-600 hover:bg-[#F2ECE4]'
                     }`}
                   >
-                    <Banknote className="w-5 h-5 text-[#9B1B30]" />
+                    <Banknote className="w-5 h-5 text-[#7A112A]" />
                     <span>Cash on Delivery</span>
                   </button>
                 </div>
 
                 {/* TAB 1: UPI PAYMENT FLOW */}
                 {paymentMethod === 'upi' && (
-                  <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#EAE0D4] space-y-4 animate-fadeIn">
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE0D4] space-y-4 animate-fadeIn">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-[#1E1A17]">
                         Choose UPI App or Scan QR
                       </span>
-                      <span className="text-[11px] text-[#9B1B30] font-mono font-medium">
+                      <span className="text-[11px] text-[#7A112A] font-mono font-medium">
                         UPI Autopay Ready
                       </span>
                     </div>
 
                     {/* QR Code Simulator */}
                     <div className="p-4 bg-white rounded-xl border border-[#DECBB8] flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-                      <div className="w-28 h-28 bg-[#FAF8F5] border border-neutral-300 rounded-xl p-2 flex flex-col items-center justify-center shrink-0 shadow-inner">
+                      <div className="w-28 h-28 bg-[#FAF7F2] border border-neutral-300 rounded-xl p-2 flex flex-col items-center justify-center shrink-0 shadow-inner">
                         {/* Simulated QR Code Graphic */}
-                        <div className="w-full h-full border-2 border-dashed border-[#9B1B30] rounded-lg flex flex-col items-center justify-center bg-white p-1">
-                          <QrCode className="w-12 h-12 text-[#9B1B30]" />
+                        <div className="w-full h-full border-2 border-dashed border-[#7A112A] rounded-lg flex flex-col items-center justify-center bg-white p-1">
+                          <QrCode className="w-12 h-12 text-[#7A112A]" />
                           <span className="text-[8px] font-mono text-neutral-400 mt-0.5">SCAN & PAY</span>
                         </div>
                       </div>
@@ -649,7 +649,7 @@ export const CheckoutPage = () => {
                         </p>
                         <div className="pt-1 flex flex-wrap gap-1.5">
                           {['GPay', 'PhonePe', 'Paytm', 'BHIM UPI'].map(app => (
-                            <span key={app} className="text-[10px] font-medium bg-[#FDF2F4] text-[#831427] px-2 py-0.5 rounded-md border border-[#F9CCD4]">
+                            <span key={app} className="text-[10px] font-medium bg-[#FDF5F6] text-[#640B20] px-2 py-0.5 rounded-md border border-[#F6CCD5]">
                               ✓ {app}
                             </span>
                           ))}
@@ -668,11 +668,11 @@ export const CheckoutPage = () => {
                           placeholder="e.g. mobile@upi or name@okhdfcbank"
                           value={upiIdInput}
                           onChange={(e) => setUpiIdInput(e.target.value)}
-                          className="flex-1 p-2.5 bg-white border border-[#DECBB8] rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                          className="flex-1 p-2.5 bg-white border border-[#DECBB8] rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                         />
                         <button
                           type="button"
-                          onClick={() => setUpiIdInput('radhasang.customer@upi')}
+                          onClick={() => setUpiIdInput('poojalacehub.customer@upi')}
                           className="px-3 py-2 bg-white border border-[#D8C7B5] hover:bg-[#F2EAE0] text-[11px] font-medium text-neutral-700 rounded-xl transition-colors cursor-pointer"
                         >
                           Auto-fill
@@ -684,7 +684,7 @@ export const CheckoutPage = () => {
 
                 {/* TAB 2: CREDIT / DEBIT CARDS */}
                 {paymentMethod === 'card' && (
-                  <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#EAE0D4] space-y-3 animate-fadeIn text-xs">
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE0D4] space-y-3 animate-fadeIn text-xs">
                     <div className="flex items-center justify-between text-neutral-500 text-[11px]">
                       <span>Enter any dummy test card details</span>
                       <span>Visa • Mastercard • RuPay</span>
@@ -700,7 +700,7 @@ export const CheckoutPage = () => {
                           placeholder="4532 0123 4567 8910"
                           value={cardData.number}
                           onChange={handleCardNumberChange}
-                          className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                          className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                         />
                         <CreditCard className="w-4 h-4 text-neutral-400 absolute right-3 top-3" />
                       </div>
@@ -716,7 +716,7 @@ export const CheckoutPage = () => {
                           placeholder="12/28"
                           value={cardData.expiry}
                           onChange={handleExpiryChange}
-                          className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                          className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                         />
                       </div>
                       <div>
@@ -729,7 +729,7 @@ export const CheckoutPage = () => {
                           placeholder="•••"
                           value={cardData.cvv}
                           onChange={(e) => setCardData(prev => ({ ...prev, cvv: e.target.value.replace(/[^0-9]/g, '') }))}
-                          className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                          className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                         />
                       </div>
                     </div>
@@ -743,7 +743,7 @@ export const CheckoutPage = () => {
                         placeholder="Name on card"
                         value={cardData.name}
                         onChange={(e) => setCardData(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#9B1B30]"
+                        className="w-full p-2.5 bg-white border border-[#DECBB8] rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#7A112A]"
                       />
                     </div>
                   </div>
@@ -751,7 +751,7 @@ export const CheckoutPage = () => {
 
                 {/* TAB 3: NET BANKING */}
                 {paymentMethod === 'netbanking' && (
-                  <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#EAE0D4] space-y-3 animate-fadeIn text-xs">
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE0D4] space-y-3 animate-fadeIn text-xs">
                     <span className="text-neutral-600 font-medium block">
                       Select Your Preferred Bank
                     </span>
@@ -770,8 +770,8 @@ export const CheckoutPage = () => {
                           onClick={() => setSelectedBank(b.id)}
                           className={`p-2.5 rounded-lg border text-[11px] font-medium text-left transition-all cursor-pointer ${
                             selectedBank === b.id
-                              ? 'border-[#9B1B30] bg-[#FDF2F4] text-[#831427] font-semibold'
-                              : 'border-[#DECBB8] bg-white text-neutral-700 hover:bg-[#FAF8F5]'
+                              ? 'border-[#7A112A] bg-[#FDF5F6] text-[#640B20] font-semibold'
+                              : 'border-[#DECBB8] bg-white text-neutral-700 hover:bg-[#FAF7F2]'
                           }`}
                         >
                           {b.name}
@@ -783,13 +783,13 @@ export const CheckoutPage = () => {
 
                 {/* TAB 4: CASH ON DELIVERY */}
                 {paymentMethod === 'cod' && (
-                  <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#EAE0D4] space-y-2 animate-fadeIn text-xs">
+                  <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE0D4] space-y-2 animate-fadeIn text-xs">
                     <div className="flex items-center gap-2 text-emerald-800 font-semibold">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       <span>Cash on Delivery Available</span>
                     </div>
                     <p className="text-neutral-600 leading-relaxed font-light">
-                      Pay easily in cash or UPI QR directly to the courier executive when your package reaches your doorstep in <strong>{formData.city || 'Barnala'}</strong>.
+                      Pay easily in cash or UPI QR directly to the courier executive when your package reaches your doorstep in <strong>{formData.city || 'Surat'}</strong>.
                     </p>
                   </div>
                 )}
@@ -798,11 +798,11 @@ export const CheckoutPage = () => {
 
               {/* Trust & Guarantee Banner */}
               <div className="bg-[#FAF4EC] rounded-xl border border-[#E8D9C8] p-4 flex items-center gap-3 text-xs text-[#6A5342]">
-                <ShieldCheck className="w-5 h-5 text-[#9B1B30] shrink-0" />
+                <ShieldCheck className="w-5 h-5 text-[#7A112A] shrink-0" />
                 <div>
-                  <span className="font-semibold block">Radha Sang Boutique Guarantee</span>
+                  <span className="font-semibold block">Pooja Lace HUB Guarantee</span>
                   <span className="text-[11px] text-neutral-500">
-                    Handcrafted inspection in Barnala studio • Pan-India Express Delivery • 100% genuine fabric.
+                    Handcrafted inspection in Surat studio • Pan-India Express Delivery • 100% genuine laces, latkans & handwork.
                   </span>
                 </div>
               </div>
@@ -917,7 +917,7 @@ export const CheckoutPage = () => {
                   </div>
                   <div className="flex justify-between text-sm font-semibold text-[#221B16] pt-2 border-t border-[#EAE0D4]">
                     <span>Total Amount</span>
-                    <span className="font-serif text-lg font-bold text-[#9B1B30]">
+                    <span className="font-serif text-lg font-bold text-[#7A112A]">
                       ₹{cartSubtotal.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -928,7 +928,7 @@ export const CheckoutPage = () => {
                   <button
                     type="submit"
                     disabled={isProcessing}
-                    className="w-full py-4 px-5 bg-[#9B1B30] hover:bg-[#831427] active:bg-[#6B0E1E] active:scale-98 text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2.5 shadow-lg shadow-[#9B1B30]/25 transition-all cursor-pointer"
+                    className="w-full py-4 px-5 bg-[#7A112A] hover:bg-[#640B20] active:bg-[#6B0E1E] active:scale-98 text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2.5 shadow-lg shadow-[#7A112A]/25 transition-all cursor-pointer"
                   >
                     <Lock className="w-4 h-4" />
                     <span>
@@ -945,9 +945,9 @@ export const CheckoutPage = () => {
                 </div>
 
                 {/* Studio Help Box */}
-                <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#EAE0D4] text-[11px] text-neutral-500 space-y-1">
+                <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EAE0D4] text-[11px] text-neutral-500 space-y-1">
                   <p className="font-semibold text-neutral-700">Need styling or order assistance?</p>
-                  <p>WhatsApp our Barnala Studio: <strong className="text-neutral-900">{boutiquePhone}</strong></p>
+                  <p>WhatsApp our Surat Studio: <strong className="text-neutral-900">{boutiquePhone}</strong></p>
                 </div>
 
               </div>

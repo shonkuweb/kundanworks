@@ -35,7 +35,7 @@ export const OrderSection = () => {
   const [searchError, setSearchError] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  const rawPhone = storeConfig?.whatsappNumber || '9855786123';
+  const rawPhone = storeConfig?.whatsappNumber || '9313306258';
   const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
   const whatsappPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
@@ -139,7 +139,7 @@ export const OrderSection = () => {
             <button
               type="submit"
               disabled={isSearching}
-              className="px-6 py-3 bg-[#9B1B30] hover:bg-[#831427] disabled:bg-neutral-400 text-white rounded-full text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2 min-w-[120px]"
+              className="px-6 py-3 bg-[#7A112A] hover:bg-[#640B20] disabled:bg-neutral-400 text-white rounded-full text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2 min-w-[120px]"
             >
               {isSearching ? (
                 <>
@@ -166,7 +166,7 @@ export const OrderSection = () => {
             
             {/* DELIVERED CELEBRATION HERO BANNER */}
             {isDelivered ? (
-              <div className="relative overflow-hidden bg-gradient-to-br from-[#4A0A17] via-[#6B0E1E] to-[#9B1B30] text-white p-6 sm:p-8">
+              <div className="relative overflow-hidden bg-gradient-to-br from-[#4A0A17] via-[#6B0E1E] to-[#7A112A] text-white p-6 sm:p-8">
                 {/* Radiant luxury background effects */}
                 <div className="absolute -top-12 -right-12 w-56 h-56 bg-emerald-300/20 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-12 -left-12 w-56 h-56 bg-[#FD9AA7]/20 rounded-full blur-3xl pointer-events-none" />
@@ -195,7 +195,7 @@ export const OrderSection = () => {
                       </h2>
 
                       <p className="text-xs sm:text-sm text-emerald-50/90 font-light mt-1.5 max-w-lg leading-relaxed">
-                        Your handcrafted Radha Sang pieces have arrived safely. We hope you cherish every thread of your new ensemble!
+                        Your handcrafted Pooja Lace HUB pieces have arrived safely. We hope you cherish every detail of your handcrafted laces and embellishments!
                       </p>
                     </div>
                   </div>
@@ -226,7 +226,7 @@ export const OrderSection = () => {
               }`}>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs uppercase tracking-widest text-[#C5A059] font-mono font-semibold">
+                    <span className="text-xs uppercase tracking-widest text-[#D4AF37] font-mono font-semibold">
                       Order #{searchedOrder.id}
                     </span>
                     <span className="text-white/40">•</span>
@@ -242,7 +242,7 @@ export const OrderSection = () => {
                       </>
                     ) : (
                       <>
-                        <Truck className="w-5 h-5 text-[#C5A059]" />
+                        <Truck className="w-5 h-5 text-[#D4AF37]" />
                         <span>{searchedOrder.statusTitle}</span>
                       </>
                     )}
@@ -255,7 +255,7 @@ export const OrderSection = () => {
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-xs border border-white/20 p-3 rounded-xl text-left sm:text-right shrink-0">
-                  <span className="text-[10px] text-[#C5A059] uppercase tracking-wider block font-semibold">Estimated Delivery</span>
+                  <span className="text-[10px] text-[#D4AF37] uppercase tracking-wider block font-semibold">Estimated Delivery</span>
                   <span className="font-serif text-sm font-semibold text-white">
                     {searchedOrder.decision === 'rejected' ? 'Cancelled' : searchedOrder.estimatedDelivery}
                   </span>
@@ -273,17 +273,17 @@ export const OrderSection = () => {
                   </div>
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-[#1C1E21]">
-                      Thank You for Choosing Radha Sang!
+                      Thank You for Choosing Pooja Lace HUB Surat!
                     </h4>
                     <p className="text-[11px] text-neutral-600 mt-0.5">
-                      Need alterations, styling advice, or assistance from our Barnala boutique?
+                      Need custom orders, design advice, or assistance from our Surat studio?
                     </p>
                   </div>
                 </div>
 
                 <a
                   href={`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(
-                    `Hello Radha Sang! I received my order #${searchedOrder.id} and would love to share feedback / get styling assistance.`
+                    `Hello Pooja Lace HUB Surat! I received my order #${searchedOrder.id} and would love to share feedback / get styling assistance.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -325,7 +325,7 @@ export const OrderSection = () => {
                               isDeliveredState || isCompleted
                                 ? 'bg-emerald-600 text-white shadow-xs' 
                                 : isCurrent 
-                                  ? 'bg-[#9B1B30] text-white ring-4 ring-[#9B1B30]/20 shadow-md scale-105' 
+                                  ? 'bg-[#7A112A] text-white ring-4 ring-[#7A112A]/20 shadow-md scale-105' 
                                   : 'bg-neutral-100 text-neutral-400 border border-neutral-300'
                             }`}
                           >
@@ -343,7 +343,7 @@ export const OrderSection = () => {
                                 isDeliveredState
                                   ? 'text-emerald-900'
                                   : isCurrent 
-                                    ? 'text-[#9B1B30]' 
+                                    ? 'text-[#7A112A]' 
                                     : isCompleted 
                                       ? 'text-neutral-800' 
                                       : 'text-neutral-400'
@@ -449,7 +449,7 @@ export const OrderSection = () => {
                         navigate('/');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className="w-full sm:flex-1 py-3 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs font-semibold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full sm:flex-1 py-3 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs font-semibold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <ShoppingBag className="w-4 h-4" />
                       <span>Browse New Boutique Arrivals</span>

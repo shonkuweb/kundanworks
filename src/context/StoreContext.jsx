@@ -87,30 +87,37 @@ export const StoreProvider = ({ children }) => {
           parsed.whatsappNumber === '+91 85115 56115' ||
           parsed.whatsappNumber === '+91 85115 56155' ||
           parsed.whatsappNumber === '8511556155' ||
+          parsed.whatsappNumber === '+91 98557 86123' ||
+          parsed.whatsappNumber === '9855786123' ||
           !parsed.whatsappNumber
         ) {
-          parsed.whatsappNumber = '+91 98557 86123';
+          parsed.whatsappNumber = '+91 93133 06258';
         }
         if (
           !parsed.storeName ||
           parsed.storeName === 'KUNDAN WORKS' ||
           parsed.storeName === 'Kundan Work Creation' ||
-          parsed.storeName === 'Kundan Works'
+          parsed.storeName === 'Kundan Works' ||
+          parsed.storeName === 'RADHA SANG'
         ) {
-          parsed.storeName = 'RADHA SANG';
+          parsed.storeName = 'POOJA LACE HUB SURAT';
         }
         if (
           !parsed.tagline ||
           parsed.tagline === 'WEAR YOUR STORY' ||
-          parsed.tagline === 'Artisanal Ethnic & Western Wear'
+          parsed.tagline === 'Artisanal Ethnic & Western Wear' ||
+          parsed.tagline === 'GIRLISH & LADIES FASHION HUB'
         ) {
-          parsed.tagline = 'GIRLISH & LADIES FASHION HUB';
+          parsed.tagline = 'BANJARA • GOTA • HANDWORK • SURAT';
         }
-        if (!parsed.subHeading || parsed.subHeading === 'Tradition Meets Everyday Style') {
-          parsed.subHeading = 'Kurti | Cord Set | Tops';
+        if (!parsed.subHeading || parsed.subHeading === 'Tradition Meets Everyday Style' || parsed.subHeading === 'Kurti | Cord Set | Tops') {
+          parsed.subHeading = 'Unique Lace ✨ | Latkan ✨ | Brooches ✨ | Pillow Cover';
         }
-        parsed.location = 'Near bansi purri ala, Barnala';
-        parsed.instagram = 'radhasang_barnala';
+        parsed.location = 'U-2A, Regent Arcade (Mall), Ghod Dod Road, Surat-395007';
+        parsed.instagram = 'pooja_lace_hub_surat';
+        parsed.owner = 'Prem Singh Chouhan (@premsingh_chouhan_09)';
+        parsed.facebook = 'Pooja Lace Hub';
+        parsed.westernWear = 'pooja_western_wear';
         return parsed;
       }
       return INITIAL_CONFIG;

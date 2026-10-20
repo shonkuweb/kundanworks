@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Search, X, ShieldCheck, ShoppingBag, Sparkles, Phone, FileText } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import radhaSangLogo from '../assets/radha_sang_logo.png';
+import poojaLaceHubLogo from '../assets/pooja_lace_hub_logo.png';
 
-export const LotusIcon = ({ className = "w-6 h-6", color = "#A77D5E" }) => (
+export const LotusIcon = ({ className = "w-6 h-6", color = "#D4AF37" }) => (
   <svg 
     viewBox="0 0 48 36" 
     fill="none" 
@@ -15,31 +15,31 @@ export const LotusIcon = ({ className = "w-6 h-6", color = "#A77D5E" }) => (
       d="M24 2C24 2 20 12 20 22C20 25.5 21.8 28 24 28C26.2 28 28 25.5 28 22C28 12 24 2 24 2Z" 
       stroke={color} 
       strokeWidth="1.8" 
-      fill="#FAF8F5" 
+      fill="#FAF7F2" 
     />
     <path 
       d="M21 9C21 9 14 17 15 25C15.5 28 18 29.5 21 28.5C19 25 19 19 21 9Z" 
       stroke={color} 
       strokeWidth="1.6" 
-      fill="#FAF8F5" 
+      fill="#FAF7F2" 
     />
     <path 
       d="M27 9C27 9 34 17 33 25C32.5 28 30 29.5 27 28.5C29 25 29 19 27 9Z" 
       stroke={color} 
       strokeWidth="1.6" 
-      fill="#FAF8F5" 
+      fill="#FAF7F2" 
     />
     <path 
       d="M16 19C16 19 8 23 8 28C8 31 12 32 17 30C15 27 15.5 23 16 19Z" 
       stroke={color} 
       strokeWidth="1.4" 
-      fill="#FAF8F5" 
+      fill="#FAF7F2" 
     />
     <path 
       d="M32 19C32 19 40 23 40 28C40 31 36 32 31 30C33 27 32.5 23 32 19Z" 
       stroke={color} 
       strokeWidth="1.4" 
-      fill="#FAF8F5" 
+      fill="#FAF7F2" 
     />
     <path 
       d="M14 33C19 35 29 35 34 33" 
@@ -68,13 +68,13 @@ export const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0]/80 transition-all shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EAE0D4] transition-all shadow-xs">
         <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
           
           {/* Left: Drawer Toggle */}
           <button
             onClick={() => setIsDrawerOpen(true)}
-            className="p-2 -ml-1 text-[#1C1E21] hover:text-[#9B1B30] hover:bg-[#FDF2F4] rounded-full transition-colors cursor-pointer"
+            className="p-2 -ml-1 text-[#241A1C] hover:text-[#7A112A] hover:bg-[#FDF5F6] rounded-full transition-colors cursor-pointer"
             aria-label="Open Navigation Menu"
           >
             <Menu className="w-6 h-6 stroke-[1.8]" />
@@ -90,9 +90,9 @@ export const Header = () => {
             className="flex items-center justify-center cursor-pointer select-none group px-2 py-0.5"
           >
             <img 
-              src={radhaSangLogo} 
-              alt={storeConfig.storeName || 'Radha Sang'} 
-              className="h-12 sm:h-15 md:h-18 max-w-[200px] sm:max-w-[260px] md:max-w-[290px] object-contain group-hover:scale-105 transition-transform duration-300" 
+              src={poojaLaceHubLogo} 
+              alt={storeConfig.storeName || 'Pooja Lace HUB Surat'} 
+              className="h-11 sm:h-14 md:h-16 max-w-[210px] sm:max-w-[270px] md:max-w-[310px] object-contain group-hover:scale-105 transition-transform duration-300" 
             />
           </div>
 
@@ -100,7 +100,7 @@ export const Header = () => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsSearchOpen(prev => !prev)}
-              className="p-2 text-[#1C1E21] hover:text-[#9B1B30] hover:bg-[#FDF2F4] rounded-full transition-colors cursor-pointer"
+              className="p-2 text-[#241A1C] hover:text-[#7A112A] hover:bg-[#FDF5F6] rounded-full transition-colors cursor-pointer"
               aria-label="Search catalog"
             >
               <Search className="w-5 h-5 stroke-[2]" />
@@ -109,12 +109,12 @@ export const Header = () => {
             {/* Shopping Bag / Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-[#1C1E21] hover:text-[#9B1B30] hover:bg-[#FDF2F4] rounded-full transition-colors cursor-pointer touch-manipulation"
+              className="relative p-2 text-[#241A1C] hover:text-[#7A112A] hover:bg-[#FDF5F6] rounded-full transition-colors cursor-pointer touch-manipulation"
               aria-label="View Shopping Bag"
             >
               <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#9B1B30] text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs select-none">
+                <span className="absolute -top-0.5 -right-0.5 bg-[#7A112A] text-white text-[10px] font-bold min-w-4 h-4 px-1 rounded-full flex items-center justify-center shadow-xs select-none">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
@@ -123,9 +123,9 @@ export const Header = () => {
             <button
               onClick={() => navigate('/admin')}
               title="Admin Panel"
-              className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full bg-[#FDF2F4] hover:bg-[#FCE4E8] text-[#831427] border border-[#F9CCD4] transition-all cursor-pointer shadow-xs active:scale-95"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold tracking-wide uppercase px-3.5 py-1.5 rounded-full bg-[#FDF5F6] hover:bg-[#FBE8EC] text-[#7A112A] border border-[#F6CCD5] transition-all cursor-pointer shadow-xs active:scale-95"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#9B1B30]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>Admin</span>
             </button>
           </div>
@@ -133,7 +133,7 @@ export const Header = () => {
 
         {/* Expandable Search Bar */}
         {isSearchOpen && (
-          <div className="border-t border-[#EAE0D4] bg-[#F7F2EC] px-4 py-2.5 animate-fadeIn">
+          <div className="border-t border-[#EAE0D4] bg-[#FAF7F2] px-4 py-2.5 animate-fadeIn">
             <div className="max-w-md mx-auto relative flex items-center">
               <Search className="w-4 h-4 text-brand-600 absolute left-3 pointer-events-none" />
               <input
@@ -143,9 +143,9 @@ export const Header = () => {
                   setSearchQuery(e.target.value);
                   navigate('/');
                 }}
-                placeholder="Search kurtas, sarees, linen shirts, bottoms..."
+                placeholder="Search unique laces, latkans, brooches, banjara patches, gota..."
                 autoFocus
-                className="w-full bg-white border border-[#DAC6B4] rounded-full pl-9 pr-8 py-2 text-sm text-[#282422] placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="w-full bg-white border border-[#DAC6B4] rounded-full pl-9 pr-8 py-2 text-sm text-[#241A1C] placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
               {searchQuery && (
                 <button
@@ -168,7 +168,7 @@ export const Header = () => {
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
           />
 
-          <div className="relative w-72 sm:w-80 max-w-[85vw] bg-[#FAF8F5] h-full shadow-2xl z-10 flex flex-col justify-between overflow-y-auto">
+          <div className="relative w-72 sm:w-80 max-w-[85vw] bg-[#FAF7F2] h-full shadow-2xl z-10 flex flex-col justify-between overflow-y-auto">
             <div className="p-5">
               <div className="flex items-center justify-between pb-4 border-b border-[#EAE0D4]">
                 <div 
@@ -180,14 +180,14 @@ export const Header = () => {
                   className="cursor-pointer"
                 >
                   <img 
-                    src={radhaSangLogo} 
-                    alt="Radha Sang" 
-                    className="h-11 w-auto object-contain"
+                    src={poojaLaceHubLogo} 
+                    alt={storeConfig.storeName || 'Pooja Lace HUB'} 
+                    className="h-10 w-auto object-contain"
                   />
                 </div>
                 <button 
                   onClick={() => setIsDrawerOpen(false)}
-                  className="p-1.5 rounded-full text-neutral-500 hover:bg-[#F0FDFA] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-full text-neutral-500 hover:bg-[#FDF5F6] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -200,10 +200,10 @@ export const Header = () => {
                     navigate('/');
                     setIsDrawerOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-brand-900 hover:bg-[#F2EAE0] transition-colors flex items-center justify-between cursor-pointer"
+                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-brand-900 hover:bg-[#F4EBE0] transition-colors flex items-center justify-between cursor-pointer"
                 >
                   <span>Home Collection</span>
-                  <Sparkles className="w-4 h-4 text-brand-500" />
+                  <Sparkles className="w-4 h-4 text-brand-gold" />
                 </button>
 
                 <button
@@ -211,7 +211,7 @@ export const Header = () => {
                     setIsDrawerOpen(false);
                     setIsCartOpen(true);
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-[#2B2522] hover:bg-[#F2EAE0] transition-colors flex items-center justify-between cursor-pointer"
+                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-[#241A1C] hover:bg-[#F4EBE0] transition-colors flex items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <ShoppingBag className="w-4 h-4 text-brand-700" />
@@ -233,7 +233,7 @@ export const Header = () => {
                     navigate('/order');
                     setIsDrawerOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-[#3E3834] hover:bg-[#F2EAE0] transition-colors flex items-center gap-2.5"
+                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-[#3E3834] hover:bg-[#F4EBE0] transition-colors flex items-center gap-2.5"
                 >
                   <FileText className="w-4 h-4 text-brand-600" />
                   <span>Orders & Live Tracking</span>
@@ -244,37 +244,38 @@ export const Header = () => {
                     setIsContactOpen(true);
                     setIsDrawerOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-[#3E3834] hover:bg-[#F2EAE0] transition-colors flex items-center gap-2.5"
+                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-[#3E3834] hover:bg-[#F4EBE0] transition-colors flex items-center gap-2.5"
                 >
                   <Phone className="w-4 h-4 text-brand-600" />
-                  <span>Contact Radha Sang</span>
+                  <span>Contact Pooja Lace HUB</span>
                 </button>
 
-                {/* Boutique Barnala Info Card */}
-                <div className="mt-4 p-3 rounded-xl bg-[#F4ECE3] border border-[#E7DCCE] text-xs space-y-1">
-                  <div className="font-semibold text-[#2B2522] flex items-center gap-1.5">
-                    <span>📍 Barnala Boutique Studio</span>
+                {/* Boutique Surat Info Card */}
+                <div className="mt-4 p-3 rounded-xl bg-white border border-[#EAE0D4] text-xs space-y-1 shadow-xs">
+                  <div className="font-semibold text-[#241A1C] flex items-center gap-1.5">
+                    <span>📍 Surat Boutique & Wholesale Hub</span>
                   </div>
-                  <p className="text-[11px] text-[#67564A]">Near bansi purri ala, Barnala</p>
-                  <p className="text-[11px] text-[#67564A]">WhatsApp / Call: <strong className="text-[#1C1E21]">+91 98557 86123</strong></p>
-                  <p className="text-[11px] text-[#9B1B30] font-medium">Instagram: @radhasang_barnala</p>
+                  <p className="text-[11px] text-[#67564A]">U-2A, Regent Arcade (Mall), Ghod Dod Road, Surat-395007</p>
+                  <p className="text-[11px] text-[#67564A]">WhatsApp / Call: <strong className="text-[#1C1E21]">+91 93133 06258</strong></p>
+                  <p className="text-[11px] text-[#7A112A] font-medium">Instagram: @pooja_lace_hub_surat</p>
+                  <p className="text-[10px] text-[#8C7667]">Owned by: @premsingh_chouhan_09</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-5 border-t border-[#EAE0D4] bg-[#F4ECE3]/50">
+            <div className="p-5 border-t border-[#EAE0D4] bg-white/70">
               <button
                 onClick={() => {
                   navigate('/admin');
                   setIsDrawerOpen(false);
                 }}
-                className="w-full py-2.5 px-3 bg-[#241F1C] hover:bg-[#38312D] text-white rounded-lg text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+                className="w-full py-2.5 px-3 bg-[#18060B] hover:bg-[#2C0C14] text-white rounded-lg text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
               >
-                <ShieldCheck className="w-4 h-4 text-[#D9B58B]" />
+                <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
                 <span>Open Admin Portal</span>
               </button>
               <p className="text-[10px] text-center text-neutral-500 mt-2.5 font-light">
-                Manage Products & Orders • Radha Sang
+                Manage Products & Orders • Pooja Lace HUB Surat
               </p>
             </div>
           </div>

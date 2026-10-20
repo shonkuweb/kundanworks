@@ -1,18 +1,28 @@
-// Initial data for Radha Sang (Girlish & Ladies fashion hub)
-export const INITIAL_CATEGORIES = [];
+// Initial data for Pooja Lace HUB Surat (Banjara, Gota, Handwork & Designer Laces)
+export const INITIAL_CATEGORIES = [
+  { id: 'cat_lace', name: 'Unique Lace ✨', slug: 'unique-lace' },
+  { id: 'cat_latkan', name: 'Latkan ✨', slug: 'latkan' },
+  { id: 'cat_brooches', name: 'Brooches ✨', slug: 'brooches' },
+  { id: 'cat_banjara', name: 'Banjara & Gota Work', slug: 'banjara-gota' },
+  { id: 'cat_home', name: 'Pillow Cover & Toran', slug: 'pillow-cover' },
+];
 
 export const INITIAL_PRODUCTS = [];
 
 export const INITIAL_CONFIG = {
-  storeName: 'RADHA SANG',
-  tagline: 'GIRLISH & LADIES FASHION HUB',
-  subHeading: 'Kurti | Cord Set | Tops',
-  heroSubtitle: 'Best Price Guaranteed • Pan India Delivery',
-  promoBanner: 'Best Price Guaranteed • Pan India Delivery',
-  whatsappNumber: '+91 98557 86123',
-  supportEmail: 'contact@radhasang.com',
-  location: 'Near bansi purri ala, Barnala',
-  instagram: 'radhasang_barnala',
+  storeName: 'POOJA LACE HUB SURAT',
+  shortName: 'Pooja Lace HUB',
+  tagline: 'BANJARA • GOTA • HANDWORK • SURAT',
+  subHeading: 'Unique Lace ✨ | Latkan ✨ | Brooches ✨ | Pillow Cover',
+  heroSubtitle: 'Surat Wholesale & Retail Hub • Pan India Express Delivery',
+  promoBanner: 'Surat Wholesale & Retail Hub • Pan India Express Delivery',
+  whatsappNumber: '+91 93133 06258',
+  supportEmail: 'poojalacehubsurat@gmail.com',
+  location: 'U-2A, Regent Arcade (Mall), Ghod Dod Road, Surat-395007',
+  instagram: 'pooja_lace_hub_surat',
+  owner: 'Prem Singh Chouhan (@premsingh_chouhan_09)',
+  facebook: 'Pooja Lace Hub',
+  westernWear: 'pooja_western_wear',
   shonkuWebDetails: {
     agencyName: 'ShonkuWEB Technologies',
     role: 'Official Digital Partner & Payment Gateway Integrator',

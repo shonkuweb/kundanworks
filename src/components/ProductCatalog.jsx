@@ -73,19 +73,19 @@ export const ProductCatalog = () => {
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
           <div className="py-14 sm:py-18 text-center bg-white rounded-3xl border border-[#EAE0D4] p-6 sm:p-10 shadow-xs max-w-xl mx-auto space-y-4">
-            <div className="w-14 h-14 mx-auto rounded-full bg-[#FDF2F4] border border-[#F9CCD4] flex items-center justify-center text-[#9B1B30]">
-              <Sparkles className="w-6 h-6 text-[#9B1B30]" />
+            <div className="w-14 h-14 mx-auto rounded-full bg-[#FDF5F6] border border-[#F6CCD5] flex items-center justify-center text-[#7A112A]">
+              <Sparkles className="w-6 h-6 text-[#D4AF37]" />
             </div>
             <div>
-              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-[#C5A059] block mb-1">
-                Radha Sang • Barnala Studio
+              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-[#D4AF37] block mb-1">
+                Pooja Lace HUB • Surat Studio
               </span>
               <h3 className="font-serif text-xl sm:text-2xl text-[#1E1A17] font-medium">
-                {products.length === 0 ? 'Fresh Boutique Arrivals Daily' : 'No pieces match your filter'}
+                {products.length === 0 ? 'Fresh Artisan Arrivals Daily' : 'No pieces match your filter'}
               </h3>
               <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto mt-2 font-light leading-relaxed">
                 {products.length === 0 
-                  ? 'Our Barnala studio curates new Kurtis, Co-ord Sets, and Tops daily. Reach out directly on WhatsApp to explore today’s collection or place custom orders.'
+                  ? 'Our Surat studio curates exclusive Unique Laces, Designer Latkans, Brooches, Banjara patches, and Gota handwork daily. Reach out directly on WhatsApp to explore today’s collection or place custom orders.'
                   : 'Try clearing your search query or category filter to view our complete collection.'}
               </p>
             </div>
@@ -94,18 +94,18 @@ export const ProductCatalog = () => {
               {activeCategory !== 'all' ? (
                 <button
                   onClick={() => setActiveCategory('all')}
-                  className="px-6 py-3 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-xs transition-colors cursor-pointer"
+                  className="px-6 py-3 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs uppercase tracking-wider font-semibold shadow-xs transition-colors cursor-pointer"
                 >
                   View All Collections
                 </button>
               ) : (
                 <a
-                  href="https://wa.me/919855786123?text=Hello%20Radha%20Sang!%20I%20would%20like%20to%20see%20latest%20pieces%20available%20in%20the%20Barnala%20studio."
+                  href={`https://wa.me/919313306258?text=${encodeURIComponent('Hello Pooja Lace HUB Surat! I would like to explore your latest laces, latkans and Banjara collection.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-6 py-3 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-widest font-semibold shadow-md transition-all active:scale-95 inline-flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs uppercase tracking-widest font-semibold shadow-md transition-all active:scale-95 inline-flex items-center justify-center gap-2"
                 >
-                  <span>WhatsApp Boutique (9855786123)</span>
+                  <span>WhatsApp Studio (+91 93133 06258)</span>
                 </a>
               )}
             </div>
@@ -173,7 +173,7 @@ export const ProductCatalog = () => {
                   <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <p className="text-[10px] tracking-wider uppercase text-neutral-400 font-medium mb-1 line-clamp-1">
-                        Radha Sang • {(product.category || product.categorySlug || 'Collection').toString().replace(/-/g, ' ')}
+                        Pooja Lace HUB • {(product.category || product.categorySlug || 'Collection').toString().replace(/-/g, ' ')}
                       </p>
                       
                       {/* Title - Links to dedicated product page */}
@@ -222,7 +222,7 @@ export const ProductCatalog = () => {
                             addToCart(product, 1);
                             setIsCartOpen(true);
                           }}
-                          className="p-2 sm:px-4 sm:py-1.5 bg-[#1C1E21] hover:bg-[#9B1B30] text-white rounded-full text-[11px] font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-all active:scale-95 shadow-xs cursor-pointer"
+                          className="p-2 sm:px-4 sm:py-1.5 bg-[#18060B] hover:bg-[#7A112A] text-white rounded-full text-[11px] font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-all active:scale-95 shadow-xs cursor-pointer"
                           aria-label={`Add ${product.title} to bag`}
                         >
                           <ShoppingBag className="w-3.5 h-3.5" />

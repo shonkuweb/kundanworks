@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
 # ================================================================
-# Automated Deployment Script for Radha Sang on VPS
-# Domain: radhasang.shonku.site
+# Automated Deployment Script for Pooja Lace HUB Surat on VPS
 # Stack: PostgreSQL 16 + Express REST API + React SPA Nginx
 # ================================================================
 
 set -e
 
 echo "=========================================="
-echo " Starting Radha Sang Full-Stack Deploy   "
-echo " Domain: radhasang.shonku.site           "
+echo " Starting Pooja Lace HUB Full-Stack Deploy"
 echo " Stack: PostgreSQL + Node API + Web SPA   "
 echo "=========================================="
 

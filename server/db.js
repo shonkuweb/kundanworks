@@ -118,7 +118,7 @@ export async function initDB(maxRetries = 15, delayMs = 2000) {
             stage INTEGER DEFAULT 1,
             status TEXT DEFAULT 'Order Placed',
             status_title TEXT DEFAULT 'Order Placed & Logged',
-            status_description TEXT DEFAULT 'Your order has been recorded in the Radha Sang boutique system.',
+            status_description TEXT DEFAULT 'Your order has been recorded in the Pooja Lace HUB boutique system.',
             courier_name TEXT DEFAULT 'Boutique Express Logistics',
             awb_number TEXT DEFAULT '',
             estimated_delivery TEXT DEFAULT 'Estimated 4-6 business days',

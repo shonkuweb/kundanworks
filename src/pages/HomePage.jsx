@@ -14,11 +14,13 @@ const InstagramIcon = ({ className = "w-3.5 h-3.5" }) => (
 
 export const HomePage = () => {
   const { storeConfig } = useStore();
-  const phone = storeConfig?.whatsappNumber || '+91 98557 86123';
+  const phone = storeConfig?.whatsappNumber || '+91 93133 06258';
   const cleanPhone = phone.replace(/[^0-9]/g, '');
+  const locationText = storeConfig?.location || 'U-2A, Regent Arcade (Mall), Ghod Dod Road, Surat-395007';
+  const instagramHandle = storeConfig?.instagram || 'pooja_lace_hub_surat';
 
   return (
-    <div className="w-full bg-[#FAF8F5]">
+    <div className="w-full bg-[#FAF7F2]">
       {/* 
         1. HERO BANNER: Full-width edge-to-edge on mobile, naturally placed without boxes,
         no CTAs, no overlays, pure 1:1 banner image from Cloudflare R2.
@@ -26,34 +28,34 @@ export const HomePage = () => {
       <HeroSection />
 
       {/* 
-        2. ELEGANT BOUTIQUE BRAND STRIP:
+        2. ELEGANT SURAT BOUTIQUE BRAND STRIP:
         Clean, minimal luxury sub-bar giving instant boutique credibility and direct contacts.
       */}
       <div className="border-y border-[#EAE0D4] bg-white/70 backdrop-blur-xs py-2.5 px-4">
-        <div className="max-w-2xl mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[11px] sm:text-xs text-[#5C4538]">
+        <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[11px] sm:text-xs text-[#5C4538]">
           <span className="flex items-center gap-1.5 font-medium">
-            <MapPin className="w-3.5 h-3.5 text-[#9B1B30]" />
-            <span>Near bansi purri ala, Barnala</span>
+            <MapPin className="w-3.5 h-3.5 text-[#7A112A]" />
+            <span>{locationText}</span>
           </span>
 
           <a 
             href={`https://wa.me/${cleanPhone}`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 font-semibold text-[#1C1E21] hover:text-[#9B1B30] transition-colors"
+            className="flex items-center gap-1.5 font-semibold text-[#241A1C] hover:text-[#7A112A] transition-colors"
           >
-            <Phone className="w-3.5 h-3.5 text-[#9B1B30]" />
+            <Phone className="w-3.5 h-3.5 text-[#7A112A]" />
             <span>{phone}</span>
           </a>
 
           <a 
-            href="https://instagram.com/radhasang_barnala" 
+            href={`https://instagram.com/${instagramHandle}`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[#7A6455] hover:text-[#9B1B30] transition-colors font-medium"
+            className="flex items-center gap-1.5 text-[#7A6455] hover:text-[#7A112A] transition-colors font-medium"
           >
-            <InstagramIcon className="w-3.5 h-3.5 text-[#C5A059]" />
-            <span>@radhasang_barnala</span>
+            <InstagramIcon className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>@{instagramHandle}</span>
           </a>
         </div>
       </div>

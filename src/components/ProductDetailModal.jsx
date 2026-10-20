@@ -145,7 +145,7 @@ export const ProductDetailModal = () => {
                   onClick={() => setActiveImageIndex(idx)}
                   className={`relative w-14 h-16 rounded-lg overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 bg-[#EFE8DE] ${
                     activeImageIndex === idx
-                      ? 'border-[#9B1B30] ring-2 ring-[#9B1B30]/30 scale-102 opacity-100 shadow-xs'
+                      ? 'border-[#7A112A] ring-2 ring-[#7A112A]/30 scale-102 opacity-100 shadow-xs'
                       : 'border-[#DACABE] opacity-60 hover:opacity-100'
                   }`}
                   title={`View photo ${idx + 1}`}
@@ -164,7 +164,7 @@ export const ProductDetailModal = () => {
             
             <div>
               <p className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#866D5B] mb-1">
-                Radha Sang Exclusive
+                Pooja Lace HUB Exclusive
               </p>
               <h2 className="font-serif text-xl sm:text-2xl text-[#221B16] font-normal leading-snug">
                 {selectedProduct.title}
@@ -216,7 +216,7 @@ export const ProductDetailModal = () => {
               ) : (
                 <button
                   onClick={handleAddAndOpenCart}
-                  className="flex-1 py-3.5 px-4 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md shadow-[#9B1B30]/25 transition-all active:scale-95 cursor-pointer"
+                  className="flex-1 py-3.5 px-4 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-md shadow-[#7A112A]/25 transition-all active:scale-95 cursor-pointer"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Add to Bag • ₹{(selectedProduct.price * quantity).toLocaleString('en-IN')}</span>

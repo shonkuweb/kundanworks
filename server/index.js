@@ -632,7 +632,7 @@ app.post('/api/orders', async (req, res) => {
       stage = 1,
       status = 'Order Placed',
       statusTitle = 'Order Placed & Logged',
-      statusDescription = 'Your order has been recorded in the Radha Sang boutique system.'
+      statusDescription = 'Your order has been recorded in the Pooja Lace HUB boutique system.'
     } = req.body;
 
     if (!customerName || !customerPhone) {
@@ -1088,7 +1088,7 @@ async function startServer() {
   }
 
   app.listen(PORT, () => {
-    console.log(`🚀 [Server] Radha Sang API running on port ${PORT}`);
+    console.log(`🚀 [Server] Pooja Lace HUB API running on port ${PORT}`);
   });
 }
 

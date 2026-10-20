@@ -31,7 +31,7 @@ import {
 import { useStore, ORDER_STAGES } from '../context/StoreContext';
 import { FashionPlaceholder } from './Placeholders';
 import { api } from '../services/api';
-import radhaSangLogo from '../assets/radha_sang_logo.png';
+import poojaLaceHubLogo from '../assets/pooja_lace_hub_logo.png';
 
 // Client-side image compression helper: keeps aspect ratio, max 1200px, quality JPEG
 const compressImage = (file) => {
@@ -430,7 +430,7 @@ export const AdminPanel = ({ onClose }) => {
       .map(i => `• ${i.product?.title || i.title || 'Item'} (x${i.quantity || 1})`)
       .join('\n');
 
-    const msg = `Hello ${order.customerName || 'Customer'}! Thank you for ordering from Radha Sang (Order #${order.id}).\n\nItems:\n${itemsText}\n\nTotal: ₹${(order.total || 0).toLocaleString('en-IN')}\nStatus: ${order.statusTitle || 'Processing'}\n\nWe are preparing your package!`;
+    const msg = `Hello ${order.customerName || 'Customer'}! Thank you for ordering from Pooja Lace HUB Surat (Order #${order.id}).\n\nItems:\n${itemsText}\n\nTotal: ₹${(order.total || 0).toLocaleString('en-IN')}\nStatus: ${order.statusTitle || 'Processing'}\n\nWe are preparing your package!`;
     
     const url = `https://wa.me/${phoneWithCode}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
@@ -466,7 +466,7 @@ export const AdminPanel = ({ onClose }) => {
     return (
       <div className="fixed inset-0 z-50 bg-[#1C1E21] flex items-center justify-center p-4">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 text-[#9B1B30] animate-spin mx-auto mb-3" />
+          <Loader2 className="w-8 h-8 text-[#7A112A] animate-spin mx-auto mb-3" />
           <p className="text-xs text-neutral-300 font-medium">Verifying admin session...</p>
         </div>
       </div>
@@ -476,7 +476,7 @@ export const AdminPanel = ({ onClose }) => {
   // 2. Lock Screen Guard (Zero password stored in frontend)
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#1C1E21]/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans">
+      <div className="fixed inset-0 z-50 bg-[#18060B]/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans">
         <div className="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#E2E8F0] relative my-auto animate-fadeIn">
           
           {/* Close / Return button */}
@@ -490,10 +490,10 @@ export const AdminPanel = ({ onClose }) => {
 
           {/* Logo / Lock Badge */}
           <div className="flex flex-col items-center text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#9B1B30]/20 to-[#FD9AA7]/20 flex items-center justify-center mb-3 text-[#9B1B30] border border-[#9B1B30]/20 shadow-xs">
-              <Lock className="w-7 h-7" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#7A112A]/25 to-[#F6CCD5]/30 flex items-center justify-center mb-3 text-[#7A112A] border border-[#7A112A]/30 shadow-xs">
+              <Lock className="w-7 h-7 text-[#7A112A]" />
             </div>
-            <h2 className="text-xl font-bold text-[#1C1E21] tracking-tight">Admin Access</h2>
+            <h2 className="text-xl font-bold text-[#241A1C] tracking-tight">Admin Access</h2>
             <p className="text-xs text-neutral-500 mt-1">
               Protected area. Enter admin password to manage products and orders.
             </p>
@@ -523,7 +523,7 @@ export const AdminPanel = ({ onClose }) => {
                   }}
                   placeholder="Enter admin password"
                   autoFocus
-                  className="w-full pl-4 pr-11 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30 focus:border-[#9B1B30] text-[#1C1E21]"
+                  className="w-full pl-4 pr-11 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30 focus:border-[#7A112A] text-[#241A1C]"
                 />
                 <button
                   type="button"
@@ -539,7 +539,7 @@ export const AdminPanel = ({ onClose }) => {
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full py-3.5 bg-[#9B1B30] hover:bg-[#831427] active:scale-98 disabled:opacity-60 text-white rounded-full text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 bg-[#7A112A] hover:bg-[#640B20] active:scale-98 disabled:opacity-60 text-white rounded-full text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {isLoggingIn ? (
                 <>
@@ -557,7 +557,7 @@ export const AdminPanel = ({ onClose }) => {
 
           {/* Security footnote */}
           <div className="mt-6 pt-4 border-t border-[#F1F5F9] text-center flex items-center justify-center gap-1.5 text-[11px] text-neutral-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#9B1B30]" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>End-to-end cryptographic verification</span>
           </div>
         </div>
@@ -568,17 +568,17 @@ export const AdminPanel = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#FAFCFD] flex flex-col font-sans">
       
-      {/* Top Mobile-Friendly Admin Navigation Bar */}
-      <header className="sticky top-0 z-20 bg-[#1C1E21] text-white border-b border-[#2C3036] shadow-md">
+      {/* Top Mobile-Friendly Admin Navigation Bar (Royal Velvet Theme) */}
+      <header className="sticky top-0 z-20 bg-[#18060B] text-white border-b border-[#330D17] shadow-md">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           
           {/* Logo & Portal Badge */}
           <div className="flex items-center gap-3">
-            <div className="bg-white/10 p-1.5 rounded-full backdrop-blur-xs">
+            <div className="bg-white/10 p-1 rounded-xl backdrop-blur-xs">
               <img 
-                src={radhaSangLogo} 
-                alt="Radha Sang" 
-                className="h-8 w-auto object-contain" 
+                src={poojaLaceHubLogo} 
+                alt="Pooja Lace HUB Surat" 
+                className="h-9 w-auto object-contain" 
               />
             </div>
             <div>
@@ -586,12 +586,12 @@ export const AdminPanel = ({ onClose }) => {
                 <h1 className="text-sm sm:text-base font-semibold tracking-wide text-white">
                   Admin Panel
                 </h1>
-                <span className="text-[10px] bg-[#9B1B30] text-white px-2.5 py-0.5 rounded-full font-medium tracking-wide">
+                <span className="text-[10px] bg-[#7A112A] text-white px-2.5 py-0.5 rounded-full font-medium tracking-wide border border-[#D4AF37]/30">
                   Store Manager
                 </span>
               </div>
               <p className="text-[10px] text-neutral-400 font-light hidden sm:block">
-                Super simple management for Boutique Products & Orders
+                Super simple management for Surat Laces, Products & Orders
               </p>
             </div>
           </div>
@@ -632,7 +632,7 @@ export const AdminPanel = ({ onClose }) => {
             </button>
             <button
               onClick={handleClose}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#2E333D] hover:bg-[#3E4552] text-white rounded-full text-xs font-medium transition-all shadow-xs active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#2D0F16] hover:bg-[#451822] text-white rounded-full text-xs font-medium transition-all shadow-xs active:scale-95 cursor-pointer border border-[#7A112A]/40"
             >
               <X className="w-4 h-4" />
               <span>Close</span>
@@ -648,7 +648,7 @@ export const AdminPanel = ({ onClose }) => {
             onClick={() => setAdminTab('products')}
             className={`px-4 py-2 text-xs font-medium rounded-full flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
               adminTab === 'products'
-                ? 'bg-[#9B1B30] text-white shadow-sm font-semibold'
+                ? 'bg-[#7A112A] text-white shadow-sm font-semibold'
                 : 'text-neutral-300 hover:text-white hover:bg-white/10'
             }`}
           >
@@ -661,14 +661,14 @@ export const AdminPanel = ({ onClose }) => {
             onClick={() => setAdminTab('orders')}
             className={`px-4 py-2 text-xs font-medium rounded-full flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
               adminTab === 'orders'
-                ? 'bg-[#9B1B30] text-white shadow-sm font-semibold'
+                ? 'bg-[#7A112A] text-white shadow-sm font-semibold'
                 : 'text-neutral-300 hover:text-white hover:bg-white/10'
             }`}
           >
             <ShoppingBag className="w-4 h-4" />
             <span>Orders ({orders.length})</span>
             {pendingOrdersCount > 0 && (
-              <span className="px-2 py-0.5 bg-[#FD9AA7] text-neutral-900 font-bold text-[10px] rounded-full animate-pulse">
+              <span className="px-2 py-0.5 bg-[#F6CCD5] text-neutral-900 font-bold text-[10px] rounded-full animate-pulse">
                 {pendingOrdersCount} new
               </span>
             )}
@@ -679,7 +679,7 @@ export const AdminPanel = ({ onClose }) => {
             onClick={() => setAdminTab('settings')}
             className={`px-4 py-2 text-xs font-medium rounded-full flex items-center gap-2 transition-all whitespace-nowrap cursor-pointer ${
               adminTab === 'settings'
-                ? 'bg-[#9B1B30] text-white shadow-sm font-semibold'
+                ? 'bg-[#7A112A] text-white shadow-sm font-semibold'
                 : 'text-neutral-300 hover:text-white hover:bg-white/10'
             }`}
           >
@@ -710,7 +710,7 @@ export const AdminPanel = ({ onClose }) => {
                   value={adminSearch}
                   onChange={(e) => setAdminSearch(e.target.value)}
                   placeholder="Search products by name..."
-                  className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-full text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30 focus:border-[#9B1B30]"
+                  className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-full text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30 focus:border-[#7A112A]"
                 />
                 {adminSearch && (
                   <button 
@@ -725,7 +725,7 @@ export const AdminPanel = ({ onClose }) => {
               {/* Add Product Button with Curve Edges */}
               <button
                 onClick={handleOpenAddProduct}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
               >
                 <Plus className="w-4 h-4 stroke-[2.5]" />
                 <span>Add Product</span>
@@ -742,7 +742,7 @@ export const AdminPanel = ({ onClose }) => {
                 return (
                   <div 
                     key={prod.id} 
-                    className="bg-white rounded-2xl border border-[#E2E8F0] p-3.5 shadow-xs hover:border-[#9B1B30]/50 transition-all flex flex-col justify-between"
+                    className="bg-white rounded-2xl border border-[#E2E8F0] p-3.5 shadow-xs hover:border-[#7A112A]/50 transition-all flex flex-col justify-between"
                   >
                     <div>
                       {/* Top row: Thumbnail & Basic Info */}
@@ -777,7 +777,7 @@ export const AdminPanel = ({ onClose }) => {
                           </h4>
 
                           <div className="flex items-baseline gap-2 mt-1.5">
-                            <span className="font-bold text-base text-[#9B1B30]">
+                            <span className="font-bold text-base text-[#7A112A]">
                               ₹{Number(prod.price).toLocaleString('en-IN')}
                             </span>
                             {prod.originalPrice > prod.price && (
@@ -828,7 +828,7 @@ export const AdminPanel = ({ onClose }) => {
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleOpenEditProduct(prod)}
-                          className="inline-flex items-center gap-1 px-3.5 py-1.5 text-[11px] font-medium text-[#9B1B30] hover:text-white hover:bg-[#9B1B30] bg-[#FDF2F4] rounded-full transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 px-3.5 py-1.5 text-[11px] font-medium text-[#7A112A] hover:text-white hover:bg-[#7A112A] bg-[#FDF5F6] rounded-full transition-colors cursor-pointer"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
                           <span>Edit</span>
@@ -861,7 +861,7 @@ export const AdminPanel = ({ onClose }) => {
                   </p>
                   <button
                     onClick={handleOpenAddProduct}
-                    className="px-5 py-2.5 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs font-semibold shadow-sm cursor-pointer"
+                    className="px-5 py-2.5 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs font-semibold shadow-sm cursor-pointer"
                   >
                     + Add Product
                   </button>
@@ -887,7 +887,7 @@ export const AdminPanel = ({ onClose }) => {
                   value={orderSearchQuery}
                   onChange={(e) => setOrderSearchQuery(e.target.value)}
                   placeholder="Search by order ID, customer name, phone..."
-                  className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-full text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30 focus:border-[#9B1B30]"
+                  className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-full text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30 focus:border-[#7A112A]"
                 />
               </div>
 
@@ -930,7 +930,7 @@ export const AdminPanel = ({ onClose }) => {
                         ? 'border-amber-300 ring-1 ring-amber-100' 
                         : isRejected 
                           ? 'border-rose-200' 
-                          : 'border-[#E2E8F0] hover:border-[#9B1B30]/50'
+                          : 'border-[#E2E8F0] hover:border-[#7A112A]/50'
                     }`}
                   >
                     <div>
@@ -987,7 +987,7 @@ export const AdminPanel = ({ onClose }) => {
                         <span className="text-neutral-500">
                           {order.items?.length || 0} {(order.items?.length === 1 ? 'item' : 'items')}
                         </span>
-                        <span className="font-bold text-base text-[#9B1B30]">
+                        <span className="font-bold text-base text-[#7A112A]">
                           ₹{(order.total || 0).toLocaleString('en-IN')}
                         </span>
                       </div>
@@ -997,7 +997,7 @@ export const AdminPanel = ({ onClose }) => {
                         <div className="mt-3 p-2.5 bg-[#F0FDFA] rounded-xl border border-[#CCFBF1]">
                           <div className="flex items-center justify-between text-[11px] text-neutral-600 mb-2 font-medium">
                             <span>Stage: <strong>{currentStageObj.label}</strong></span>
-                            <span className="text-[#9B1B30] font-semibold">{order.currentStep || 1}/4</span>
+                            <span className="text-[#7A112A] font-semibold">{order.currentStep || 1}/4</span>
                           </div>
                           
                           {/* 4 Step Buttons - Curve Edged & Easy to Tap on Mobile */}
@@ -1013,7 +1013,7 @@ export const AdminPanel = ({ onClose }) => {
                                   onClick={() => updateOrderStage(order.id, st.step)}
                                   className={`py-1.5 px-1 rounded-lg text-[10px] font-semibold text-center transition-all cursor-pointer ${
                                     isActive
-                                      ? 'bg-[#9B1B30] text-white shadow-xs'
+                                      ? 'bg-[#7A112A] text-white shadow-xs'
                                       : isDone
                                         ? 'bg-emerald-100 text-emerald-800'
                                         : 'bg-white text-neutral-500 border border-neutral-200 hover:bg-neutral-50'
@@ -1139,10 +1139,10 @@ export const AdminPanel = ({ onClose }) => {
                     <Phone className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
                     <input
                       type="text"
-                      value={storeConfig.whatsappNumber || '9855786123'}
+                      value={storeConfig.whatsappNumber || '9313306258'}
                       onChange={(e) => setStoreConfig(prev => ({ ...prev, whatsappNumber: e.target.value }))}
-                      className="w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
-                      placeholder="e.g. 9855786123"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
+                      placeholder="e.g. 9313306258"
                     />
                   </div>
                   <p className="text-[11px] text-neutral-400 mt-1">
@@ -1157,9 +1157,9 @@ export const AdminPanel = ({ onClose }) => {
                   </label>
                   <input
                     type="text"
-                    value={storeConfig.storeName || 'Radha Sang'}
+                    value={storeConfig.storeName || 'Pooja Lace HUB Surat'}
                     onChange={(e) => setStoreConfig(prev => ({ ...prev, storeName: e.target.value }))}
-                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                   />
                 </div>
 
@@ -1170,9 +1170,9 @@ export const AdminPanel = ({ onClose }) => {
                   </label>
                   <input
                     type="text"
-                    value={storeConfig.tagline || 'Girlish & Ladies Fashion Hub'}
+                    value={storeConfig.tagline || 'BANJARA • GOTA • HANDWORK • SURAT'}
                     onChange={(e) => setStoreConfig(prev => ({ ...prev, tagline: e.target.value }))}
-                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                   />
                 </div>
 
@@ -1183,9 +1183,9 @@ export const AdminPanel = ({ onClose }) => {
                   </label>
                   <input
                     type="text"
-                    value={storeConfig.location || 'Near bansi purri ala, Barnala'}
+                    value={storeConfig.location || 'U-2A, Regent Arcade (Mall), Ghod Dod Road, Surat-395007'}
                     onChange={(e) => setStoreConfig(prev => ({ ...prev, location: e.target.value }))}
-                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                    className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                   />
                 </div>
 
@@ -1194,7 +1194,7 @@ export const AdminPanel = ({ onClose }) => {
                   <button
                     type="button"
                     onClick={() => showToast('Store settings saved successfully!')}
-                    className="w-full py-3 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
+                    className="w-full py-3 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
                   >
                     Save Store Settings
                   </button>
@@ -1206,7 +1206,7 @@ export const AdminPanel = ({ onClose }) => {
             {/* 2. Admin Security & Password Card (Super Secure) */}
             <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-6 shadow-xs space-y-4">
               <div className="flex items-center gap-3 pb-3 border-b border-[#F1F5F9]">
-                <div className="w-9 h-9 rounded-full bg-[#9B1B30]/10 flex items-center justify-center text-[#9B1B30]">
+                <div className="w-9 h-9 rounded-full bg-[#7A112A]/10 flex items-center justify-center text-[#7A112A]">
                   <Key className="w-4 h-4" />
                 </div>
                 <div>
@@ -1245,7 +1245,7 @@ export const AdminPanel = ({ onClose }) => {
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="Enter current admin password"
-                      className="w-full pl-3.5 pr-10 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                     />
                     <button
                       type="button"
@@ -1269,7 +1269,7 @@ export const AdminPanel = ({ onClose }) => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="At least 6 characters"
-                        className="w-full pl-3.5 pr-10 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                        className="w-full pl-3.5 pr-10 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                       />
                       <button
                         type="button"
@@ -1291,7 +1291,7 @@ export const AdminPanel = ({ onClose }) => {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-enter new password"
-                      className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                      className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                     />
                   </div>
                 </div>
@@ -1309,7 +1309,7 @@ export const AdminPanel = ({ onClose }) => {
                       </>
                     ) : (
                       <>
-                        <ShieldCheck className="w-4 h-4 text-[#9B1B30]" />
+                        <ShieldCheck className="w-4 h-4 text-[#7A112A]" />
                         <span>Update Admin Password</span>
                       </>
                     )}
@@ -1390,7 +1390,7 @@ export const AdminPanel = ({ onClose }) => {
                   {/* Empty Slot Placeholder */}
                   {productForm.images.length < 3 && (
                     <div className="relative aspect-[3/4] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] flex flex-col items-center justify-center p-2 text-center">
-                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-[#9B1B30] shadow-xs mb-1">
+                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-[#7A112A] shadow-xs mb-1">
                         <Plus className="w-4 h-4 stroke-[2.5]" />
                       </div>
                       <span className="text-[10px] font-medium text-neutral-600">Slot {productForm.images.length + 1}</span>
@@ -1407,7 +1407,7 @@ export const AdminPanel = ({ onClose }) => {
                       onClick={() => fileInputCameraRef.current?.click()}
                       className="flex items-center justify-center gap-1.5 py-2 px-3 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-neutral-800 border border-[#CBD5E1] rounded-full text-xs font-medium transition-colors shadow-xs active:scale-95 cursor-pointer"
                     >
-                      <Camera className="w-4 h-4 text-[#9B1B30]" />
+                      <Camera className="w-4 h-4 text-[#7A112A]" />
                       <span>Take Photo</span>
                     </button>
                     <input
@@ -1424,7 +1424,7 @@ export const AdminPanel = ({ onClose }) => {
                       onClick={() => fileInputGalleryRef.current?.click()}
                       className="flex items-center justify-center gap-1.5 py-2 px-3 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-neutral-800 border border-[#CBD5E1] rounded-full text-xs font-medium transition-colors shadow-xs active:scale-95 cursor-pointer"
                     >
-                      <ImageIcon className="w-4 h-4 text-[#9B1B30]" />
+                      <ImageIcon className="w-4 h-4 text-[#7A112A]" />
                       <span>Choose Gallery</span>
                     </button>
                     <input
@@ -1450,7 +1450,7 @@ export const AdminPanel = ({ onClose }) => {
                   value={productForm.title}
                   onChange={(e) => setProductForm(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="e.g. Pure Mulberry Silk Anarkali Set"
-                  className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                  className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                 />
               </div>
 
@@ -1467,7 +1467,7 @@ export const AdminPanel = ({ onClose }) => {
                     value={productForm.price}
                     onChange={(e) => setProductForm(prev => ({ ...prev, price: e.target.value }))}
                     placeholder="e.g. 1899"
-                    className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                    className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                   />
                 </div>
 
@@ -1481,7 +1481,7 @@ export const AdminPanel = ({ onClose }) => {
                     value={productForm.originalPrice}
                     onChange={(e) => setProductForm(prev => ({ ...prev, originalPrice: e.target.value }))}
                     placeholder="e.g. 2499"
-                    className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                    className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                   />
                 </div>
               </div>
@@ -1498,7 +1498,7 @@ export const AdminPanel = ({ onClose }) => {
                     min="0"
                     value={productForm.stock}
                     onChange={(e) => setProductForm(prev => ({ ...prev, stock: e.target.value }))}
-                    className="w-28 px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                    className="w-28 px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                   />
                   <div className="flex items-center gap-1.5">
                     {Number(productForm.stock) > 0 ? (
@@ -1526,7 +1526,7 @@ export const AdminPanel = ({ onClose }) => {
                   value={productForm.description}
                   onChange={(e) => setProductForm(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Fabric, embroidery, fit, care instructions..."
-                  className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#9B1B30]/30"
+                  className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7A112A]/30"
                 />
               </div>
 
@@ -1541,7 +1541,7 @@ export const AdminPanel = ({ onClose }) => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-[#9B1B30] hover:bg-[#831427] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
+                  className="px-6 py-2.5 bg-[#7A112A] hover:bg-[#640B20] text-white rounded-full text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer"
                 >
                   {editingProductId ? 'Update Product' : 'Save Product'}
                 </button>
