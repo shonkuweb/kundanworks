@@ -69,7 +69,7 @@ export const Header = () => {
   return (
     <>
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EAE0D4] transition-all shadow-xs">
-        <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
+        <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between">
           
           {/* Left: Drawer Toggle */}
           <button
@@ -79,22 +79,6 @@ export const Header = () => {
           >
             <Menu className="w-6 h-6 stroke-[1.8]" />
           </button>
-
-          {/* Center: Brand Logo Image */}
-          <div 
-            onClick={() => {
-              setActiveCategory('all');
-              navigate('/');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="flex items-center justify-center cursor-pointer select-none group px-2 py-0.5"
-          >
-            <img 
-              src={poojaLaceHubLogo} 
-              alt={storeConfig.storeName || 'Pooja Lace HUB Surat'} 
-              className="h-11 sm:h-14 md:h-16 max-w-[210px] sm:max-w-[270px] md:max-w-[310px] object-contain group-hover:scale-105 transition-transform duration-300" 
-            />
-          </div>
 
           {/* Right: Search, Cart & Admin Access with Curved Edges */}
           <div className="flex items-center gap-1.5">
